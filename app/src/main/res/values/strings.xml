@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">GameStorm</string>
+    <string name="urlAPI">https://api.igdb.com/v4/games</string>
+    <string name="clientID">w70u2nsn2gzl9g0xsbe3uvguva3zos</string>
+    <string name="tokenAPI">Bearer sevk2qpth8qd683kwwl5e67m66t5ws</string>
+    <string name="contentType">application/json;charset=utf-8</string>
 </resources>
