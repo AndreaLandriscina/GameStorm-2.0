@@ -4,4 +4,7 @@
     <string name="clientID">w70u2nsn2gzl9g0xsbe3uvguva3zos</string>
     <string name="tokenAPI">Bearer sevk2qpth8qd683kwwl5e67m66t5ws</string>
     <string name="contentType">application/json;charset=utf-8</string>
+    <string name="home">Home</string>
+    <string name="search">Search</string>
+    <string name="profile">Profile</string>
 </resources>
