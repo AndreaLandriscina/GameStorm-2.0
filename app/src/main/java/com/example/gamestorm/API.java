@@ -14,9 +14,13 @@ import java.util.concurrent.Executors;
 
 public class API {
     private final Context context;
-
+    private String response;
     public API(Context context) {
         this.context = context;
+    }
+
+    public String getResponse() {
+        return response;
     }
 
     public void callAPI(String query) throws JSONException {
@@ -38,6 +42,9 @@ public class API {
         UrlRequest request = requestBuilder.build();
 
         request.start();
+        while (!request.isDone()){
+            response = myUrlRequestCallback.getResponse();
+        }
     }
 
     private void setRequest(UrlRequest.Builder requestBuilder) {

@@ -2,13 +2,19 @@ package com.example.gamestorm;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import org.json.JSONException;
+
+import java.util.Objects;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -17,9 +23,11 @@ import org.json.JSONException;
  */
 public class HomeFragment extends Fragment {
     static MyUrlRequestCallback myUrlRequestCallback;
+    private Button button;
     private String query;
+
     public HomeFragment() {
-        // Required empty public constructor
+
     }
 
     private void callAPI() {
@@ -27,6 +35,7 @@ public class HomeFragment extends Fragment {
         query = "fields name; limit 2;";
         try {
             api.callAPI(query);
+            String s = api.getResponse();
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -42,6 +51,7 @@ public class HomeFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
 /*
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
@@ -55,6 +65,19 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         callAPI();
+
         return inflater.inflate(R.layout.fragment_home, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        button = requireView().findViewById(R.id.button);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                requireActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new GameFragment()).commit();
+            }
+        });
     }
 }

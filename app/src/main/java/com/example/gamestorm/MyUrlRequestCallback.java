@@ -82,7 +82,6 @@ class MyUrlRequestCallback extends UrlRequest.Callback {
             Log.i("name", names[i]);
 
         }
-
         request.cancel();
     }
 
