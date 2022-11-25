@@ -1,5 +1,7 @@
 package com.example.gamestorm;
 
+
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -13,8 +15,6 @@ import android.widget.Button;
 
 import org.json.JSONException;
 
-import java.util.Objects;
-
 
 /**
  * A simple {@link Fragment} subclass.
@@ -23,8 +23,6 @@ import java.util.Objects;
  */
 public class HomeFragment extends Fragment {
     static MyUrlRequestCallback myUrlRequestCallback;
-    private Button button;
-    private String query;
 
     public HomeFragment() {
 
@@ -32,10 +30,10 @@ public class HomeFragment extends Fragment {
 
     private void callAPI() {
         API api = new API(getContext());
-        query = "fields name; limit 2;";
+        String query = "fields name; limit 2;";
         try {
             api.callAPI(query);
-            String s = api.getResponse();
+            String response = api.getResponse();
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -51,33 +49,25 @@ public class HomeFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-/*
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
- */
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         callAPI();
-
         return inflater.inflate(R.layout.fragment_home, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        button = requireView().findViewById(R.id.button);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                requireActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new GameFragment()).commit();
-            }
+        //this button is used to open the game page
+        Button button = requireView().findViewById(R.id.button);
+        button.setOnClickListener(view1 -> {
+            Intent myIntent = new Intent(getContext(), GameActivity.class);
+            //when we open the game page we have to pass the game's id
+            int idGame = 0;
+            myIntent.putExtra("idGame", idGame);
+            requireActivity().startActivity(myIntent);
         });
     }
 }

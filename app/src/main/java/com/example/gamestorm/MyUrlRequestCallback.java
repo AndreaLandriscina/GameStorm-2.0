@@ -63,19 +63,19 @@ class MyUrlRequestCallback extends UrlRequest.Callback {
         Log.i("RESPONSE", "onReadCompleted method called.");
         // You should keep reading the request until there's no more data.
         byteBuffer.clear();
+        //the response is in the buffer
         request.read(byteBuffer);
-
-        String s = StandardCharsets.UTF_8.decode(byteBuffer).toString();
-        setResponse(s);
+        //fix the response
+        setResponse(StandardCharsets.UTF_8.decode(byteBuffer).toString());
 
         Log.i("RESPONSE", getResponse());
-
-        JSONArray data = new JSONArray(s);
+        //get the info from the response
+        JSONArray data = new JSONArray(getResponse());
         String[] names = new String[data.length()];
         String[] ids = new String[data.length()];
         for (int i = 0; i < data.length(); i++){
             JSONObject jsonObject = data.getJSONObject(i);
-            int id = jsonObject.getInt("id");
+
             ids[i] = jsonObject.getString("id");
             names[i] = jsonObject.getString("name");
             Log.i("id",ids[i]);

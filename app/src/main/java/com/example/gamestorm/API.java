@@ -34,7 +34,7 @@ public class API {
                 url, myUrlRequestCallback, executor);
 
         setRequest(requestBuilder);
-
+        //the query must be bytes
         byte[] bytes = convertStringToBytes(query);
         UploadDataProvider myUploadDataProvider = UploadDataProviders.create(bytes);
 
@@ -46,7 +46,7 @@ public class API {
             response = myUrlRequestCallback.getResponse();
         }
     }
-
+    //authorization for the request to the API
     private void setRequest(UrlRequest.Builder requestBuilder) {
         requestBuilder.setHttpMethod("POST");
         requestBuilder.addHeader("Content-Type",context.getString(R.string.contentType));
@@ -63,7 +63,6 @@ public class API {
             bytes = new byte[byteBuffer.remaining()];
             byteBuffer.get(bytes);
         }
-
         return bytes;
     }
 }

@@ -1,12 +1,15 @@
 <resources>
     <string name="app_name">GameStorm</string>
-    <string name="urlAPI">https://api.igdb.com/v4/games</string>
-    <string name="clientID">w70u2nsn2gzl9g0xsbe3uvguva3zos</string>
-    <string name="tokenAPI">Bearer sevk2qpth8qd683kwwl5e67m66t5ws</string>
-    <string name="contentType">application/json;charset=utf-8</string>
+    <string name="urlAPI" translatable="false">https://api.igdb.com/v4/games</string>
+    <string name="clientID" translatable="false">w70u2nsn2gzl9g0xsbe3uvguva3zos</string>
+    <string name="tokenAPI" translatable="false">Bearer sevk2qpth8qd683kwwl5e67m66t5ws</string>
+    <string name="contentType" translatable="false">application/json;charset=utf-8</string>
     <string name="home">Home</string>
     <string name="search">Search</string>
     <string name="profile">Profile</string>
-<!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment" translatable="false">Hello blank fragment</string>
+    <string name="title_activity_game" translatable="false">GameActivity</string>
+    <string name="action_settings">Settings</string>
+    <string name="large_text" translatable="false">ops</string>
 </resources>
