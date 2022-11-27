@@ -70,6 +70,7 @@ class MyUrlRequestCallback extends UrlRequest.Callback {
 
         Log.i("RESPONSE", getResponse());
         //get the info from the response
+        /*
         JSONArray data = new JSONArray(getResponse());
         String[] names = new String[data.length()];
         String[] ids = new String[data.length()];
@@ -82,6 +83,7 @@ class MyUrlRequestCallback extends UrlRequest.Callback {
             Log.i("name", names[i]);
 
         }
+         */
         request.cancel();
     }
 

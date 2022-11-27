@@ -54,7 +54,7 @@ public class API {
         requestBuilder.addHeader("Authorization", context.getString(R.string.tokenAPI));
     }
 
-    public static byte[] convertStringToBytes(String payload) {
+    private static byte[] convertStringToBytes(String payload) {
         byte[] bytes;
         ByteBuffer byteBuffer = ByteBuffer.wrap(payload.getBytes());
         if (byteBuffer.hasArray()) {
