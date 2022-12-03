@@ -29,7 +29,8 @@ public class HomeFragment extends Fragment {
     }
 
     private void callAPI() {
-        API api = new API(getContext());
+        String url = "";
+        API api = new API(getContext(), url);
         String query = "fields name; limit 2;";
         try {
             api.callAPI(query);
@@ -53,7 +54,7 @@ public class HomeFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        callAPI();
+        //callAPI();
         return inflater.inflate(R.layout.fragment_home, container, false);
     }
 

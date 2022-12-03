@@ -45,6 +45,8 @@ class MyUrlRequestCallback extends UrlRequest.Callback {
             // The service is unavailable. You should still check if the request
             // contains some data.
             //request.read(myBuffer);
+        } else if (httpStatusCode == 400){
+            request.cancel();
         }
     }
 

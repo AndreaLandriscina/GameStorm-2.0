@@ -15,6 +15,33 @@
         android:theme="@style/Theme.GameStorm"
         tools:targetApi="31">
         <activity
+            android:name=".GameVersionActivity"
+            android:exported="false"
+            android:label="@string/title_activity_game_version"
+            android:theme="@style/Theme.GameStorm.NoActionBar">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".GameSagaActivity"
+            android:exported="false"
+            android:label="@string/title_activity_game_saga"
+            android:theme="@style/Theme.GameStorm.NoActionBar">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".CategoryActivity"
+            android:exported="false"
+            android:label="@string/title_activity_category"
+            android:theme="@style/Theme.GameStorm.NoActionBar">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
             android:name=".GameActivity"
             android:exported="false"
             android:label="@string/title_activity_game"

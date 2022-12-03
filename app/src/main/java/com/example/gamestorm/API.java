@@ -14,9 +14,11 @@ import java.util.concurrent.Executors;
 
 public class API {
     private final Context context;
+    private String url;
     private String response;
-    public API(Context context) {
+    public API(Context context, String url) {
         this.context = context;
+        this.url = url;
     }
 
     public String getResponse() {
@@ -24,7 +26,6 @@ public class API {
     }
 
     public void callAPI(String query) throws JSONException {
-        String url = context.getString(R.string.urlAPI);
 
         CronetEngine.Builder myBuilder = new CronetEngine.Builder(context);
         CronetEngine cronetEngine = myBuilder.build();
