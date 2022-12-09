@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">GameStorm</string>
-    <string name="urlAPI" translatable="false">https://api.igdb.com/v4/games</string>
+    <string name="urlAPI" translatable="false">https://api.igdb.com/v4/</string>
     <string name="clientID" translatable="false">w70u2nsn2gzl9g0xsbe3uvguva3zos</string>
     <string name="tokenAPI" translatable="false">Bearer sevk2qpth8qd683kwwl5e67m66t5ws</string>
     <string name="contentType" translatable="false">application/json;charset=utf-8</string>
@@ -16,4 +16,5 @@
     <string name="videogame_saga">Videogame saga</string>
     <string name="title_activity_game_saga">GameSagaActivity</string>
     <string name="title_activity_game_version">GameVersionActivity</string>
+    <string name="error_retrieving_games">\"error_retrieving_games</string>
 </resources>

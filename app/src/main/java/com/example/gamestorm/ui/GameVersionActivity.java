@@ -1,4 +1,4 @@
-package com.example.gamestorm;
+package com.example.gamestorm.ui;
 
 import android.os.Bundle;
 
@@ -11,17 +11,17 @@ import androidx.appcompat.widget.Toolbar;
 
 import android.view.View;
 
-import com.example.gamestorm.databinding.ActivityGameSagaBinding;
+import com.example.gamestorm.databinding.ActivityGameVersionBinding;
 
-public class GameSagaActivity extends AppCompatActivity {
+public class GameVersionActivity extends AppCompatActivity {
 
-    private ActivityGameSagaBinding binding;
+    private ActivityGameVersionBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        binding = ActivityGameSagaBinding.inflate(getLayoutInflater());
+        binding = ActivityGameVersionBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         Toolbar toolbar = binding.toolbar;

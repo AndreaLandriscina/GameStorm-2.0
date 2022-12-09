@@ -1,10 +1,17 @@
-package com.example.gamestorm;
+package com.example.gamestorm.ui;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 
+import com.example.gamestorm.Model.Game;
+import com.example.gamestorm.Model.GameApiResponse;
+import com.example.gamestorm.R;
+import com.example.gamestorm.Repository.GamesRepository;
+import com.example.gamestorm.Repository.IGamesRepository;
+import com.example.gamestorm.databinding.ActivityGameBinding;
+import com.example.gamestorm.util.ResponseCallback;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,22 +20,24 @@ import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.appcompat.widget.Toolbar;
 
 
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
-
-import com.example.gamestorm.databinding.ActivityGameBinding;
 
 import org.json.JSONException;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
-public class GameActivity extends AppCompatActivity {
-    String response = null;
-    GameInfo gameInfo = null;
+public class GameActivity extends AppCompatActivity implements ResponseCallback {
+
     int idGame = 0;
+    private IGamesRepository iGamesRepository;
+    private ArrayList<Game> games;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,32 +46,23 @@ public class GameActivity extends AppCompatActivity {
         //toolBarLayout.setTitle(getTitle());
         Intent intent = getIntent();
         idGame = intent.getIntExtra("idGame", 0);
+        iGamesRepository = new GamesRepository(getApplication(), this);
+        games = new ArrayList<Game>();
+
+        iGamesRepository.fetchGames(10000);
+    }
 
 
-        try {
-            response = callAPI(idGame);
-            ImageView gameImageView = findViewById(R.id.gameImage);
-            gameInfo = new GameInfo(gameImageView, response);
-            gameInfo.setGameImage();
-            setTitle();
-            setGenres();
-            setReleaseDate();
-            setPlatforms();
-            setGameSagaButton();
-            setGameVersionButton();
-            //franchise
-            //company
-            //logo
-            //screenshot
-        } catch (JSONException | IOException e) {
-            e.printStackTrace();
-        }
+
+    private void setScreenshot() throws JSONException, IOException {
+        String query = "fields screenshots.url; where id = 1020;";
+
 
     }
 
     private void setTitle() throws JSONException {
         TextView textView = findViewById(R.id.gameName);
-        textView.setText(gameInfo.getName());
+        
     }
 
     private void setGameVersionButton() {
@@ -86,28 +86,35 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void showGameSaga(){
+        /*
         Intent myIntent = new Intent(getApplicationContext(), GameSagaActivity.class);
         myIntent.putExtra("idGame", idGame);
         startActivity(myIntent);
+         */
     }
+
     private void showGameVesions(){
+        /*
         Intent myIntent = new Intent(getApplicationContext(), GameVersionActivity.class);
         myIntent.putExtra("idGame", idGame);
         startActivity(myIntent);
+        */
+
     }
 
     private void setReleaseDate() throws JSONException {
         TextView textView1 = findViewById(R.id.releaseDate);
-        String releaseDate = gameInfo.getReleaseDate();
-        textView1.setText(releaseDate);
+        //String releaseDate = gameInfo.getReleaseDate();
+        //textView1.setText(releaseDate);
     }
 
     private void setGenres() throws JSONException {
-        String[] genres = gameInfo.getGenre();
-        showGenres(genres);
+        //String[] genres = gameInfo.getGenre();
+        //showGenres(genres);
     }
 
     private void setPlatforms() throws JSONException {
+        /*
         String[] platforms = gameInfo.getPlatforms();
         TextView platformText = findViewById(R.id.platformText);
         StringBuilder text = new StringBuilder();
@@ -118,6 +125,8 @@ public class GameActivity extends AppCompatActivity {
             }
         }
         platformText.setText(text);
+
+         */
     }
 
     @SuppressLint("UseCompatLoadingForDrawables")
@@ -131,14 +140,14 @@ public class GameActivity extends AppCompatActivity {
             textView.setPadding(15,10,15,10);
             textView.setBackground(AppCompatResources.getDrawable(getApplicationContext(),R.drawable.rounded_corner));
             textView.setText(genre);
-            textView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent myIntent = new Intent(getApplicationContext(), CategoryActivity.class);
-                    int category = 0;
-                    myIntent.putExtra("category", category);
-                    startActivity(myIntent);
-                }
+            textView.setOnClickListener(v -> {
+                /*
+                Intent myIntent = new Intent(getApplicationContext(), CategoryActivity.class);
+                int category = 0;
+                myIntent.putExtra("category", category);
+                startActivity(myIntent);
+
+                 */
             });
             linearLayoutCompat.addView(textView);
         }
@@ -153,14 +162,23 @@ public class GameActivity extends AppCompatActivity {
         Objects.requireNonNull(getSupportActionBar()).setDisplayShowTitleEnabled(false);
     }
 //1020
-    private String callAPI(int idGame) throws JSONException, IOException {
-        String url = getString(R.string.urlAPI);
-        API api = new API(getApplicationContext(), url);
-        String query = "fields name, release_dates.date, genres.name, rating, cover.url, platforms.name; where id = 1020;";
-        api.callAPI(query);
-        return api.getResponse();
+
+
+    @Override
+    public void onSuccess(List<GameApiResponse> gamesList, long lastUpdate) {
+        //this.games.addAll(gamesList);
     }
 
+
+    @Override
+    public void onFailure(String errorMessage) {
+        Log.i("onFailure", errorMessage);
+    }
+
+    @Override
+    public void onGameFavoriteStatusChanged(Game game) {
+
+    }
 }
 
 

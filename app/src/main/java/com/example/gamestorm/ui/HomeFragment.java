@@ -1,4 +1,4 @@
-package com.example.gamestorm;
+package com.example.gamestorm.ui;
 
 
 import android.content.Intent;
@@ -13,6 +13,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+
+import com.example.gamestorm.R;
+
 import org.json.JSONException;
 
 
@@ -22,13 +25,14 @@ import org.json.JSONException;
  * create an instance of this fragment.
  */
 public class HomeFragment extends Fragment {
-    static MyUrlRequestCallback myUrlRequestCallback;
+
 
     public HomeFragment() {
 
     }
 
     private void callAPI() {
+        /*
         String url = "";
         API api = new API(getContext(), url);
         String query = "fields name; limit 2;";
@@ -38,6 +42,8 @@ public class HomeFragment extends Fragment {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        */
+
     }
 
     public static HomeFragment newInstance(String param1, String param2) {
