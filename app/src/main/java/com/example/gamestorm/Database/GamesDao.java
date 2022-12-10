@@ -1,15 +1,6 @@
 package com.example.gamestorm.Database;
 
 import androidx.room.Dao;
-import androidx.room.Delete;
-import androidx.room.Insert;
-import androidx.room.OnConflictStrategy;
-import androidx.room.Query;
-import androidx.room.Update;
-
-import com.example.gamestorm.Model.Game;
-
-import java.util.List;
 
 
 /**

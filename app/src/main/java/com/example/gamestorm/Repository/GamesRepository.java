@@ -1,10 +1,7 @@
 package com.example.gamestorm.Repository;
 
-import static com.example.gamestorm.util.Constants.CLIENT_ID;
 import static com.example.gamestorm.util.Constants.CLIENT_ID_VALUE;
-import static com.example.gamestorm.util.Constants.CONTENT_TYPE;
 import static com.example.gamestorm.util.Constants.CONTENT_TYPE_VALUE;
-import static com.example.gamestorm.util.Constants.TOKEN_API;
 import static com.example.gamestorm.util.Constants.TOKEN_API_VALUE;
 
 import android.app.Application;
@@ -14,12 +11,9 @@ import com.example.gamestorm.Model.Game;
 import com.example.gamestorm.Model.GameApiResponse;
 import com.example.gamestorm.R;
 import com.example.gamestorm.service.GamesApiService;
-import com.example.gamestorm.util.Constants;
 import com.example.gamestorm.util.ResponseCallback;
 import com.example.gamestorm.util.ServiceLocator;
 
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.MediaType;
@@ -42,13 +36,14 @@ public class GamesRepository implements IGamesRepository{
     }
 
     @Override
-    public void fetchGames(long lastUpdate) {
+    public void fetchGames(String query, long lastUpdate) {
         long currentTime = System.currentTimeMillis();
 
         // It gets the news from the Web Service if the last download
         // of the news has been performed more than FRESH_TIMEOUT value ago
         if (true) {
-        String query = "fields name, cover;";
+            //fields name, release_dates.date, genres.name, rating, cover.url, platforms.name; where id = 1020;
+
         RequestBody body = RequestBody.create(MediaType.parse("text-plain"), query);
         Call<List<GameApiResponse>> gameApiResponseCall = gamesApiService.getGames(
                 CONTENT_TYPE_VALUE,
@@ -60,16 +55,13 @@ public class GamesRepository implements IGamesRepository{
             @Override
             public void onResponse(Call<List<GameApiResponse>> call, Response<List<GameApiResponse>> response) {
                 if (response.body() != null && response.isSuccessful()) {
-                    List<GameApiResponse> gamesList = response.body();
-                    Log.i("response",gamesList.toString());
-                    GameApiResponse gameApiResponse = response.body().get(0);
-                    String name = gameApiResponse.getName();
-                    Log.i("response", name);
+                    List<GameApiResponse> gameApiResponses = response.body();
 
-                    responseCallback.onSuccess(gamesList, 1000);
-                    //saveDataInDatabase(newsList);
+                    Log.i("response", gameApiResponses.toString());
+
+                    responseCallback.onSuccess(gameApiResponses, 1000);
+                    //saveDataInDatabase(gamesList);
                 } else {
-                    Log.i("onfailure", "no");
                     responseCallback.onFailure(application.getString(R.string.error_retrieving_games));
                 }
             }
@@ -86,8 +78,10 @@ public class GamesRepository implements IGamesRepository{
         }
     }
 
+
+
     @Override
-    public void updateGames(Game game) {
+    public void updateGames(GameApiResponse game) {
 
     }
 

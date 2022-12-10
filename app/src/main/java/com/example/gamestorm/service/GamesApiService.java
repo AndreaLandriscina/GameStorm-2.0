@@ -23,5 +23,4 @@ public interface GamesApiService {
             @Header(CLIENT_ID) String clientID,
             @Header(TOKEN_API) String authorization,
             @Body RequestBody query);
-
 }

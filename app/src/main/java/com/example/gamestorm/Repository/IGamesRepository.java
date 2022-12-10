@@ -1,6 +1,6 @@
 package com.example.gamestorm.Repository;
 
-import com.example.gamestorm.Model.Game;
+import com.example.gamestorm.Model.GameApiResponse;
 
 public interface IGamesRepository {
     enum JsonParserType {
@@ -10,9 +10,9 @@ public interface IGamesRepository {
         JSON_ERROR
     }
 
-    void fetchGames(long lastUpdate);
+    void fetchGames(String query, long lastUpdate);
 
-    void updateGames(Game game);
+    void updateGames(GameApiResponse game);
 
     void getFavoriteGames();
 
