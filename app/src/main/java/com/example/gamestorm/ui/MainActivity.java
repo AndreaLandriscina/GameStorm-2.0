@@ -1,4 +1,4 @@
-package com.example.gamestorm;
+package com.example.gamestorm.ui;
 
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -10,6 +10,7 @@ import androidx.navigation.ui.NavigationUI;
 import android.os.Bundle;
 import android.view.WindowManager;
 
+import com.example.gamestorm.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {

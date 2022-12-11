@@ -116,21 +116,18 @@ public class GameInfo {
         return platformsString;
     }
 
-    ArrayList<URL> getAllURLScreenshots(){
-        ArrayList<URL> urls = new ArrayList<>();
-        /*
+    public String[] getAllURLScreenshots() throws JSONException, MalformedURLException {
+        JSONArray screenshots = jsonObject.getJSONArray("screenshots");
+        String[] urls = new String[screenshots.length()];
+        JSONObject screenshotObject;
 
         for (int i = 0; i < jsonArray.length(); i++){
-
-            JSONObject jsonObject = jsonArray.getJSONObject(i);
-            //JSONArray screenshots = jsonObject.getJSONArray("cover");
-            for (int j = 0; j < screenshots.length(); j++){
-                JSONObject screenshotsJSONObject = screenshots.getJSONObject(j);
-                String newURL = screenshotsJSONObject.getString("url").replace("thumb", "cover_big");
-                urls.add(new URL("https:" + newURL));
-            }
+            screenshotObject = screenshots.getJSONObject(i);
+            String url = screenshotObject.getString("url");
+            //String newURL = screenshotsJSONObject.getString("url").replace("thumb", "");
+            urls[i] = new URL("https:" + url).toString();
+            Log.i("screenshots", urls[i]);
         }
- */
         return urls;
     }
 
