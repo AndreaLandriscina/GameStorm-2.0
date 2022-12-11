@@ -16,6 +16,7 @@ public class API {
     private final Context context;
     private String url;
     private String response;
+
     public API(Context context, String url) {
         this.context = context;
         this.url = url;
