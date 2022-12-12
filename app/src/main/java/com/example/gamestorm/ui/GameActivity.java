@@ -1,15 +1,10 @@
 package com.example.gamestorm.ui;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 
-import com.example.gamestorm.Model.Cover;
-import com.example.gamestorm.Model.Game;
 import com.example.gamestorm.Model.GameApiResponse;
-import com.example.gamestorm.Model.Genre;
-import com.example.gamestorm.Model.ReleaseDate;
 import com.example.gamestorm.R;
 import com.example.gamestorm.Repository.GamesRepository;
 import com.example.gamestorm.Repository.IGamesRepository;
@@ -31,13 +26,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import org.json.JSONException;
-
-import java.io.IOException;
-import java.text.DateFormatSymbols;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -60,7 +49,7 @@ public class GameActivity extends AppCompatActivity implements ResponseCallback 
         progressBar = findViewById(R.id.progressBar);
         iGamesRepository = new GamesRepository(getApplication(), this);
         progressBar.setVisibility(View.VISIBLE);
-        String query = "fields id,name, cover.url; search \"God of war\";";
+        String query = "fields name, franchises.name, first_release_date, genres.name, rating, cover.url, platforms.name, summary; where id = 1020; ";
         iGamesRepository.fetchGames(query,10000);
 
         games = new ArrayList<>();
@@ -103,6 +92,12 @@ public class GameActivity extends AppCompatActivity implements ResponseCallback 
                  */
             });
             linearLayoutCompat.addView(textView);
+
+            TextView descriptionView = findViewById(R.id.descriptionText);
+            descriptionView.setText(game.getDescription());
+
+            setGameSagaButton();
+
         }
 
         List<String> platforms = game.getPlatformsString();
@@ -117,53 +112,16 @@ public class GameActivity extends AppCompatActivity implements ResponseCallback 
         platformText.setText(text);
     }
 
-
-    @Override
-    public void onFailure(String errorMessage) {
-        Log.i("onFailure", errorMessage);
-    }
-
-    @Override
-    public void onGameFavoriteStatusChanged(GameApiResponse game) {
-
-    }
-
-
-    private void setGameVersionButton() {
-        Button showGameVersionsButton = findViewById(R.id.showVersionsButton);
-        showGameVersionsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showGameVesions();
-            }
-        });
-    }
-
     private void setGameSagaButton() {
         Button showGameSagaButton = findViewById(R.id.showGameSagaButton);
         showGameSagaButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showGameSaga();
+                Intent myIntent = new Intent(getApplicationContext(), FranchiseActivity.class);
+                myIntent.putExtra("nameFranchise", game.getFranchise().getName());
+                startActivity(myIntent);
             }
         });
-    }
-
-    private void showGameSaga(){
-        /*
-        Intent myIntent = new Intent(getApplicationContext(), GameSagaActivity.class);
-        myIntent.putExtra("idGame", idGame);
-        startActivity(myIntent);
-         */
-    }
-
-    private void showGameVesions(){
-        /*
-        Intent myIntent = new Intent(getApplicationContext(), GameVersionActivity.class);
-        myIntent.putExtra("idGame", idGame);
-        startActivity(myIntent);
-        */
-
     }
 
     private void setToolbar() {
@@ -176,7 +134,15 @@ public class GameActivity extends AppCompatActivity implements ResponseCallback 
     }
 //1020
 
+    @Override
+    public void onFailure(String errorMessage) {
+        Log.i("onFailure", errorMessage);
+    }
 
+    @Override
+    public void onGameFavoriteStatusChanged(GameApiResponse game) {
+
+    }
 
 }
 

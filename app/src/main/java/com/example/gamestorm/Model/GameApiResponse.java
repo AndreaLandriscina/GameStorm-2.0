@@ -5,7 +5,6 @@ import com.google.gson.annotations.SerializedName;
 import java.text.DateFormatSymbols;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.List;
 
 public class GameApiResponse {
@@ -14,20 +13,26 @@ public class GameApiResponse {
     private Cover cover;
     private List<Genre> genres;
     private List<Platform> platforms;
-    @SerializedName("release_dates")
-    private List<ReleaseDate> releaseDates;
+    @SerializedName("first_release_date")
+    private String releaseDate;
     private double ratings;
+    @SerializedName("summary")
+    private String description;
+    @SerializedName("franchises")
+    private List<Franchises> franchise;
 
     public GameApiResponse() {}
 
-    public GameApiResponse(int id, String name, Cover cover, List<Genre> genres, List<Platform> platforms, List<ReleaseDate> releaseDates, double ratings) {
+    public GameApiResponse(int id, String name, Cover cover, List<Genre> genres, List<Platform> platforms, String releaseDate, double ratings, String description, List<Franchises> franchise) {
         this.id = id;
         this.name = name;
         this.cover = cover;
         this.genres = genres;
         this.platforms = platforms;
-        this.releaseDates = releaseDates;
+        this.releaseDate = releaseDate;
         this.ratings = ratings;
+        this.description = description;
+        this.franchise = franchise;
     }
 
     public String getName() {
@@ -86,32 +91,22 @@ public class GameApiResponse {
         this.platforms = platforms;
     }
 
-    public List<ReleaseDate> getReleaseDates() {
-        return releaseDates;
-    }
-
     public String getReleaseDate() {
-        List<Calendar> datesLong = new ArrayList<>();
         Calendar calendar = Calendar.getInstance();
-        String dateString;
-        for (ReleaseDate releaseDate : releaseDates) {
-            dateString = releaseDate.getDate() + "000";
-            Long dateLong = Long.parseLong(dateString);
-            calendar.setTimeInMillis(dateLong);
-            datesLong.add(calendar);
-        }
-        Calendar calendar1 = Collections.min(datesLong);
+        Long dateLong = Long.parseLong(releaseDate + "000");
+        calendar.setTimeInMillis(dateLong);
+
         DateFormatSymbols dateFormatSymbols = new DateFormatSymbols();
         String[] months = dateFormatSymbols.getMonths();
-        String month = months[calendar1.get(Calendar.MONTH)];
-        String date = calendar1.get(Calendar.DAY_OF_MONTH)
+        String month = months[calendar.get(Calendar.MONTH)];
+        String date = calendar.get(Calendar.DAY_OF_MONTH)
                 + " " + month
-                + " " + calendar1.get(Calendar.YEAR);
+                + " " + calendar.get(Calendar.YEAR);
         return date;
     }
 
-    public void setReleaseDates(List<ReleaseDate> releaseDates) {
-        this.releaseDates = releaseDates;
+    public void setReleaseDate(String releaseDate) {
+        this.releaseDate = releaseDate;
     }
 
     public double getRatings() {
@@ -122,6 +117,18 @@ public class GameApiResponse {
         this.ratings = ratings;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Franchises getFranchise() {
+        return franchise.get(0);
+    }
+
     @Override
     public String toString() {
         return "GameApiResponse{" +
@@ -130,8 +137,10 @@ public class GameApiResponse {
                 ", cover=" + cover +
                 ", genres=" + genres +
                 ", platforms=" + platforms +
-                ", releaseDates=" + releaseDates +
+                ", releaseDate=" + releaseDate +
                 ", rating=" + ratings +
+                ", description=" + description +
+                ", franchise=" + franchise +
                 '}' + "\n";
     }
 }

@@ -79,6 +79,15 @@
                 android:textColor="@color/white"
                 android:textSize="20sp" />
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:layout_marginStart="14dp"
+                android:textSize="16dp"
+                android:textStyle="bold"
+                android:text="Genres"/>
+
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:id="@+id/genresLayout"
                 android:layout_width="match_parent"
@@ -89,10 +98,20 @@
             </androidx.appcompat.widget.LinearLayoutCompat>
 
             <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:layout_marginStart="14dp"
+                android:textSize="16dp"
+                android:textStyle="bold"
+                android:text="Platforms"/>
+
+            <TextView
                 android:id="@+id/platformText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textColor="@color/white"
+                android:textAlignment="center"
                 android:textSize="14sp" />
 
             <Button
@@ -103,23 +122,24 @@
                 android:backgroundTint="#1C1B1B"
                 android:text="@string/videogame_saga" />
 
-            <Button
-                android:id="@+id/showVersionsButton"
-                android:layout_width="375dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:backgroundTint="#1C1B1B"
-                android:text="Version" />
 
-            <HorizontalScrollView
+            <TextView
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:layout_marginStart="14dp"
+                android:layout_marginEnd="14dp"
+                android:textSize="16dp"
+                android:textStyle="bold"
+                android:text="Description"/>
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical" />
-            </HorizontalScrollView>
+            <TextView
+                android:id="@+id/descriptionText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:layout_marginStart="14dp"
+                android:layout_marginEnd="14dp"/>
 
 
         </androidx.appcompat.widget.LinearLayoutCompat>
