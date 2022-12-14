@@ -1,4 +1,4 @@
-package com.example.gamestorm.Model;
+package com.example.gamestorm.model;
 
 public class Cover {
     int id;

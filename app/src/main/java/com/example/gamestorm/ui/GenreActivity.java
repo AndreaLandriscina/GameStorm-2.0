@@ -4,7 +4,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -22,32 +21,31 @@ import com.example.gamestorm.util.ResponseCallback;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FranchiseActivity extends AppCompatActivity implements ResponseCallback {
+public class GenreActivity extends AppCompatActivity implements ResponseCallback {
     private RecyclerView recyclerView;
     private ArrayList<RecyclerData> recyclerDataArrayList;
     private ProgressBar progressBar;
 
-    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_franchise);
-        Intent intent = getIntent();
-        String franchise = intent.getStringExtra("nameFranchise");
-        TextView franchiseTitleView = findViewById(R.id.franchiseTitle);
-
+        setContentView(R.layout.activity_genre);
         progressBar = findViewById(R.id.progressBar);
-        recyclerView=findViewById(R.id.franchiseRecyclerView);
+
+        Intent intent = getIntent();
+        String genre = intent.getStringExtra("genreName");
+
+        TextView genreTitle = findViewById(R.id.genreTitle);
+        genreTitle.setText(genre);
+
+        recyclerView=findViewById(R.id.genreRecyclerView);
         recyclerDataArrayList=new ArrayList<>();
-        if (franchise != null) {
-            franchiseTitleView.setText(franchise);
-            IGamesRepository iGamesRepository = new GamesRepository(getApplication(), this);
-            progressBar.setVisibility(View.VISIBLE);
-            String query = "fields name, cover.url; where franchises.name = \"" + franchise + "\"; limit 30;";
-            iGamesRepository.fetchGames(query,10000);
-        }  else {
-            franchiseTitleView.setText("No results :(");
-        }
+
+        IGamesRepository gamesRepository = new GamesRepository(getApplication(), this);
+        progressBar.setVisibility(View.VISIBLE);
+        //1262304000 = 1/1/2010
+        String query = "fields name, total_rating, cover.url, genres.name, first_release_date; where genres.name = \"" + genre + "\" & total_rating > 85 & first_release_date > 1262304000; limit 30;";
+        gamesRepository.fetchGames(query, 10000);
     }
 
     @Override

@@ -1,4 +1,4 @@
-package com.example.gamestorm.Model;
+package com.example.gamestorm.model;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -15,36 +15,37 @@ public class GameApiResponse {
     private List<Platform> platforms;
     @SerializedName("first_release_date")
     private String releaseDate;
-    private double ratings;
+    @SerializedName("total_rating")
+    private double rating;
+    @SerializedName("total_rating_count")
+    private int ratingCount;
     @SerializedName("summary")
     private String description;
     @SerializedName("franchises")
     private List<Franchises> franchise;
+    @SerializedName("involved_companies")
+    private List<InvolvedCompany> companies;
+    private List<Screenshot> screenshots;
 
     public GameApiResponse() {}
 
-    public GameApiResponse(int id, String name, Cover cover, List<Genre> genres, List<Platform> platforms, String releaseDate, double ratings, String description, List<Franchises> franchise) {
+    public GameApiResponse(int id, String name, Cover cover, List<Genre> genres, List<Platform> platforms, String releaseDate, int ratingCount, double rating, String description, List<Franchises> franchise, List<InvolvedCompany> companies, List<Screenshot> screenshots) {
         this.id = id;
         this.name = name;
         this.cover = cover;
         this.genres = genres;
         this.platforms = platforms;
         this.releaseDate = releaseDate;
-        this.ratings = ratings;
+        this.ratingCount = ratingCount;
+        this.rating = rating;
         this.description = description;
         this.franchise = franchise;
+        this.companies = companies;
+        this.screenshots = screenshots;
     }
 
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public int getId() {
@@ -53,10 +54,6 @@ public class GameApiResponse {
 
     public Cover getCover() {
         return cover;
-    }
-
-    public void setCover(Cover cover) {
-        this.cover = cover;
     }
 
     public List<Genre> getGenres() {
@@ -71,10 +68,6 @@ public class GameApiResponse {
         return genres;
     }
 
-    public void setGenres(List<Genre> genres) {
-        this.genres = genres;
-    }
-
     public List<Platform> getPlatforms() {
         return platforms;
     }
@@ -87,46 +80,45 @@ public class GameApiResponse {
         return platforms;
     }
 
-    public void setPlatforms(List<Platform> platforms) {
-        this.platforms = platforms;
-    }
-
     public String getReleaseDate() {
         Calendar calendar = Calendar.getInstance();
-        Long dateLong = Long.parseLong(releaseDate + "000");
+        long dateLong = Long.parseLong(releaseDate + "000");
         calendar.setTimeInMillis(dateLong);
 
         DateFormatSymbols dateFormatSymbols = new DateFormatSymbols();
         String[] months = dateFormatSymbols.getMonths();
         String month = months[calendar.get(Calendar.MONTH)];
-        String date = calendar.get(Calendar.DAY_OF_MONTH)
+        return calendar.get(Calendar.DAY_OF_MONTH)
                 + " " + month
                 + " " + calendar.get(Calendar.YEAR);
-        return date;
     }
 
-    public void setReleaseDate(String releaseDate) {
-        this.releaseDate = releaseDate;
+    public int getRatingCount() {
+        return ratingCount;
     }
 
-    public double getRatings() {
-        return ratings;
-    }
-
-    public void setRatings(double ratings) {
-        this.ratings = ratings;
+    public double getRating() {
+        return rating;
     }
 
     public String getDescription() {
         return description;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public Franchises getFranchise() {
+        if (franchise != null)
+            return franchise.get(0);
+        return null;
     }
 
-    public Franchises getFranchise() {
-        return franchise.get(0);
+    public InvolvedCompany getCompanies() {
+        if (companies != null)
+            return companies.get(0);
+        return null;
+    }
+
+    public List<Screenshot> getScreenshots() {
+        return screenshots;
     }
 
     @Override
@@ -138,9 +130,11 @@ public class GameApiResponse {
                 ", genres=" + genres +
                 ", platforms=" + platforms +
                 ", releaseDate=" + releaseDate +
-                ", rating=" + ratings +
+                ", ratingCount=" + ratingCount +
+                ", rating=" + rating +
                 ", description=" + description +
                 ", franchise=" + franchise +
+                ", screenshots=" + screenshots +
                 '}' + "\n";
     }
 }

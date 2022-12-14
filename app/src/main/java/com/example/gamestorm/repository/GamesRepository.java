@@ -1,4 +1,4 @@
-package com.example.gamestorm.Repository;
+package com.example.gamestorm.repository;
 
 import static com.example.gamestorm.util.Constants.CLIENT_ID_VALUE;
 import static com.example.gamestorm.util.Constants.CONTENT_TYPE_VALUE;
@@ -7,8 +7,7 @@ import static com.example.gamestorm.util.Constants.TOKEN_API_VALUE;
 import android.app.Application;
 import android.util.Log;
 
-import com.example.gamestorm.Model.Game;
-import com.example.gamestorm.Model.GameApiResponse;
+import com.example.gamestorm.model.GameApiResponse;
 import com.example.gamestorm.R;
 import com.example.gamestorm.service.GamesApiService;
 import com.example.gamestorm.util.ResponseCallback;

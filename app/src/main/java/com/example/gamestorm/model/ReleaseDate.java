@@ -1,11 +1,14 @@
-package com.example.gamestorm.Model;
+package com.example.gamestorm.model;
+
+import com.google.gson.annotations.SerializedName;
 
 public class ReleaseDate {
     int id;
+    @SerializedName("y")
+    int year;
     String date;
 
     public String getDate() {
-
         return date;
     }
 

@@ -1,6 +1,6 @@
-package com.example.gamestorm.Repository;
+package com.example.gamestorm.repository;
 
-import com.example.gamestorm.Model.GameApiResponse;
+import com.example.gamestorm.model.GameApiResponse;
 
 public interface IGamesRepository {
     enum JsonParserType {

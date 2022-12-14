@@ -1,12 +1,12 @@
 package com.example.gamestorm.ui;
 
 
-import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,8 +15,6 @@ import android.widget.Button;
 
 
 import com.example.gamestorm.R;
-
-import org.json.JSONException;
 
 
 /**
@@ -68,12 +66,6 @@ public class HomeFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         //this button is used to open the game page
         Button button = requireView().findViewById(R.id.button);
-        button.setOnClickListener(view1 -> {
-            Intent myIntent = new Intent(getContext(), GameActivity.class);
-            //when we open the game page we have to pass the game's id
-            int idGame = 0;
-            myIntent.putExtra("idGame", idGame);
-            requireActivity().startActivity(myIntent);
-        });
+        button.setOnClickListener(view1 -> Navigation.findNavController(view).navigate(R.id.gameActivity));
     }
 }

@@ -1,4 +1,4 @@
-package com.example.gamestorm.Database;
+package com.example.gamestorm.database;
 
 import androidx.room.Dao;
 

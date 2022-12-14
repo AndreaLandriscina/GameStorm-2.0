@@ -1,18 +1,17 @@
-package com.example.gamestorm.Adapter;
+package com.example.gamestorm.adapter;
 
 import android.content.Context;
-import android.net.Uri;
-import android.util.Log;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.gamestorm.R;
+import com.example.gamestorm.ui.GameActivity;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -40,7 +39,13 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         // Set the data to textview and imageview.
         RecyclerData recyclerData = dataArrayList.get(position);
         String newUrl = recyclerData.getImgUrl().replace("thumb", "cover_big");
-        Picasso.get().load(newUrl).into(holder.courseIV);
+        Picasso.get().load(newUrl).into(holder.cover);
+        holder.cover.setOnClickListener(v -> {
+            Intent myIntent = new Intent(mcontext, GameActivity.class);
+
+            myIntent.putExtra("idGame", recyclerData.getId());
+            mcontext.startActivity(myIntent);
+        });
         //holder.textView.setText(recyclerData.getName());
     }
 
@@ -52,13 +57,14 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     // View Holder Class to handle Recycler View.
     public class RecyclerViewHolder extends RecyclerView.ViewHolder {
-        private ImageView courseIV;
-        private TextView textView;
+        private ImageView cover;
+        //private TextView textView;
         public RecyclerViewHolder(@NonNull View itemView) {
             super(itemView);
-            courseIV = itemView.findViewById(R.id.idIVcourseIV);
+            cover = itemView.findViewById(R.id.cover);
             //textView = itemView.findViewById(R.id.idTVCourse);
         }
+
     }
 }
 

@@ -5,4 +5,15 @@
     <string name="search">Cerca</string>
     <string name="profile">Profilo</string>
     <string name="action_settings">Impostazioni</string>
+    <string name="wanted">Desiderato</string>
+    <string name="palyied">Giocato</string>
+    <string name="error_retrieving_games">errore_recupero_giochi</string>
+    <string name="genres">Generi</string>
+    <string name="platforms">Piattaforme</string>
+    <string name="franchise">SAGA</string>
+    <string name="description">Descrizione</string>
+    <string name="company">COMPAGNIA</string>
+    <string name="gameCover">Cover del gioco</string>
+    <string name="rating">Punteggio</string>
+    <string name="reviews">Recensioni</string>
 </resources>

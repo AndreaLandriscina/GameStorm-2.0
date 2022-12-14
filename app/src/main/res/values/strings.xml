@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">GameStorm</string>
+    <string name="app_name" translatable="false">GameStorm</string>
     <string name="urlAPI" translatable="false">https://api.igdb.com/v4/</string>
     <string name="clientID" translatable="false">w70u2nsn2gzl9g0xsbe3uvguva3zos</string>
     <string name="tokenAPI" translatable="false">Bearer sevk2qpth8qd683kwwl5e67m66t5ws</string>
@@ -12,9 +12,19 @@
     <string name="title_activity_game" translatable="false">GameActivity</string>
     <string name="action_settings">Settings</string>
     <string name="large_text" translatable="false">ops</string>
-    <string name="title_activity_category">CategoryActivity</string>
-    <string name="videogame_saga">Videogame saga</string>
-    <string name="title_activity_game_saga">GameSagaActivity</string>
-    <string name="title_activity_game_version">GameVersionActivity</string>
-    <string name="error_retrieving_games">\"error_retrieving_games</string>
+    <string name="title_activity_category" translatable="false">CategoryActivity</string>
+    <string name="videogame_saga" translatable="false">Videogame saga</string>
+    <string name="title_activity_game_saga" translatable="false">GameSagaActivity</string>
+    <string name="title_activity_game_version" translatable="false">GameVersionActivity</string>
+    <string name="error_retrieving_games">error_retrieving_games</string>
+    <string name="rating">Punteggio</string>
+    <string name="reviews">Recensioni</string>
+    <string name="wanted">Wanted</string>
+    <string name="palyied">Playied</string>
+    <string name="genres">Genres</string>
+    <string name="platforms">Platforms</string>
+    <string name="franchise">FRANCHISE</string>
+    <string name="description">Description</string>
+    <string name="company">COMPANY</string>
+    <string name="gameCover">Game\'s cover</string>
 </resources>

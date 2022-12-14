@@ -5,7 +5,7 @@ import static com.example.gamestorm.util.Constants.CONTENT_TYPE;
 import static com.example.gamestorm.util.Constants.TOKEN_API;
 import static com.example.gamestorm.util.Constants.TOP_HEADLINES_ENDPOINT;
 
-import com.example.gamestorm.Model.GameApiResponse;
+import com.example.gamestorm.model.GameApiResponse;
 
 import java.util.List;
 

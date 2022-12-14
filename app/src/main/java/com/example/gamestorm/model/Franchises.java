@@ -1,8 +1,8 @@
-package com.example.gamestorm.Model;
+package com.example.gamestorm.model;
 
 public class Franchises {
-    private int id;
-    private String name;
+    private final int id;
+    private final String name;
 
     public Franchises(int id, String name) {
         this.id = id;

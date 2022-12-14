@@ -4,7 +4,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -22,32 +21,30 @@ import com.example.gamestorm.util.ResponseCallback;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FranchiseActivity extends AppCompatActivity implements ResponseCallback {
+public class CompanyActivity extends AppCompatActivity implements ResponseCallback {
     private RecyclerView recyclerView;
     private ArrayList<RecyclerData> recyclerDataArrayList;
     private ProgressBar progressBar;
 
-    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_franchise);
+        setContentView(R.layout.activity_company);
+
         Intent intent = getIntent();
-        String franchise = intent.getStringExtra("nameFranchise");
-        TextView franchiseTitleView = findViewById(R.id.franchiseTitle);
+        String company = intent.getStringExtra("nameCompany");
+        TextView companyTitleView = findViewById(R.id.companyTitle);
 
         progressBar = findViewById(R.id.progressBar);
-        recyclerView=findViewById(R.id.franchiseRecyclerView);
+        recyclerView=findViewById(R.id.companyRecyclerView);
         recyclerDataArrayList=new ArrayList<>();
-        if (franchise != null) {
-            franchiseTitleView.setText(franchise);
-            IGamesRepository iGamesRepository = new GamesRepository(getApplication(), this);
-            progressBar.setVisibility(View.VISIBLE);
-            String query = "fields name, cover.url; where franchises.name = \"" + franchise + "\"; limit 30;";
-            iGamesRepository.fetchGames(query,10000);
-        }  else {
-            franchiseTitleView.setText("No results :(");
+        if (company != null){
+            companyTitleView.setText(company);
         }
+        IGamesRepository iGamesRepository = new GamesRepository(getApplication(), this);
+        progressBar.setVisibility(View.VISIBLE);
+        String query = "fields name, cover.url; where involved_companies.company.name = \"" + company + "\"; limit 30;";
+        iGamesRepository.fetchGames(query,10000);
     }
 
     @Override

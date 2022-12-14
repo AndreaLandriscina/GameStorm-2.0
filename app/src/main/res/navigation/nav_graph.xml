@@ -35,4 +35,24 @@
             android:id="@+id/action_searchFragment_to_homeFragment"
             app:destination="@id/homeFragment" />
     </fragment>
+    <activity
+        android:id="@+id/gameActivity"
+        android:name="com.example.gamestorm.ui.GameActivity"
+        android:label="activity_game"
+        tools:layout="@layout/activity_game" />
+    <activity
+        android:id="@+id/franchiseActivity"
+        android:name="com.example.gamestorm.ui.FranchiseActivity"
+        android:label="activity_franchise"
+        tools:layout="@layout/activity_franchise" />
+    <activity
+        android:id="@+id/genreActivity"
+        android:name="com.example.gamestorm.ui.GenreActivity"
+        android:label="activity_genre"
+        tools:layout="@layout/activity_genre" />
+    <fragment
+        android:id="@+id/screenshotFragment"
+        android:name="com.example.gamestorm.ui.ScreenshotFragment"
+        android:label="fragment_screenshot"
+        tools:layout="@layout/fragment_screenshot" />
 </navigation>
