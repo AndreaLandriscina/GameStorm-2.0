@@ -37,10 +37,11 @@
         <action
             android:id="@+id/action_searchFragment_to_gameActivity"
             app:destination="@id/gameActivity" />
+
     </fragment>
     <activity
         android:id="@+id/gameActivity"
-        android:name="com.example.gamestorm.GameActivity"
+        android:name="com.example.gamestorm.ui.GameActivity"
         android:label="activity_game"
         tools:layout="@layout/activity_game" />
 </navigation>

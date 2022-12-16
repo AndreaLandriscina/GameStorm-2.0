@@ -1,8 +1,7 @@
-package com.example.gamestorm;
+package com.example.gamestorm.ui;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,23 +10,22 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.snackbar.Snackbar;
+import com.example.gamestorm.Model.GameApiResponse;
+import com.example.gamestorm.R;
 import com.squareup.picasso.Picasso;
-
-import java.util.ArrayList;
+import java.util.List;
 
 
 public class GameAdapter extends RecyclerView.Adapter<GameAdapter.RecyclerViewHolder> {
 
-    private ArrayList<GameData> games;
+    private List<GameApiResponse> games;
     private Context context;
 
-    public GameAdapter(ArrayList<GameData> recyclerDataArrayList, Context context) {
-        this.games = recyclerDataArrayList;
+    public GameAdapter(List<GameApiResponse> games, Context context) {
+        this.games = games;
         this.context = context;
     }
 
@@ -42,9 +40,10 @@ public class GameAdapter extends RecyclerView.Adapter<GameAdapter.RecyclerViewHo
     @Override
     public void onBindViewHolder(@NonNull GameAdapter.RecyclerViewHolder holder, int position) {
         // Set the data to textview and imageview.
-        GameData game = games.get(position);
+        GameApiResponse game = games.get(position);
         holder.nameTV.setText(game.getName());
-        Picasso.get().load(game.getImage().toString()).into(holder.coverIV);
+        if(game.getCover() != null)
+            Picasso.get().load(game.getCover().getUrl()).into(holder.coverIV);
         holder.gameCV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -72,8 +71,8 @@ public class GameAdapter extends RecyclerView.Adapter<GameAdapter.RecyclerViewHo
 
         public RecyclerViewHolder(@NonNull View itemView) {
             super(itemView);
-            nameTV = itemView.findViewById(R.id.card_game_name);
-            coverIV = itemView.findViewById(R.id.card_game_image);
+            nameTV = itemView.findViewById(R.id.card_game_name_TV);
+            coverIV = itemView.findViewById(R.id.card_game_image_IV);
             gameCV = itemView.findViewById(R.id.game_cv);
         }
     }

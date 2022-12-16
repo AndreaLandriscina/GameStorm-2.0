@@ -2,10 +2,13 @@ package com.example.gamestorm.Model;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.text.DateFormat;
 import java.text.DateFormatSymbols;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 public class GameApiResponse {
@@ -16,18 +19,23 @@ public class GameApiResponse {
     private List<Platform> platforms;
     @SerializedName("release_dates")
     private List<ReleaseDate> releaseDates;
-    private double ratings;
+    private double rating;
+    @SerializedName("first_release_date")
+    private int firstReleaseDate;
+    private int follows;
 
     public GameApiResponse() {}
 
-    public GameApiResponse(int id, String name, Cover cover, List<Genre> genres, List<Platform> platforms, List<ReleaseDate> releaseDates, double ratings) {
+    public GameApiResponse(int id, String name, Cover cover, List<Genre> genres, List<Platform> platforms, List<ReleaseDate> releaseDates, double ratings, int firstReleaseDate, int follows) {
         this.id = id;
         this.name = name;
         this.cover = cover;
         this.genres = genres;
         this.platforms = platforms;
         this.releaseDates = releaseDates;
-        this.ratings = ratings;
+        this.rating = ratings;
+        this.firstReleaseDate = firstReleaseDate;
+        this.follows = follows;
     }
 
     public String getName() {
@@ -114,12 +122,12 @@ public class GameApiResponse {
         this.releaseDates = releaseDates;
     }
 
-    public double getRatings() {
-        return ratings;
+    public double getRating() {
+        return rating;
     }
 
     public void setRatings(double ratings) {
-        this.ratings = ratings;
+        this.rating = ratings;
     }
 
     @Override
@@ -131,8 +139,23 @@ public class GameApiResponse {
                 ", genres=" + genres +
                 ", platforms=" + platforms +
                 ", releaseDates=" + releaseDates +
-                ", rating=" + ratings +
+                ", rating=" + rating +
+                ", firstReleaseDate=" + firstReleaseDate +
+                ", follows=" + follows +
                 '}' + "\n";
+    }
+
+    public String getFirstReleaseDate() {
+        Date date = new Date((long)firstReleaseDate*1000);
+        // Display a date in day, month, year format
+        DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+        String stringFormattedDate = formatter.format(date);
+        return stringFormattedDate;
+    }
+
+
+    public int getFollows() {
+        return follows;
     }
 }
 
