@@ -5,4 +5,9 @@
     <string name="search">Cerca</string>
     <string name="profile">Profilo</string>
     <string name="action_settings">Impostazioni</string>
+    <string name="emailAddress">Indirizzo Email</string>
+    <string name="signup">Registrati</string>
+    <string name="reset_password">Dimenticato la password? Reset</string>
+    <string name="or">OPPURE</string>
+    <string name="haveAccount">Già registrato?</string>
 </resources>

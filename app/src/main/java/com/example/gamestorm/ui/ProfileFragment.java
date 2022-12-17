@@ -1,14 +1,23 @@
 package com.example.gamestorm.ui;
 
+import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.Toast;
 
 import com.example.gamestorm.R;
+import com.example.gamestorm.databinding.ActivityLoginBinding;
+import com.google.firebase.auth.FirebaseAuth;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -16,6 +25,11 @@ import com.example.gamestorm.R;
  * create an instance of this fragment.
  */
 public class ProfileFragment extends Fragment {
+    ActivityLoginBinding binding;
+    FirebaseAuth firebaseAuth;
+    ProgressDialog progressDialog;
+    Button registerButton;
+    LayoutInflater inflater;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -48,6 +62,10 @@ public class ProfileFragment extends Fragment {
         return fragment;
     }
 
+    public static ProfileFragment newInstance(){
+        return new ProfileFragment();
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,5 +80,16 @@ public class ProfileFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_profile, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        inflater=LayoutInflater.from(getContext());
+        registerButton = requireView().findViewById(R.id.registerBtn);
+        registerButton.setOnClickListener(view1 -> {
+            Intent myIntent = new Intent(getContext(), RegisterActivity.class);
+            requireActivity().startActivity(myIntent);
+        });
     }
 }

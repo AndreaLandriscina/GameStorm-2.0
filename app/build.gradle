@@ -1,5 +1,6 @@
 plugins {
     id 'com.android.application'
+    id 'com.google.gms.google-services'
 }
 
 android {
@@ -46,6 +47,8 @@ dependencies {
     implementation 'org.chromium.net:cronet-api:106.5249.126'
     implementation 'androidx.room:room-common:2.4.3'
     implementation 'org.apache.directory.studio:org.apache.commons.io:2.4'
+    implementation 'com.google.firebase:firebase-auth:21.1.0'
+    implementation 'com.google.firebase:firebase-firestore:24.4.1'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.4'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.0'
