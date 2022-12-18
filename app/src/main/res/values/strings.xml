@@ -25,4 +25,13 @@
     <string name="reset_password">Forgot your password? Reset</string>
     <string name="or">OR</string>
     <string name="haveAccount">Already registered?</string>
+    <string name="insert_mail_to_reset_password">To reset your password, enter your email</string>
+    <string name="emailsent">Email sent. Check your spam folder</string>
+    <string name="check_data">Check the data you inserted</string>
+    <string name="sending_mail">Sending Mail...</string>
+    <string name="email_empty">Email can\'t be empty</string>
+    <string name="password_empty">Password can\'t be empty</string>
+    <string name="login_successfully">Login Successfully</string>
+    <string name="login_in_progress" translatable="false">Login...</string>
+    <string name="username_empty">Username can\'t be empty</string>
 </resources>

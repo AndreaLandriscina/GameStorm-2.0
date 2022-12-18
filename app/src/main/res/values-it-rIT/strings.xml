@@ -10,4 +10,12 @@
     <string name="reset_password">Dimenticato la password? Reset</string>
     <string name="or">OPPURE</string>
     <string name="haveAccount">Già registrato?</string>
+    <string name="emailsent">Email inviata. Controlla la casella spam</string>
+    <string name="sending_mail">Inviando la mail...</string>
+    <string name="email_empty">Inserisci la mail</string>
+    <string name="password_empty">Inserisci la password</string>
+    <string name="login_successfully">Login riuscito</string>
+    <string name="check_data">Controlla i dati inseriti</string>
+    <string name="insert_mail_to_reset_password">Per resettare la password, inserisci la tua mail</string>
+    <string name="username_empty">Inserisci l\'username</string>
 </resources>
