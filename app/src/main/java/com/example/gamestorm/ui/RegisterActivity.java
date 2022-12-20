@@ -20,6 +20,8 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class RegisterActivity extends AppCompatActivity {
@@ -58,6 +60,12 @@ public class RegisterActivity extends AppCompatActivity {
                                     firebaseFirestore.collection("User")
                                             .document(FirebaseAuth.getInstance().getUid())
                                             .set(new UserModel(name, email));
+                                    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+                                    UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                                            .setDisplayName(name).build();
+
+                                    user.updateProfile(profileUpdates);
                                 }
                             })
                             .addOnFailureListener(new OnFailureListener() {

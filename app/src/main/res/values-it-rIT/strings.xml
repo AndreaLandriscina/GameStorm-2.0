@@ -18,4 +18,9 @@
     <string name="check_data">Controlla i dati inseriti</string>
     <string name="insert_mail_to_reset_password">Per resettare la password, inserisci la tua mail</string>
     <string name="username_empty">Inserisci l\'username</string>
+    <string name="desired">Desiderati</string>
+    <string name="playing">In gioco</string>
+    <string name="played">Giocati</string>
+    <string name="login_to_see_this">Funzionalità disponibile solo per gli utenti registrati</string>
+    <string name="logout_successfully">Logout riuscito</string>
 </resources>

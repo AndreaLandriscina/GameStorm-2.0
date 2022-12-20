@@ -34,4 +34,10 @@
     <string name="login_successfully">Login Successfully</string>
     <string name="login_in_progress" translatable="false">Login...</string>
     <string name="username_empty">Username can\'t be empty</string>
+    <string name="desired">Desired</string>
+    <string name="playing">Playing</string>
+    <string name="played">Played</string>
+    <string name="login_to_see_this">This function is available only for registered users</string>
+    <string name="logout">Logout</string>
+    <string name="logout_successfully">Logout Successfully</string>
 </resources>
