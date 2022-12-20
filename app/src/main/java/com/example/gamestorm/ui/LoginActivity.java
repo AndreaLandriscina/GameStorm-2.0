@@ -19,6 +19,7 @@ import com.example.gamestorm.Model.UserModel;
 import com.example.gamestorm.R;
 import com.example.gamestorm.databinding.ActivityLoginBinding;
 import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.identity.SignInCredential;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -51,13 +52,14 @@ public class LoginActivity extends AppCompatActivity {
     GoogleSignInClient gsc;
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding=ActivityLoginBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         googleButton = findViewById(R.id.googleButton);
-        gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
+        gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestIdToken(getString(R.string.default_web_client_id)).requestEmail().build();
         gsc = GoogleSignIn.getClient(this,gso);
 
         firebaseAuth=FirebaseAuth.getInstance();
@@ -137,50 +139,52 @@ public class LoginActivity extends AppCompatActivity {
         binding.googleButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                signIn();
+                progressDialog.setTitle(getString(R.string.login_in_progress));
+                progressDialog.show();
+                Intent i = gsc.getSignInIntent();
+                startActivityForResult(i, 1234);
             }
         });
-    }
-
-    void signIn (){
-        progressDialog.setTitle(getString(R.string.login_in_progress));
-        progressDialog.show();
-        Intent signInIntent = gsc.getSignInIntent();
-        startActivityForResult(signInIntent, 1000);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 1000){
+
+        if (requestCode == 1234){
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             try {
-                task.getResult(ApiException.class);
-                finish();
-                Toast.makeText(LoginActivity.this, R.string.login_successfully, Toast.LENGTH_SHORT).show();
-                progressDialog.cancel();
-                //checkFirstTime();
-                startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                GoogleSignInAccount account = task.getResult(ApiException.class);
+                AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(),null);
+                FirebaseAuth.getInstance().signInWithCredential(credential).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if(task.isSuccessful()){
+                            finish();
+                            Toast.makeText(LoginActivity.this, R.string.login_successfully, Toast.LENGTH_SHORT).show();
+                            progressDialog.cancel();
+                            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                            startActivity(intent);
+                            firebaseFirestore=FirebaseFirestore.getInstance();
+                            firebaseFirestore.collection("User")
+                                    .document(FirebaseAuth.getInstance().getUid())
+                                    .set(new UserModel(account.getDisplayName(), account.getEmail()));
+                            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                            UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                                    .setDisplayName(account.getDisplayName()).build();
+
+                            user.updateProfile(profileUpdates);
+                        } else {
+                            Toast.makeText(LoginActivity.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
             } catch (ApiException e) {
                 Toast.makeText(LoginActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-                progressDialog.cancel();
+                e.printStackTrace();
             }
         }
     }
-
-    /*void checkFirstTime(){
-        firebaseAuth=FirebaseAuth.getInstance();
-        firebaseFirestore= FirebaseFirestore.getInstance();
-        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
-        firebaseFirestore.collection("User")
-                .document(FirebaseAuth.getInstance().getUid())
-                .set(new UserModel(account.getDisplayName(), account.getEmail()));
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-                .setDisplayName(account.getDisplayName()).build();
-
-        user.updateProfile(profileUpdates);
-    }*/
 
 
     private boolean isEmailOk(String email) {
@@ -203,4 +207,12 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null){
+            startActivity(new Intent(this, MainActivity.class));
+        }
+    }
 }
