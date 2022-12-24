@@ -24,6 +24,7 @@ public class GameApiResponse {
     private int firstReleaseDate;
     private int follows;
 
+
     public GameApiResponse() {}
 
     public GameApiResponse(int id, String name, Cover cover, List<Genre> genres, List<Platform> platforms, List<ReleaseDate> releaseDates, double ratings, int firstReleaseDate, int follows) {

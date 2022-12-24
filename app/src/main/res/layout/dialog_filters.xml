@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:rowCount="5"
+    android:columnCount="2">
+
+    <TextView
+        android:id="@+id/genre_TV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Genres" />
+
+    <Spinner
+        android:id="@+id/genre_SPN"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/platform_TV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Platform" />
+
+    <Spinner
+        android:id="@+id/platform_SPN"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/releaseyear_TV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Release Year" />
+
+    <Spinner
+        android:id="@+id/releaseyear_SPN"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:id="@+id/cancel_B"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Cancel" />
+
+    <Button
+        android:id="@+id/confirm_B"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Confirm" />
+</GridLayout>

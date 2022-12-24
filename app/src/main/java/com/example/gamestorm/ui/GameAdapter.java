@@ -41,9 +41,8 @@ public class GameAdapter extends RecyclerView.Adapter<GameAdapter.RecyclerViewHo
     public void onBindViewHolder(@NonNull GameAdapter.RecyclerViewHolder holder, int position) {
         // Set the data to textview and imageview.
         GameApiResponse game = games.get(position);
-        holder.nameTV.setText(game.getName());
-        if(game.getCover() != null)
-            Picasso.get().load(game.getCover().getUrl()).into(holder.coverIV);
+        if(game.getCover() != null)//?
+            Picasso.get().load(game.getCover().getUrl().replace("thumb", "cover_big")).into(holder.coverIV);
         holder.gameCV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -65,15 +64,18 @@ public class GameAdapter extends RecyclerView.Adapter<GameAdapter.RecyclerViewHo
     // View Holder Class to handle Recycler View.
     public class RecyclerViewHolder extends RecyclerView.ViewHolder {
 
-        private TextView nameTV;
         private ImageView coverIV;
         private CardView gameCV;
 
         public RecyclerViewHolder(@NonNull View itemView) {
             super(itemView);
-            nameTV = itemView.findViewById(R.id.card_game_name_TV);
             coverIV = itemView.findViewById(R.id.card_game_image_IV);
-            gameCV = itemView.findViewById(R.id.game_cv);
+            gameCV = itemView.findViewById(R.id.game_CV);
         }
     }
+
+    public void setGames(List<GameApiResponse> games) {
+        this.games = games;
+    }
+
 }
