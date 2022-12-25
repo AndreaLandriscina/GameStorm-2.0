@@ -18,14 +18,17 @@ import com.squareup.picasso.Picasso;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.Toolbar;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.GridLayout;
@@ -39,6 +42,8 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+import J.N;
 
 public class GameActivity extends AppCompatActivity implements ResponseCallback {
 
@@ -92,16 +97,19 @@ public class GameActivity extends AppCompatActivity implements ResponseCallback 
     }
 
     private void showScreenshots() {
-        for (int i = 0; i < game.getScreenshots().size(); i++) {
-            if (game.getScreenshots() != null)
-                recyclerDataArrayList.add(new RecyclerData(game.getId(), game.getScreenshots().get(i).getUrl()));
+        if (game.getScreenshots() != null){
+            for (int i = 0; i < game.getScreenshots().size(); i++) {
+                if (game.getScreenshots() != null)
+                    recyclerDataArrayList.add(new RecyclerData(game.getId(), game.getScreenshots().get(i).getUrl()));
+            }
+            RecyclerScreenshotsViewAdapter adapter=new RecyclerScreenshotsViewAdapter(recyclerDataArrayList,this);
+            LinearLayoutManager layoutManager=new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false);
+            recyclerView.setLayoutManager(layoutManager);
+            recyclerView.setAdapter(adapter);
         }
-        RecyclerScreenshotsViewAdapter adapter=new RecyclerScreenshotsViewAdapter(recyclerDataArrayList,this);
-        LinearLayoutManager layoutManager=new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false);
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setAdapter(adapter);
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private void showDescription() {
         TextView descriptionView = findViewById(R.id.descriptionView);
         descriptionView.setVisibility(View.VISIBLE);
@@ -110,12 +118,18 @@ public class GameActivity extends AppCompatActivity implements ResponseCallback 
     }
 
     private void showWantedButton(GridLayout buttonsLayout){
-        Button desireButton = new Button(this);
-        desireButton.setText(R.string.wanted);
-        desireButton.setTextSize(18);
-        desireButton.setGravity(Gravity.CENTER);
-        desireButton.setBackgroundResource(R.drawable.rounded_corner);
-        buttonsLayout.addView(desireButton);
+        Button wantedButton = new Button(this);
+        wantedButton.setText(R.string.wanted);
+        wantedButton.setTextSize(18);
+        wantedButton.setGravity(Gravity.CENTER);
+        wantedButton.setBackgroundResource(R.drawable.rounded_corner);
+        buttonsLayout.addView(wantedButton);
+        wantedButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
     }
 
     private void showPlayiedButton(GridLayout buttonsLayout) {
@@ -125,6 +139,12 @@ public class GameActivity extends AppCompatActivity implements ResponseCallback 
         playButton.setGravity(Gravity.CENTER);
         playButton.setBackgroundResource(R.drawable.rounded_corner);
         buttonsLayout.addView(playButton);
+        playButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
     }
 
     @SuppressLint("SetTextI18n")
@@ -166,7 +186,6 @@ public class GameActivity extends AppCompatActivity implements ResponseCallback 
         List<String> genres = game.getGenresString();
         for (String genre : genres) {
             TextView textView = new TextView(this);
-            textView.setTextColor(Color.WHITE);
             textView.setTextSize(20);
             textView.setPadding(15, 15, 15, 15);
             textView.setBackground(AppCompatResources.getDrawable(getApplicationContext(), R.drawable.rounded_corner));
@@ -182,7 +201,11 @@ public class GameActivity extends AppCompatActivity implements ResponseCallback 
 
     private void showReleaseDate() {
         TextView releaseDateView = findViewById(R.id.releaseDate);
-        String date = game.getReleaseDate();
+        String date = "";
+        if (game.getReleaseDate() != null)
+             date = game.getReleaseDate();
+        else
+            date = getString(R.string.Unreleased);
         releaseDateView.setText(date);
     }
 
@@ -206,7 +229,8 @@ public class GameActivity extends AppCompatActivity implements ResponseCallback 
         }
         showFranchiseButton.setOnClickListener(v -> {
             Intent myIntent = new Intent(getApplicationContext(), FranchiseActivity.class);
-            myIntent.putExtra("nameFranchise", game.getFranchise().getName());
+            if (game.getFranchise() != null)
+                myIntent.putExtra("nameFranchise", game.getFranchise().getName());
             startActivity(myIntent);
         });
     }
@@ -215,12 +239,12 @@ public class GameActivity extends AppCompatActivity implements ResponseCallback 
         Button showCompanyButton = findViewById(R.id.showCompanyButton);
         showCompanyButton.setVisibility(View.VISIBLE);
         if (game.getCompanies() != null) {
-            showCompanyButton.setText(game.getCompanies().getCompany().getName());
+            showCompanyButton.setText(game.getCompany());
         }
         showCompanyButton.setOnClickListener(v -> {
             Intent myIntent = new Intent(getApplicationContext(), CompanyActivity.class);
-            if (game.getFranchise() != null)
-                myIntent.putExtra("nameCompany", game.getCompanies().getCompany().getName());
+            if (game.getCompanies() != null)
+                myIntent.putExtra("nameCompany", game.getCompany());
             startActivity(myIntent);
         });
     }
@@ -250,6 +274,8 @@ public class GameActivity extends AppCompatActivity implements ResponseCallback 
         if (!(fragment instanceof ScreenshotFragment)){
             super.onBackPressed();
         } else {
+            CoordinatorLayout coordinatorLayout = findViewById(R.id.scrollView);
+            coordinatorLayout.setVisibility(View.VISIBLE);
             getSupportFragmentManager().beginTransaction().remove(fragment).commit();
             NestedScrollView nestedScrollView = findViewById(R.id.nestedScrollView);
             nestedScrollView.setNestedScrollingEnabled(true);

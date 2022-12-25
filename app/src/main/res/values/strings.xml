@@ -27,4 +27,5 @@
     <string name="description">Description</string>
     <string name="company">COMPANY</string>
     <string name="gameCover">Game\'s cover</string>
+    <string name="Unreleased">Unreleased</string>
 </resources>

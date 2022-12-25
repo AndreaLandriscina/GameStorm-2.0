@@ -1,5 +1,6 @@
 package com.example.gamestorm.model;
 
+import com.example.gamestorm.R;
 import com.google.gson.annotations.SerializedName;
 
 import java.text.DateFormatSymbols;
@@ -81,16 +82,21 @@ public class GameApiResponse {
     }
 
     public String getReleaseDate() {
-        Calendar calendar = Calendar.getInstance();
-        long dateLong = Long.parseLong(releaseDate + "000");
-        calendar.setTimeInMillis(dateLong);
+        if (releaseDate != null){
+            Calendar calendar = Calendar.getInstance();
+            long dateLong = Long.parseLong(releaseDate + "000");
+            calendar.setTimeInMillis(dateLong);
 
-        DateFormatSymbols dateFormatSymbols = new DateFormatSymbols();
-        String[] months = dateFormatSymbols.getMonths();
-        String month = months[calendar.get(Calendar.MONTH)];
-        return calendar.get(Calendar.DAY_OF_MONTH)
-                + " " + month
-                + " " + calendar.get(Calendar.YEAR);
+            DateFormatSymbols dateFormatSymbols = new DateFormatSymbols();
+            String[] months = dateFormatSymbols.getMonths();
+            String month = months[calendar.get(Calendar.MONTH)];
+            return calendar.get(Calendar.DAY_OF_MONTH)
+                    + " " + month
+                    + " " + calendar.get(Calendar.YEAR);
+        } else {
+            return null;
+        }
+
     }
 
     public int getRatingCount() {
@@ -111,10 +117,14 @@ public class GameApiResponse {
         return null;
     }
 
-    public InvolvedCompany getCompanies() {
+    public String getCompany() {
         if (companies != null)
-            return companies.get(0);
+            return companies.get(0).getCompany().getName();
         return null;
+    }
+
+    public List<InvolvedCompany> getCompanies() {
+        return companies;
     }
 
     public List<Screenshot> getScreenshots() {
@@ -135,6 +145,7 @@ public class GameApiResponse {
                 ", description=" + description +
                 ", franchise=" + franchise +
                 ", screenshots=" + screenshots +
+                ", companies=" + getCompanies() +
                 '}' + "\n";
     }
 }

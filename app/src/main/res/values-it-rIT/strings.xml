@@ -16,4 +16,5 @@
     <string name="gameCover">Cover del gioco</string>
     <string name="rating">Punteggio</string>
     <string name="reviews">Recensioni</string>
+    <string name="Unreleased">Non rilisciato</string>
 </resources>

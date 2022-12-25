@@ -7,12 +7,32 @@
     android:background="@color/black"
     tools:context=".ui.ScreenshotFragment">
 
-    <ImageView
-        android:id="@+id/screenshotFragmentView"
-        android:layout_width="370dp"
+    <RelativeLayout
+        android:layout_width="371dp"
         android:layout_height="200dp"
-        android:layout_gravity="center"
-        android:scaleType="fitXY"
-        tools:src="@tools:sample/avatars" />
+        android:layout_gravity="center">
+
+        <ImageView
+            android:id="@+id/screenshotFragmentView"
+            android:layout_width="371dp"
+            android:layout_height="200dp"
+            android:layout_gravity="center"
+            android:scaleType="fitXY"
+            tools:src="@tools:sample/avatars" />
+
+        <Button
+            android:id="@+id/leftButton"
+            android:layout_width="100dp"
+            android:layout_height="match_parent"
+            android:background="@android:color/transparent"/>
+
+        <Button
+            android:id="@+id/rightButton"
+            android:layout_width="100dp"
+            android:layout_height="match_parent"
+            android:layout_alignRight="@id/screenshotFragmentView"
+            android:background="@android:color/transparent"/>
+
+    </RelativeLayout>
 
 </FrameLayout>

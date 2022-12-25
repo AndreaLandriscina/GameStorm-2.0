@@ -6,15 +6,18 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 
 import com.example.gamestorm.R;
 import com.squareup.picasso.Picasso;
 
-import java.util.Objects;
+import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -22,15 +25,9 @@ import java.util.Objects;
  * create an instance of this fragment.
  */
 public class ScreenshotFragment extends Fragment {
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-
-
-    // TODO: Rename and change types of parameters
-    private String imageUrl;
-
+    private ArrayList<String> imageUrls;
+    private String currentImage;
+    private int position;
 
     public ScreenshotFragment() {
         // Required empty public constructor
@@ -52,14 +49,36 @@ public class ScreenshotFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            imageUrl = getArguments().getString("imageUrl");
+            position = getArguments().getInt("position");
+            currentImage = getArguments().getString("currentImage");
+            imageUrls = getArguments().getStringArrayList("imageUrl");
         }
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         ImageView imageView = requireView().findViewById(R.id.screenshotFragmentView);
-        Picasso.get().load(imageUrl).into(imageView);
+        Button leftButton = requireView().findViewById(R.id.leftButton);
+        Button rightButton = requireView().findViewById(R.id.rightButton);
+
+        AtomicReference<String> newUrl = new AtomicReference<>(currentImage.replace("thumb", "screenshot_med"));
+        Picasso.get().load(newUrl.get()).into(imageView);
+        leftButton.setOnClickListener(v -> {
+            //left limit
+            if (position > 0) {
+                position--;
+                newUrl.set(imageUrls.get(position).replace("thumb", "screenshot_med"));
+                Picasso.get().load(newUrl.get()).into(imageView);
+            }
+        });
+        rightButton.setOnClickListener(v -> {
+            //right limit
+            if (position < imageUrls.size() - 1){
+                position++;
+                newUrl.set(imageUrls.get(position).replace("thumb", "screenshot_med"));
+                Picasso.get().load(newUrl.get()).into(imageView);
+            }
+        });
         super.onViewCreated(view, savedInstanceState);
     }
 

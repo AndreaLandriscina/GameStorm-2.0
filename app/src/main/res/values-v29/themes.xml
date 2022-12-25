@@ -1,5 +1,6 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
     <style name="Theme.GameStorm" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/white</item>
@@ -11,18 +12,15 @@
         <item name="colorOnSecondary">@color/black</item>
         <item name="android:textColor">@color/black</item>
         <item name="backgroundColor">@color/cardview_dark_background</item>
-
         <!-- Status bar color. -->
-        <item name="android:statusBarColor">@color/white</item>
-        <item name="android:enforceStatusBarContrast">true</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">true</item>
+
+        <item name="android:enforceStatusBarContrast" >true</item>
+        <item name="android:enforceNavigationBarContrast">true</item>
+
+
         <!-- Customize your theme here. -->
     </style>
-
-    <style name="Theme.GameStorm.NoActionBar">
-
-    </style>
-
-    <style name="Theme.GameStorm.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
-
-    <style name="Theme.GameStorm.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>

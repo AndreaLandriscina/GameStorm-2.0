@@ -5,11 +5,12 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.widget.NestedScrollView;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -24,37 +25,40 @@ public class RecyclerScreenshotsViewAdapter extends RecyclerView.Adapter<Recycle
 
     private ArrayList<RecyclerData> dataArrayList;
     private Context mcontext;
-    private boolean isImageFitToScreen;
 
     public RecyclerScreenshotsViewAdapter(ArrayList<RecyclerData> recyclerDataArrayList, Context mcontext) {
         this.dataArrayList = recyclerDataArrayList;
         this.mcontext = mcontext;
-        this.isImageFitToScreen = false;
     }
 
     @NonNull
     @Override
     public RecyclerViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        // Inflate Layout
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.screenshot_layout, parent, false);
         return new RecyclerViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerViewHolder holder, int position) {
-        // Set the data to textview and imageview.
+        // Set the data to imageview.
 
         RecyclerData recyclerData = dataArrayList.get(position);
         String newUrl = recyclerData.getImgUrl().replace("thumb", "screenshot_med");
         Picasso.get().load(newUrl).into(holder.screenshot);
         holder.screenshot.setOnClickListener(v -> {
             AppCompatActivity activity = (AppCompatActivity) v.getContext();
-            NestedScrollView nestedScrollView = activity.findViewById(R.id.nestedScrollView);
-            nestedScrollView.setNestedScrollingEnabled(false);
+            CoordinatorLayout coordinatorLayout = activity.findViewById(R.id.scrollView);
+            coordinatorLayout.setVisibility(View.INVISIBLE);
 
             Fragment fragment = new ScreenshotFragment();
             Bundle bundle = new Bundle();
-            bundle.putString("imageUrl", newUrl);
+            ArrayList<String> list = new ArrayList<>();
+            for (RecyclerData data : dataArrayList){
+                list.add(data.getImgUrl());
+            }
+            bundle.putString("currentImage", newUrl);
+            bundle.putInt("position", position);
+            bundle.putStringArrayList("imageUrl",list);
             fragment.setArguments(bundle);
             activity.getSupportFragmentManager().beginTransaction().replace(R.id.container, fragment).commit();
         });
@@ -62,20 +66,19 @@ public class RecyclerScreenshotsViewAdapter extends RecyclerView.Adapter<Recycle
 
     @Override
     public int getItemCount() {
-        // this method returns the size of recyclerview
         return dataArrayList.size();
     }
 
     // View Holder Class to handle Recycler View.
     public class RecyclerViewHolder extends RecyclerView.ViewHolder {
         private ImageView screenshot;
-        //private TextView textView;
+        private Button leftButton;
+        private Button rightButton;
+
         public RecyclerViewHolder(@NonNull View itemView) {
             super(itemView);
             screenshot = itemView.findViewById(R.id.screenshot);
-            //textView = itemView.findViewById(R.id.idTVCourse);
         }
-
     }
 }
 

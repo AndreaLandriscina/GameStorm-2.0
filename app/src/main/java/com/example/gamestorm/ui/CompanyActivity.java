@@ -40,6 +40,8 @@ public class CompanyActivity extends AppCompatActivity implements ResponseCallba
         recyclerDataArrayList=new ArrayList<>();
         if (company != null){
             companyTitleView.setText(company);
+        } else {
+            companyTitleView.setText("No results :(");
         }
         IGamesRepository iGamesRepository = new GamesRepository(getApplication(), this);
         progressBar.setVisibility(View.VISIBLE);
