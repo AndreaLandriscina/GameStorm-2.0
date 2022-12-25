@@ -1,7 +1,6 @@
 package com.example.gamestorm.ui;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 
@@ -18,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -42,12 +42,14 @@ public class SearchFragment extends Fragment implements ResponseCallback {
 
     private IGamesRepository iGamesRepository;
     private List<GameApiResponse> games;
+    private List<GameApiResponse> gamesCopy;
     private EditText gameName;
     private Button search;
     private Button sorting;
     private Button filters;
     private TextView numberOfResults;
     private RecyclerView gamesRV;
+    private ProgressBar searchLoading;
     GameAdapter adapter;
     private String sortingParameter;
     private int lastSelectedSortingParameter;
@@ -80,18 +82,34 @@ public class SearchFragment extends Fragment implements ResponseCallback {
         filters = view.findViewById(R.id.filters_B);
         numberOfResults = view.findViewById(R.id.number_of_results_TV);
         gamesRV = view.findViewById(R.id.games_RV);
+        searchLoading = view.findViewById(R.id.search_loading_PB);
         sortingParameter = "";
         lastSelectedSortingParameter = -1;
         lastSelectedGenre = 0;
         lastSelectedPlatform = 0;
         lastSelectedReleaseYear = 0;
 
+        sorting.setVisibility(View.GONE);
+        filters.setVisibility(View.GONE);
+
         search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(!games.isEmpty()){
+                    games.clear();
+                    adapter.notifyDataSetChanged();
+                }
+
+                lastSelectedSortingParameter = -1;
+
+                lastSelectedGenre = 0;
+                lastSelectedPlatform = 0;
+                lastSelectedReleaseYear = 0;
+
                 String user_input = gameName.getText().toString();
                 //timestamp per ottenere solo giochi già usciti(su igdb si sono giochi che devono ancora uscire e che non hanno informazioni utili per l'utente)
                 String query = "fields id, name, cover.url, follows, rating, first_release_date, genres.name, platforms.name; where first_release_date < " + System.currentTimeMillis() / 1000 + " & version_parent = null;search \"" + user_input + "\"; limit 500;";
+                searchLoading.setVisibility(View.VISIBLE);
                 iGamesRepository.fetchGames(query, 10000);
             }
         });
@@ -99,7 +117,6 @@ public class SearchFragment extends Fragment implements ResponseCallback {
         sorting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //SOSTITUIRE ALERTDIALOG CON DIALOG
 
                 // AlertDialog builder instance to build the alert dialog
                 AlertDialog.Builder alertDialog = new AlertDialog.Builder(getContext());
@@ -151,6 +168,7 @@ public class SearchFragment extends Fragment implements ResponseCallback {
                             return result;
                         });
                         adapter.notifyDataSetChanged();
+                        showGamesOnRecyclerView(games);
                         dialogInterface.dismiss();
                     }
                 });
@@ -168,18 +186,25 @@ public class SearchFragment extends Fragment implements ResponseCallback {
             }
         });
 
-        //DA FARE
+
         filters.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Dialog filtersDialog = new Dialog(getContext());
-                filtersDialog.setContentView(R.layout.dialog_filters);
+                // AlertDialog builder instance to build the alert dialog
+                AlertDialog.Builder filtersDialog = new AlertDialog.Builder(getContext());
 
-                Spinner genreSPN = filtersDialog.findViewById(R.id.genre_SPN);
-                Spinner platformSPN = filtersDialog.findViewById(R.id.platform_SPN);
-                Spinner releaseYearSPN = filtersDialog.findViewById(R.id.releaseyear_SPN);
-                Button cancelB = filtersDialog.findViewById(R.id.cancel_B);
-                Button confirmB = filtersDialog.findViewById(R.id.confirm_B);
+                // title of the alert dialog
+                filtersDialog.setTitle("Search Filters");
+
+                // set the custom layout
+                final View customLayout = getLayoutInflater().inflate(R.layout.dialog_filters, null);
+                filtersDialog.setView(customLayout);
+
+
+                Spinner genreSPN = customLayout.findViewById(R.id.genre_SPN);
+                Spinner platformSPN = customLayout.findViewById(R.id.platform_SPN);
+                Spinner releaseYearSPN = customLayout.findViewById(R.id.releaseyear_SPN);
+
 
 
                 String[] genres = {"Any genre", "Fighting", "Shooter", "Music", "Platform", "Puzzle", "Racing", "Real Time Strategy (RTS)", "Role-playing (RPG)"
@@ -408,16 +433,9 @@ public class SearchFragment extends Fragment implements ResponseCallback {
                 releaseYearSPN.setAdapter(releaseYearAdapter);
                 releaseYearSPN.setSelection(lastSelectedReleaseYear);
 
-                cancelB.setOnClickListener(new View.OnClickListener() {
+                filtersDialog.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
                     @Override
-                    public void onClick(View v) {
-                        filtersDialog.dismiss();
-                    }
-                });
-
-                confirmB.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
+                    public void onClick(DialogInterface dialog, int which) {
                         String genreInput, platformInput, releaseyearInput;
 
                         genreInput = genreSPN.getSelectedItem().toString();
@@ -428,20 +446,54 @@ public class SearchFragment extends Fragment implements ResponseCallback {
                         lastSelectedPlatform = platformAdapter.getPosition(platformInput);
                         lastSelectedReleaseYear = releaseYearAdapter.getPosition(releaseyearInput);
 
-                        filtersDialog.dismiss();
 
-                        List<GameApiResponse> filteredGames = new ArrayList<>(games);
+                        if (genreInput.equals("Any genre") || platformInput.equals("Any platform") || releaseyearInput.equals("Any year")) {
+                            games = new ArrayList<>(gamesCopy);
 
+                            if(sortingParameter != ""){
 
-                        if (genreInput.equals("Any genre") && platformInput.equals("Any platform") && releaseyearInput.equals("Any year")) {
-                            //filteredGames = games;
-                        } else {
+                                Log.e("TAG", "dentro a sorting");
+
+                                //sorting decrescente
+                                Collections.sort(games, (o1, o2) -> {
+                                    //non bello
+                                    int result = 0;
+                                    switch (sortingParameter) {
+                                        case "Most popular":
+                                            result = -Integer.compare(o1.getFollows(), o2.getFollows());
+                                            break;
+
+                                        case "Most recent":
+                                            try {
+                                                SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+                                                Date date1 = formatter.parse(o1.getFirstReleaseDate());
+                                                Date date2 = formatter.parse(o2.getFirstReleaseDate());
+                                                result = -date1.compareTo(date2);
+                                            } catch (ParseException e1) {
+                                                e1.printStackTrace();
+                                            }
+                                            break;
+
+                                        case "Best rating":
+                                            result = -Double.compare(o1.getRating(), o2.getRating());
+                                            break;
+
+                                        case "Alphabet":
+                                            result = o1.getName().compareTo(o2.getName());
+                                            break;
+
+                                    }
+                                    return result;
+                                });
+                            }
+
+                        }
 
                             if (!genreInput.equals("Any genre")) {
-                                for (int i = filteredGames.size() - 1; i >= 0; i--) {
+                                for (int i = games.size() - 1; i >= 0; i--) {
                                     boolean hasGenre = false;
 
-                                    List<Genre> gameGenres = filteredGames.get(i).getGenres();
+                                    List<Genre> gameGenres = games.get(i).getGenres();
 
                                     if (gameGenres != null) {
                                         for (Genre genre : gameGenres) {
@@ -451,7 +503,7 @@ public class SearchFragment extends Fragment implements ResponseCallback {
                                         }
 
                                         if (!hasGenre) {
-                                            filteredGames.remove(filteredGames.get(i));
+                                            games.remove(games.get(i));
                                         }
                                     }
                                 }
@@ -461,10 +513,10 @@ public class SearchFragment extends Fragment implements ResponseCallback {
 
 
                             if (!platformInput.equals("Any platform")) {
-                                for (int i = filteredGames.size() - 1; i >= 0; i--) {
+                                for (int i = games.size() - 1; i >= 0; i--) {
                                     boolean hasPlatform = false;
 
-                                    List<Platform> gamePlatforms = filteredGames.get(i).getPlatforms();
+                                    List<Platform> gamePlatforms = games.get(i).getPlatforms();
 
                                     if (gamePlatforms != null) {
                                         for (Platform platform : gamePlatforms) {
@@ -474,43 +526,59 @@ public class SearchFragment extends Fragment implements ResponseCallback {
                                         }
 
                                         if (!hasPlatform) {
-                                            filteredGames.remove(filteredGames.get(i));
+                                            games.remove(games.get(i));
                                         }
                                     }
                                 }
                             }
 
-                        }
-
-                        if (!releaseyearInput.equals("Any year")) {
-                            for (int i = filteredGames.size() - 1; i >= 0; i--) {
-                                String[] dateParts = filteredGames.get(i).getFirstReleaseDate().split("/");
-                                String yearOfRelease = dateParts[2];
-                                if (!yearOfRelease.equals(releaseyearInput))
-                                    filteredGames.remove(filteredGames.get(i));
+                            if (!releaseyearInput.equals("Any year")) {
+                                for (int i = games.size() - 1; i >= 0; i--) {
+                                    String[] dateParts = games.get(i).getFirstReleaseDate().split("/");
+                                    String yearOfRelease = dateParts[2];
+                                    if (!yearOfRelease.equals(releaseyearInput))
+                                        games.remove(games.get(i));
+                                }
                             }
-                        }
 
 
 
-
-                        numberOfResults.setText(filteredGames.size() + " results found for " + "\"" + gameName.getText() + "\"");
-                        showGamesOnRecyclerView(filteredGames);
+                        numberOfResults.setText(games.size() + " results found for " + "\"" + gameName.getText() + "\"");
+                        showGamesOnRecyclerView(games);
                         adapter.notifyDataSetChanged();
+                    }
+
+                });
+
+                filtersDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
 
                     }
                 });
 
-                filtersDialog.show();
+                // create and show the alert dialog
+                AlertDialog dialog = filtersDialog.create();
+                dialog.show();
             }
         });
     }
 
     @Override
     public void onSuccess(List<GameApiResponse> gamesList, long lastUpdate) {
+        searchLoading.setVisibility(View.GONE);
         games = gamesList;
-        numberOfResults.setText(gamesList.size() + " results found for " + "\"" + gameName.getText() + "\"");
+        gamesCopy = new ArrayList<>(games);
+        numberOfResults.setText(games.size() + " results found for " + "\"" + gameName.getText() + "\"");
         showGamesOnRecyclerView(games);
+
+        if(games.size() > 0){
+            sorting.setVisibility(View.VISIBLE);
+            filters.setVisibility(View.VISIBLE);
+        }else{
+            sorting.setVisibility(View.GONE);
+            filters.setVisibility(View.GONE);
+        }
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.example.gamestorm.ui;
 
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.cardview.widget.CardView;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
@@ -37,12 +39,19 @@ public class GameAdapter extends RecyclerView.Adapter<GameAdapter.RecyclerViewHo
         return new RecyclerViewHolder(view);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onBindViewHolder(@NonNull GameAdapter.RecyclerViewHolder holder, int position) {
         // Set the data to textview and imageview.
         GameApiResponse game = games.get(position);
-        if(game.getCover() != null)//?
+        if(game.getCover() != null){
             Picasso.get().load(game.getCover().getUrl().replace("thumb", "cover_big")).into(holder.coverIV);
+        }else{
+            holder.coverIV.setImageResource(R.drawable.no_cover);
+        }
+
+        holder.gameCV.setTooltipText(game.getName());
+
         holder.gameCV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
