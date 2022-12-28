@@ -4,7 +4,6 @@ package com.example.gamestorm.ui;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,7 +12,6 @@ import android.widget.Toast;
 
 import com.example.gamestorm.Model.UserModel;
 import com.example.gamestorm.R;
-import com.example.gamestorm.databinding.ActivityMainBinding;
 import com.example.gamestorm.databinding.ActivityRegisterBinding;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -59,7 +57,7 @@ public class RegisterActivity extends AppCompatActivity {
 
                                     firebaseFirestore.collection("User")
                                             .document(FirebaseAuth.getInstance().getUid())
-                                            .set(new UserModel(name, email));
+                                            .set(new UserModel(name, email, FirebaseAuth.getInstance().getUid()));
                                     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
                                     UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
@@ -121,4 +119,6 @@ public class RegisterActivity extends AppCompatActivity {
             return true;
         }
     }
+
+
 }

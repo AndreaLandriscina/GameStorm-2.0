@@ -2,33 +2,25 @@ package com.example.gamestorm.ui;
 
 import static com.example.gamestorm.R.string.check_data;
 import static com.example.gamestorm.R.string.emailsent;
-import static com.example.gamestorm.R.string.username;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
 import com.example.gamestorm.Model.UserModel;
 import com.example.gamestorm.R;
 import com.example.gamestorm.databinding.ActivityLoginBinding;
-import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.auth.api.identity.SignInCredential;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.auth.api.signin.GoogleSignInResult;
-import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -65,6 +57,7 @@ public class LoginActivity extends AppCompatActivity {
         firebaseAuth=FirebaseAuth.getInstance();
         progressDialog = new ProgressDialog(this);
 
+        //LOGIN CON CREDENZIALI
         binding.login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -81,6 +74,7 @@ public class LoginActivity extends AppCompatActivity {
                                     Toast.makeText(LoginActivity.this, R.string.login_successfully, Toast.LENGTH_SHORT).show();
                                     Intent i = new Intent(LoginActivity.this, MainActivity.class);
                                     startActivity(i);
+                                    finish();
                                 }
                             })
                             .addOnFailureListener(new OnFailureListener() {
@@ -98,6 +92,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+        //CLICK SU RESET PASSWORD
         binding.resetPassword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -128,6 +123,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+        //CLICK SU REGISTRATI
         binding.goToSignUpActivity.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -136,6 +132,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+        //CLICK SU LOGIN CON GOOGLE
         binding.googleButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -151,6 +148,7 @@ public class LoginActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+        //ACCESSO CON GOOGLE
         if (requestCode == 1234){
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             try {
@@ -168,7 +166,7 @@ public class LoginActivity extends AppCompatActivity {
                             firebaseFirestore=FirebaseFirestore.getInstance();
                             firebaseFirestore.collection("User")
                                     .document(FirebaseAuth.getInstance().getUid())
-                                    .set(new UserModel(account.getDisplayName(), account.getEmail()));
+                                    .set(new UserModel(account.getDisplayName(), account.getEmail(), account.getId()));
                             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                             UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
                                     .setDisplayName(account.getDisplayName()).build();

@@ -1,5 +1,6 @@
 package com.example.gamestorm.ui;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,14 +12,20 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.widget.ViewPager2;
 
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.Toolbar;
 
 import com.example.gamestorm.R;
 import com.example.gamestorm.databinding.ActivityLoginBinding;
@@ -32,22 +39,30 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.ArrayList;
 
 public class ProfileFragment extends Fragment {
     FragmentProfileBinding binding;
     FirebaseAuth firebaseAuth;
     ProgressDialog progressDialog;
     LayoutInflater inflater;
-    Button logoutButton;
     ConstraintLayout logoutLayout;
     TextView usernameText;
     GoogleSignInOptions gso;
     GoogleSignInClient gsc;
+    MenuItem logout_option;
+    TextView nDesiredGames;
+    TextView nPlayedGames;
+    String loggedUserID;
 
     TabLayout tabLayout;
     ViewPager2 viewPager2;
     MyViewPagerAdapter myViewPagerAdapter;
-    Bundle extras;
+    FirebaseFirestore firebaseFirestore;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -66,25 +81,50 @@ public class ProfileFragment extends Fragment {
         myViewPagerAdapter = new MyViewPagerAdapter((FragmentActivity) getContext());
         viewPager2.setAdapter(myViewPagerAdapter);
         firebaseAuth=FirebaseAuth.getInstance();
-        logoutButton = requireView().findViewById(R.id.logoutButton);
         logoutLayout = requireView().findViewById(R.id.logout_layout);
         gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
         gsc = GoogleSignIn.getClient(getContext(),gso);
+        nDesiredGames = requireView().findViewById(R.id.nDesiredGames);
+        nPlayedGames = requireView().findViewById(R.id.nPlayedGames);
+        firebaseFirestore=FirebaseFirestore.getInstance();
+
+        setHasOptionsMenu(true);
 
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(getContext());
         if (account != null){
-            usernameText.setText(account.getDisplayName());
+            usernameText.setText("Bentornato, " + account.getDisplayName());
         }
 
         if (firebaseAuth.getCurrentUser()!= null) {
             FirebaseUser user = firebaseAuth.getInstance().getCurrentUser();
-            usernameText.setText(user.getDisplayName());
+            usernameText.setText("Bentornato, " + user.getDisplayName());
+        }
+
+        if (firebaseAuth.getCurrentUser()!=null){
+            loggedUserID=firebaseAuth.getCurrentUser().getUid();
+        } else if(account!=null){
+            loggedUserID= account.getId();
         }
 
         if (firebaseAuth.getCurrentUser()==null && account == null) {
             logoutLayout.setVisibility(View.GONE);
         }else{
-                logoutLayout.setVisibility(View.VISIBLE);
+            logoutLayout.setVisibility(View.VISIBLE);
+            DocumentReference docRef = firebaseFirestore.collection("User").document(loggedUserID);
+            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document != null) {
+                            ArrayList<Integer> desiredGames = (ArrayList<Integer>) document.get("desiredGames");
+                            nDesiredGames.setText("Giochi desiderati: " + desiredGames.size());
+                            ArrayList<Integer> playedGames = (ArrayList<Integer>) document.get("playedGames");
+                            nPlayedGames.setText("Giochi giocati: " + playedGames.size());
+                        }
+                    }
+                }
+            });
         }
 
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -113,17 +153,35 @@ public class ProfileFragment extends Fragment {
         });
 
         progressDialog = new ProgressDialog(getContext());
+    }
 
-        logoutButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.profile_menu, menu);
+        Toolbar tb = (Toolbar) requireView().findViewById(R.id.toolbar);
+        logout_option = menu.findItem(R.id.logout_option);
+
+        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(getContext());
+        if (firebaseAuth.getCurrentUser()==null && account == null) {
+            logout_option.setVisible(false);
+        }else{
+            logout_option.setVisible(true);
+        }
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.logout_option:
+                GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(getContext());
+                progressDialog.setTitle(getString(R.string.logout_in_progress));
                 progressDialog.show();
-                progressDialog.cancel();
+
                 //LOGOUT CON MAIL E PASSWORD
                 if (firebaseAuth.getCurrentUser()!=null) {
                     try {
                         firebaseAuth.signOut();
-                        progressDialog.cancel();
                         Toast.makeText(getContext(), R.string.logout_successfully, Toast.LENGTH_SHORT).show();
                         logoutLayout.setVisibility(View.GONE);
                         startActivity(new Intent(getContext(), MainActivity.class));
@@ -148,8 +206,13 @@ public class ProfileFragment extends Fragment {
                         }
                     });
                 }
-            }
-        });
+                return true;
+            case R.id.settings_option:
+                Toast.makeText(getContext(), "settings da fare", Toast.LENGTH_SHORT).show();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override

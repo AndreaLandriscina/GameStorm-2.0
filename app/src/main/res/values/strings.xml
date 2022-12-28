@@ -40,4 +40,6 @@
     <string name="login_to_see_this">This function is available only for registered users</string>
     <string name="logout">Logout</string>
     <string name="logout_successfully">Logout Successfully</string>
+    <string name="settings">Settings</string>
+    <string name="logout_in_progress">Logout...</string>
 </resources>
