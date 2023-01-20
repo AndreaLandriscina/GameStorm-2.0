@@ -18,47 +18,41 @@
         app:layout_constraintTop_toBottomOf="@+id/sorting_B"
         android:visibility="gone"/>
 
-    <EditText
-        android:id="@+id/game_name_ET"
-        android:layout_width="wrap_content"
+    <androidx.appcompat.widget.SearchView
+        android:id="@+id/game_name_SV"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:inputType="textPersonName"
         android:hint="Search games"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:inputType="text"
+        app:iconifiedByDefault="false"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-        android:id="@+id/search_B"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Search"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/game_name_ET" />
-
-    <Button
+    <ImageButton
         android:id="@+id/sorting_B"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:src="@drawable/ic_baseline_sort_24"
         android:text="Sort"
-        app:layout_constraintEnd_toStartOf="@+id/filters_B"
-        app:layout_constraintStart_toEndOf="@+id/search_B"
-        app:layout_constraintTop_toBottomOf="@+id/game_name_ET" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
+    <ImageButton
         android:id="@+id/filters_B"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:src="@drawable/ic_baseline_filter_alt_24"
         android:text="Filters"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/game_name_ET" />
+        app:layout_constraintEnd_toStartOf="@+id/sorting_B"
+        app:layout_constraintStart_toEndOf="@+id/game_name_SV"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/games_RV"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="120dp"
+        android:layout_marginTop="100dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -71,8 +65,6 @@
         android:layout_marginBottom="32dp"
         android:text=""
         app:layout_constraintBottom_toTopOf="@+id/games_RV"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/search_B"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

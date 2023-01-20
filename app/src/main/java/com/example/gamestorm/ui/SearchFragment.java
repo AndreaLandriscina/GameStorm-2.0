@@ -6,17 +6,19 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -43,10 +45,10 @@ public class SearchFragment extends Fragment implements ResponseCallback {
     private IGamesRepository iGamesRepository;
     private List<GameApiResponse> games;
     private List<GameApiResponse> gamesCopy;
-    private EditText gameName;
-    private Button search;
-    private Button sorting;
-    private Button filters;
+    private SearchView gameName;
+    private String userInput;
+    private ImageButton sorting;
+    private ImageButton filters;
     private TextView numberOfResults;
     private RecyclerView gamesRV;
     private ProgressBar searchLoading;
@@ -76,8 +78,8 @@ public class SearchFragment extends Fragment implements ResponseCallback {
 
         iGamesRepository = new GamesRepository(getActivity().getApplication(), this);
         games = new ArrayList<>();
-        gameName = view.findViewById(R.id.game_name_ET);
-        search = view.findViewById(R.id.search_B);
+        gameName = view.findViewById(R.id.game_name_SV);
+        userInput = "";
         sorting = view.findViewById(R.id.sorting_B);
         filters = view.findViewById(R.id.filters_B);
         numberOfResults = view.findViewById(R.id.number_of_results_TV);
@@ -92,9 +94,31 @@ public class SearchFragment extends Fragment implements ResponseCallback {
         sorting.setVisibility(View.GONE);
         filters.setVisibility(View.GONE);
 
-        search.setOnClickListener(new View.OnClickListener() {
+        if(savedInstanceState != null){
+            userInput = savedInstanceState.getString("GAME_NAME");
+            sortingParameter = savedInstanceState.getString("SORTING_PARAMETER");
+            lastSelectedSortingParameter = savedInstanceState.getInt("LAST_SORTING_PARAMETER");
+            lastSelectedGenre = savedInstanceState.getInt("GENRE");
+            lastSelectedPlatform = savedInstanceState.getInt("PLATFORM");
+            lastSelectedReleaseYear = savedInstanceState.getInt("RELEASE_YEAR");
+            games = savedInstanceState.getParcelableArrayList("GAMES");
+            gamesCopy = savedInstanceState.getParcelableArrayList("GAMES_COPY");
+            numberOfResults.setText(savedInstanceState.getString("RESULTS_NUMBER"));
+
+
+            if(!games.isEmpty()){
+                showGamesOnRecyclerView(games);
+                adapter.notifyDataSetChanged();
+                sorting.setVisibility(View.VISIBLE);
+                filters.setVisibility(View.VISIBLE);
+            }
+
+        }
+
+
+        gameName.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
-            public void onClick(View v) {
+            public boolean onQueryTextSubmit(String query) {
                 if(!games.isEmpty()){
                     games.clear();
                     adapter.notifyDataSetChanged();
@@ -106,13 +130,21 @@ public class SearchFragment extends Fragment implements ResponseCallback {
                 lastSelectedPlatform = 0;
                 lastSelectedReleaseYear = 0;
 
-                String user_input = gameName.getText().toString();
+                userInput = query;
                 //timestamp per ottenere solo giochi già usciti(su igdb si sono giochi che devono ancora uscire e che non hanno informazioni utili per l'utente)
-                String query = "fields id, name, cover.url, follows, rating, first_release_date, genres.name, platforms.name; where first_release_date < " + System.currentTimeMillis() / 1000 + " & version_parent = null;search \"" + user_input + "\"; limit 500;";
+                String queryToServer = "fields id, name, cover.url, follows, rating, first_release_date, genres.name, platforms.name; where first_release_date < " + System.currentTimeMillis() / 1000 + " & version_parent = null;search \"" + userInput + "\"; limit 500;";
                 searchLoading.setVisibility(View.VISIBLE);
-                iGamesRepository.fetchGames(query, 10000);
+                iGamesRepository.fetchGames(queryToServer, 10000);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
             }
         });
+
+
 
         sorting.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -543,7 +575,7 @@ public class SearchFragment extends Fragment implements ResponseCallback {
 
 
 
-                        numberOfResults.setText(games.size() + " results found for " + "\"" + gameName.getText() + "\"");
+                        numberOfResults.setText(games.size() + " results found for " + "\"" + userInput + "\"");
                         showGamesOnRecyclerView(games);
                         adapter.notifyDataSetChanged();
                     }
@@ -569,7 +601,7 @@ public class SearchFragment extends Fragment implements ResponseCallback {
         searchLoading.setVisibility(View.GONE);
         games = gamesList;
         gamesCopy = new ArrayList<>(games);
-        numberOfResults.setText(games.size() + " results found for " + "\"" + gameName.getText() + "\"");
+        numberOfResults.setText(games.size() + " results found for " + "\"" + userInput + "\"");
         showGamesOnRecyclerView(games);
 
         if(games.size() > 0){
@@ -590,6 +622,25 @@ public class SearchFragment extends Fragment implements ResponseCallback {
     public void onGameFavoriteStatusChanged(GameApiResponse game) {
 
     }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString("GAME_NAME", userInput);
+        outState.putString("SORTING_PARAMETER", sortingParameter);
+        outState.putInt("LAST_SORTING_PARAMETER", lastSelectedSortingParameter);
+        outState.putInt("GENRE", lastSelectedGenre);
+        outState.putInt("PLATFORM", lastSelectedPlatform);
+        outState.putInt("RELEASE_YEAR", lastSelectedReleaseYear);
+        outState.putString("RESULTS_NUMBER", numberOfResults.getText().toString());
+
+
+        //tutti i giochi
+        outState.putParcelableArrayList("GAMES", (ArrayList<? extends Parcelable>) games);
+        outState.putParcelableArrayList("GAMES_COPY", (ArrayList<? extends Parcelable>) gamesCopy);
+
+    }
+
 
     public void showGamesOnRecyclerView(List<GameApiResponse> gamesList) {
         // added data from arraylist to adapter class.

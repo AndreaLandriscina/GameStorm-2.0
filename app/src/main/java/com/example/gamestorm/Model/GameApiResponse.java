@@ -1,5 +1,10 @@
 package com.example.gamestorm.Model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import androidx.annotation.NonNull;
+
 import com.google.gson.annotations.SerializedName;
 
 import java.text.DateFormat;
@@ -11,7 +16,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-public class GameApiResponse {
+public class GameApiResponse implements Parcelable {
     private int id;
     private String name;
     private Cover cover;
@@ -157,6 +162,16 @@ public class GameApiResponse {
 
     public int getFollows() {
         return follows;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
+
     }
 }
 
