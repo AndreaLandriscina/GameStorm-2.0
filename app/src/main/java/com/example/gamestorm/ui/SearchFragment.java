@@ -2,6 +2,7 @@ package com.example.gamestorm.ui;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.graphics.Typeface;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -43,6 +44,7 @@ import java.util.List;
 public class SearchFragment extends Fragment implements ResponseCallback {
 
     private IGamesRepository iGamesRepository;
+    private boolean firstBoot;
     private List<GameApiResponse> games;
     private List<GameApiResponse> gamesCopy;
     private SearchView gameName;
@@ -77,6 +79,7 @@ public class SearchFragment extends Fragment implements ResponseCallback {
         super.onViewCreated(view, savedInstanceState);
 
         iGamesRepository = new GamesRepository(getActivity().getApplication(), this);
+        firstBoot = true;
         games = new ArrayList<>();
         gameName = view.findViewById(R.id.game_name_SV);
         userInput = "";
@@ -91,9 +94,6 @@ public class SearchFragment extends Fragment implements ResponseCallback {
         lastSelectedPlatform = 0;
         lastSelectedReleaseYear = 0;
 
-        sorting.setVisibility(View.GONE);
-        filters.setVisibility(View.GONE);
-
         if(savedInstanceState != null){
             userInput = savedInstanceState.getString("GAME_NAME");
             sortingParameter = savedInstanceState.getString("SORTING_PARAMETER");
@@ -103,7 +103,19 @@ public class SearchFragment extends Fragment implements ResponseCallback {
             lastSelectedReleaseYear = savedInstanceState.getInt("RELEASE_YEAR");
             games = savedInstanceState.getParcelableArrayList("GAMES");
             gamesCopy = savedInstanceState.getParcelableArrayList("GAMES_COPY");
-            numberOfResults.setText(savedInstanceState.getString("RESULTS_NUMBER"));
+            firstBoot = savedInstanceState.getBoolean("FIRST_BOOT");
+
+            if(firstBoot){
+                numberOfResults.setTextSize(30);
+                numberOfResults.setTypeface(null, Typeface.BOLD);
+                numberOfResults.setText("Esplora");
+
+            }else {
+                numberOfResults.setTextSize(15);
+                numberOfResults.setTypeface(null, Typeface.NORMAL);
+                numberOfResults.setText(savedInstanceState.getString("RESULTS_NUMBER"));
+            }
+
 
 
             if(!games.isEmpty()){
@@ -113,19 +125,30 @@ public class SearchFragment extends Fragment implements ResponseCallback {
                 filters.setVisibility(View.VISIBLE);
             }
 
+        }else{
+            //mostro i piu popolari la prima volta che si accede al fragment
+            if(firstBoot){
+                numberOfResults.setText("Esplora");
+                numberOfResults.setTextSize(30);
+                numberOfResults.setTypeface(null, Typeface.BOLD);
+            }
+            String queryToServer = "fields id, name, cover.url, follows, rating, first_release_date, genres.name, platforms.name; where cover.url != null; limit 500;";
+            iGamesRepository.fetchGames(queryToServer, 10000);
         }
+
 
 
         gameName.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+                firstBoot = false;
+
                 if(!games.isEmpty()){
                     games.clear();
                     adapter.notifyDataSetChanged();
                 }
 
                 lastSelectedSortingParameter = -1;
-
                 lastSelectedGenre = 0;
                 lastSelectedPlatform = 0;
                 lastSelectedReleaseYear = 0;
@@ -134,6 +157,7 @@ public class SearchFragment extends Fragment implements ResponseCallback {
                 //timestamp per ottenere solo giochi già usciti(su igdb si sono giochi che devono ancora uscire e che non hanno informazioni utili per l'utente)
                 String queryToServer = "fields id, name, cover.url, follows, rating, first_release_date, genres.name, platforms.name; where first_release_date < " + System.currentTimeMillis() / 1000 + " & version_parent = null;search \"" + userInput + "\"; limit 500;";
                 searchLoading.setVisibility(View.VISIBLE);
+                numberOfResults.setText("");
                 iGamesRepository.fetchGames(queryToServer, 10000);
                 return false;
             }
@@ -601,7 +625,13 @@ public class SearchFragment extends Fragment implements ResponseCallback {
         searchLoading.setVisibility(View.GONE);
         games = gamesList;
         gamesCopy = new ArrayList<>(games);
-        numberOfResults.setText(games.size() + " results found for " + "\"" + userInput + "\"");
+
+        if(!firstBoot){
+            numberOfResults.setTextSize(15);
+            numberOfResults.setTypeface(null, Typeface.NORMAL);
+            numberOfResults.setText(games.size() + " results found for " + "\"" + userInput + "\"");
+        }
+
         showGamesOnRecyclerView(games);
 
         if(games.size() > 0){
@@ -633,6 +663,7 @@ public class SearchFragment extends Fragment implements ResponseCallback {
         outState.putInt("PLATFORM", lastSelectedPlatform);
         outState.putInt("RELEASE_YEAR", lastSelectedReleaseYear);
         outState.putString("RESULTS_NUMBER", numberOfResults.getText().toString());
+        outState.putBoolean("FIRST_BOOT", firstBoot);
 
 
         //tutti i giochi
