@@ -57,7 +57,7 @@ public class FranchiseActivity extends AppCompatActivity implements ResponseCall
             if (gameApiResponse.getCover() != null)
                 recyclerDataArrayList.add(new RecyclerData(gameApiResponse.getId(), gameApiResponse.getCover().getUrl()));
         }
-        RecyclerViewAdapter adapter=new RecyclerViewAdapter(recyclerDataArrayList,this);
+        RecyclerViewAdapter adapter=new RecyclerViewAdapter(recyclerDataArrayList,this, false);
         GridLayoutManager layoutManager=new GridLayoutManager(this,2);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);

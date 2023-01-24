@@ -2,7 +2,7 @@
     <string name="app_name" translatable="false">GameStorm</string>
     <string name="urlAPI" translatable="false">https://api.igdb.com/v4/</string>
     <string name="clientID" translatable="false">w70u2nsn2gzl9g0xsbe3uvguva3zos</string>
-    <string name="tokenAPI" translatable="false">Bearer sevk2qpth8qd683kwwl5e67m66t5ws</string>
+    <string name="tokenAPI" translatable="false">Bearer 1w5btb4ipqlpouhec20h3vh4qtpzp7</string>
     <string name="contentType" translatable="false">application/json;charset=utf-8</string>
     <string name="home">Home</string>
     <string name="search">Search</string>
@@ -28,4 +28,5 @@
     <string name="company">COMPANY</string>
     <string name="gameCover">Game\'s cover</string>
     <string name="Unreleased">Unreleased</string>
+    <string name="related_games">Related Games</string>
 </resources>

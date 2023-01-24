@@ -20,10 +20,16 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     private ArrayList<RecyclerData> dataArrayList;
     private Context mcontext;
+    private boolean relatedGames;
 
-    public RecyclerViewAdapter(ArrayList<RecyclerData> recyclerDataArrayList, Context mcontext) {
+    public boolean isRelatedGames() {
+        return relatedGames;
+    }
+
+    public RecyclerViewAdapter(ArrayList<RecyclerData> recyclerDataArrayList, Context mcontext, boolean relatedGames) {
         this.dataArrayList = recyclerDataArrayList;
         this.mcontext = mcontext;
+        this.relatedGames = relatedGames;
     }
 
     @NonNull
@@ -39,14 +45,19 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         // Set the data to textview and imageview.
         RecyclerData recyclerData = dataArrayList.get(position);
         String newUrl = recyclerData.getImgUrl().replace("thumb", "cover_big");
-        Picasso.get().load(newUrl).into(holder.cover);
-        holder.cover.setOnClickListener(v -> {
+        ImageView x = null;
+        if (isRelatedGames())
+            x = holder.smallCover;
+        else
+            x = holder.cover;
+        Picasso.get().load(newUrl).into(x);
+
+        x.setOnClickListener(v -> {
             Intent myIntent = new Intent(mcontext, GameActivity.class);
 
             myIntent.putExtra("idGame", recyclerData.getId());
             mcontext.startActivity(myIntent);
         });
-        //holder.textView.setText(recyclerData.getName());
     }
 
     @Override
@@ -55,14 +66,23 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         return dataArrayList.size();
     }
 
+
     // View Holder Class to handle Recycler View.
     public class RecyclerViewHolder extends RecyclerView.ViewHolder {
         private ImageView cover;
-        //private TextView textView;
+        private ImageView smallCover;
+
         public RecyclerViewHolder(@NonNull View itemView) {
             super(itemView);
+            smallCover = itemView.findViewById(R.id.smallCover);
             cover = itemView.findViewById(R.id.cover);
-            //textView = itemView.findViewById(R.id.idTVCourse);
+            if (isRelatedGames()) {
+                cover.setVisibility(View.GONE);
+                smallCover.setVisibility(View.VISIBLE);
+            } else {
+                cover.setVisibility(View.VISIBLE);
+                smallCover.setVisibility(View.GONE);
+            }
         }
 
     }

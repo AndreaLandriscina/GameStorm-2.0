@@ -1,14 +1,18 @@
 package com.example.gamestorm.ui;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 
 import com.example.gamestorm.adapter.RecyclerData;
 import com.example.gamestorm.adapter.RecyclerScreenshotsViewAdapter;
+import com.example.gamestorm.adapter.RecyclerViewAdapter;
 import com.example.gamestorm.model.GameApiResponse;
 import com.example.gamestorm.R;
+import com.example.gamestorm.model.Genre;
 import com.example.gamestorm.repository.GamesRepository;
 import com.example.gamestorm.repository.IGamesRepository;
 import com.example.gamestorm.databinding.ActivityGameBinding;
@@ -16,7 +20,6 @@ import com.example.gamestorm.util.ResponseCallback;
 import com.squareup.picasso.Picasso;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.widget.NestedScrollView;
@@ -25,10 +28,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 
-import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.GridLayout;
@@ -36,6 +37,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
@@ -43,60 +45,137 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import J.N;
-
 public class GameActivity extends AppCompatActivity implements ResponseCallback {
 
     int idGame = 0;
-    private List<GameApiResponse> games;
+    private List<GameApiResponse> relatedGamesList;
     private GameApiResponse game;
     private ProgressBar progressBar;
     private RecyclerView recyclerView;
     private ArrayList<RecyclerData> recyclerDataArrayList;
-
+    private IGamesRepository iGamesRepository;
+    private boolean relatedGames = false;
+    private List<String> genres;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setToolbar();
-        recyclerView=findViewById(R.id.screenshotsRecyclerView);
-        recyclerDataArrayList=new ArrayList<>();
-        //toolBarLayout.setTitle(getTitle());
+
+
         Intent intent = getIntent();
         idGame = intent.getIntExtra("idGame", 1020);
         progressBar = findViewById(R.id.progressBar);
-        IGamesRepository iGamesRepository = new GamesRepository(getApplication(), this);
+        iGamesRepository = new GamesRepository(getApplication(), this);
         progressBar.setVisibility(View.VISIBLE);
         String query = "fields name, franchises.name, first_release_date, genres.name, total_rating, total_rating_count, cover.url, involved_companies.company.name, platforms.name, summary, screenshots.url; where id = " + idGame + ";";
-        iGamesRepository.fetchGames(query, 10000);
 
-        games = new ArrayList<>();
+        checkNetwork();
+        iGamesRepository.fetchGames(query, 10000);
+        genres = new ArrayList<>();
+        relatedGamesList = new ArrayList<>();
     }
 
     @SuppressLint("SetTextI18n")
     @Override
     public void onSuccess(List<GameApiResponse> gamesList, long lastUpdate) {
-        progressBar.setVisibility(View.GONE);
-        this.games.addAll(gamesList);
-        game = games.get(0);
+        if (!relatedGames){
+            game = gamesList.get(0);
+            showGameCover();
+            showGameName();
+            showReleaseDate();
+            showRating();
+            showReviewsNumber();
+            genres = game.getGenresString();
+            showGenres(genres);
+            showPlatforms();
+            setFranchiseButton();
+            setCompanyButton();
+            GridLayout buttonsLayout = findViewById(R.id.buttonsLayout);
+            showWantedButton(buttonsLayout);
+            showPlayiedButton(buttonsLayout);
+            showDescription();
+            showScreenshots();
+            getRelatedGames(genres);
+        } else {
+            int differentGenres = 0;
+            for (GameApiResponse gameApiResponse : gamesList){
+                differentGenres = 0;
+                //il gioco mostrato non viene messo tra quelli simili
+                if (gameApiResponse.getId() != game.getId()){
+                    for (int i = 0; i < gameApiResponse.getGenres().size() && differentGenres < 2; i++){
+                        String genre = gameApiResponse.getGenres().get(i).getName();
+                        boolean isFound = false;
+                        for (int j = 0; j < genres.size() && !isFound; j++ ) {
+                            String genreToFind = genres.get(j);
+                            if (genre.equals(genreToFind)){
+                                isFound = true;
+                            }
+                        }
+                        if (!isFound) {
+                            differentGenres++;
+                        }
+                    }
+                    if (differentGenres < 2 && relatedGamesList.size() <= 10){
+                        relatedGamesList.add(gameApiResponse);
+                    }
 
-        showGameCover();
-        showGameName();
-        showReleaseDate();
-        showRating();
-        showReviewsNumber();
-        showGenres();
-        showPlatforms();
-        setFranchiseButton();
-        setCompanyButton();
-        GridLayout buttonsLayout = findViewById(R.id.buttonsLayout);
-        showWantedButton(buttonsLayout);
-        showPlayiedButton(buttonsLayout);
-        showDescription();
-        showScreenshots();
+                }
+            }
+            Log.i("n", String.valueOf(relatedGamesList.size()));
+            progressBar.setVisibility(View.GONE);
+            showRelatedGames();
+        }
+    }
+
+    private void getRelatedGames(List<String> genres) {
+        relatedGames = true;
+        StringBuilder subquery = new StringBuilder();
+        subquery.append("(");
+
+        for (int i = 0; i < genres.size(); i++) {
+            Log.i("x", String.valueOf(i));
+            subquery.append("\"").append(genres.get(i)).append("\"");
+            if (i < genres.size() - 1){
+                subquery.append(", ");
+            } else {
+                subquery.append(")");
+            }
+        }
+        String query = "fields name, total_rating, cover.url, genres.name, first_release_date; where genres.name = " + subquery + " & total_rating > 85 & first_release_date > 1262304000; limit 30;";
+        checkNetwork();
+
+        iGamesRepository.fetchGames(query, 10000);
+    }
+
+    private void checkNetwork() {
+        ConnectivityManager connectivityManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+        if(connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() != NetworkInfo.State.CONNECTED &&
+                connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() != NetworkInfo.State.CONNECTED) {
+            Toast.makeText(this, "No connection :/", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void showRelatedGames() {
+        TextView textView = findViewById(R.id.relatedView);
+        textView.setVisibility(View.VISIBLE);
+        recyclerView=findViewById(R.id.relatedRecyclerView);
+        recyclerDataArrayList=new ArrayList<>();
+        if (relatedGamesList != null && !relatedGamesList.isEmpty()){
+            for (GameApiResponse gameApiResponse : relatedGamesList) {
+                if (gameApiResponse.getCover() != null)
+                    recyclerDataArrayList.add(new RecyclerData(gameApiResponse.getId(), gameApiResponse.getCover().getUrl()));
+            }
+            RecyclerViewAdapter adapter=new RecyclerViewAdapter(recyclerDataArrayList,this, true);
+            LinearLayoutManager layoutManager=new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false);
+            recyclerView.setLayoutManager(layoutManager);
+            recyclerView.setAdapter(adapter);
+        }
     }
 
     private void showScreenshots() {
+        recyclerView=findViewById(R.id.screenshotsRecyclerView);
+        recyclerDataArrayList=new ArrayList<>();
         if (game.getScreenshots() != null){
             for (int i = 0; i < game.getScreenshots().size(); i++) {
                 if (game.getScreenshots() != null)
@@ -179,16 +258,17 @@ public class GameActivity extends AppCompatActivity implements ResponseCallback 
         platformText.setText(text);
     }
 
-    private void showGenres() {
+    private void showGenres(List<String> genres) {
         LinearLayout linearLayout = findViewById(R.id.genresLayout);
         TextView genresView = findViewById(R.id.genresView);
         genresView.setVisibility(View.VISIBLE);
-        List<String> genres = game.getGenresString();
+
         for (String genre : genres) {
             TextView textView = new TextView(this);
             textView.setTextSize(20);
             textView.setPadding(15, 15, 15, 15);
-            textView.setBackground(AppCompatResources.getDrawable(getApplicationContext(), R.drawable.rounded_corner));
+            textView.setBackgroundResource(R.drawable.rounded_corner);
+
             textView.setText(genre);
             textView.setOnClickListener(v -> {
                 Intent myIntent = new Intent(getApplicationContext(), GenreActivity.class);

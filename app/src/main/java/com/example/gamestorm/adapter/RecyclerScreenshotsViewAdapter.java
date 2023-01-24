@@ -72,8 +72,6 @@ public class RecyclerScreenshotsViewAdapter extends RecyclerView.Adapter<Recycle
     // View Holder Class to handle Recycler View.
     public class RecyclerViewHolder extends RecyclerView.ViewHolder {
         private ImageView screenshot;
-        private Button leftButton;
-        private Button rightButton;
 
         public RecyclerViewHolder(@NonNull View itemView) {
             super(itemView);

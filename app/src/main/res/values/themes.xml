@@ -19,7 +19,19 @@
     </style>
 
     <style name="Theme.GameStorm.NoActionBar">
+        <item name="colorPrimary">@color/white</item>
+        <item name="colorPrimaryVariant">@color/purple_700</item>
+        <item name="colorOnPrimary">@color/black</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/black</item>
+        <item name="colorSecondaryVariant">@color/black</item>
+        <item name="colorOnSecondary">@color/black</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="backgroundColor">@color/cardview_dark_background</item>
 
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor">@color/white</item>
+        <item name="android:enforceStatusBarContrast">true</item>
     </style>
 
     <style name="Theme.GameStorm.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
