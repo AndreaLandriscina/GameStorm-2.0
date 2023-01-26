@@ -25,9 +25,9 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:background="#fff"
-        android:elevation="2dp"
+        android:elevation="4dp"
         android:ems="10"
-        android:hint="Search games"
+        app:queryHint="Search games"
         android:inputType="text"
         app:iconifiedByDefault="false"
         app:layout_constraintStart_toStartOf="parent"
@@ -41,7 +41,8 @@
         android:src="@drawable/ic_baseline_sort_24"
         android:text="Sort"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:elevation="4dp"/>
 
     <ImageButton
         android:id="@+id/filters_B"
@@ -53,7 +54,8 @@
         android:text="Filters"
         app:layout_constraintEnd_toStartOf="@+id/sorting_B"
         app:layout_constraintStart_toEndOf="@+id/game_name_SV"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:elevation="4dp"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/games_RV"

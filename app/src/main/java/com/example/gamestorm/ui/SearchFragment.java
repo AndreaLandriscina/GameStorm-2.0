@@ -44,7 +44,7 @@ import java.util.List;
 public class SearchFragment extends Fragment implements ResponseCallback {
 
     private IGamesRepository iGamesRepository;
-    private boolean firstBoot;
+    private boolean firstLoad;
     private List<GameApiResponse> games;
     private List<GameApiResponse> gamesCopy;
     private SearchView gameName;
@@ -60,6 +60,19 @@ public class SearchFragment extends Fragment implements ResponseCallback {
     private int lastSelectedGenre;
     private int lastSelectedPlatform;
     private int lastSelectedReleaseYear;
+
+    //savedInstanceState keys
+    private final String gameNameKey = "GAME_NAME";
+    private final String sortingParameterKey = "SORTING_PARAMETER";
+    private final String lastSelectedSortingParameterKey = "LAST_SORTING_PARAMETER";
+    private final String lastSelectedGenreKey = "GENRE";
+    private final String lastSelectedPlatformKey = "PLATFORM";
+    private final String lastSelectedReleaseYearKey = "RELEASE_YEAR";
+    private final String gamesKey = "GAMES";
+    private final String gamesCopyKey = "GAMES_COPY";
+    private final String firstLoadKey = "FIRST_LOAD";
+    private final String resultNumberKey = "RESULTS_NUMBER";
+
 
 
     public SearchFragment() {
@@ -79,7 +92,7 @@ public class SearchFragment extends Fragment implements ResponseCallback {
         super.onViewCreated(view, savedInstanceState);
 
         iGamesRepository = new GamesRepository(getActivity().getApplication(), this);
-        firstBoot = true;
+        firstLoad = true;
         games = new ArrayList<>();
         gameName = view.findViewById(R.id.game_name_SV);
         userInput = "";
@@ -95,25 +108,25 @@ public class SearchFragment extends Fragment implements ResponseCallback {
         lastSelectedReleaseYear = 0;
 
         if(savedInstanceState != null){
-            userInput = savedInstanceState.getString("GAME_NAME");
-            sortingParameter = savedInstanceState.getString("SORTING_PARAMETER");
-            lastSelectedSortingParameter = savedInstanceState.getInt("LAST_SORTING_PARAMETER");
-            lastSelectedGenre = savedInstanceState.getInt("GENRE");
-            lastSelectedPlatform = savedInstanceState.getInt("PLATFORM");
-            lastSelectedReleaseYear = savedInstanceState.getInt("RELEASE_YEAR");
-            games = savedInstanceState.getParcelableArrayList("GAMES");
-            gamesCopy = savedInstanceState.getParcelableArrayList("GAMES_COPY");
-            firstBoot = savedInstanceState.getBoolean("FIRST_BOOT");
+            userInput = savedInstanceState.getString(gameNameKey);
+            sortingParameter = savedInstanceState.getString(sortingParameterKey);
+            lastSelectedSortingParameter = savedInstanceState.getInt(lastSelectedSortingParameterKey);
+            lastSelectedGenre = savedInstanceState.getInt(lastSelectedGenreKey);
+            lastSelectedPlatform = savedInstanceState.getInt(lastSelectedPlatformKey);
+            lastSelectedReleaseYear = savedInstanceState.getInt(lastSelectedReleaseYearKey);
+            games = savedInstanceState.getParcelableArrayList(gamesKey);
+            gamesCopy = savedInstanceState.getParcelableArrayList(gamesCopyKey);
+            firstLoad = savedInstanceState.getBoolean(firstLoadKey);
 
-            if(firstBoot){
+            if(firstLoad){
                 numberOfResults.setTextSize(30);
                 numberOfResults.setTypeface(null, Typeface.BOLD);
-                numberOfResults.setText("Esplora");
+                numberOfResults.setText(R.string.explore_title);
 
             }else {
                 numberOfResults.setTextSize(15);
                 numberOfResults.setTypeface(null, Typeface.NORMAL);
-                numberOfResults.setText(savedInstanceState.getString("RESULTS_NUMBER"));
+                numberOfResults.setText(savedInstanceState.getString(resultNumberKey));
             }
 
 
@@ -127,11 +140,12 @@ public class SearchFragment extends Fragment implements ResponseCallback {
 
         }else{
             //mostro i piu popolari la prima volta che si accede al fragment
-            if(firstBoot){
-                numberOfResults.setText("Esplora");
+            if(firstLoad){
+                numberOfResults.setText(R.string.explore_title);
                 numberOfResults.setTextSize(30);
                 numberOfResults.setTypeface(null, Typeface.BOLD);
             }
+            searchLoading.setVisibility(View.VISIBLE);
             String queryToServer = "fields id, name, cover.url, follows, rating, first_release_date, genres.name, platforms.name; where cover.url != null; limit 500;";
             iGamesRepository.fetchGames(queryToServer, 10000);
         }
@@ -141,7 +155,7 @@ public class SearchFragment extends Fragment implements ResponseCallback {
         gameName.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                firstBoot = false;
+                firstLoad = false;
 
                 if(!games.isEmpty()){
                     games.clear();
@@ -178,11 +192,11 @@ public class SearchFragment extends Fragment implements ResponseCallback {
                 AlertDialog.Builder alertDialog = new AlertDialog.Builder(getContext());
 
                 // title of the alert dialog
-                alertDialog.setTitle("Sort by");
+                alertDialog.setTitle(R.string.sort_by_dialog_title);
 
                 // list of the items to be displayed to the user in the
                 // form of list so that user can select the item from
-                final String[] listItems = new String[]{"Most popular", "Most recent", "Best rating", "Alphabet"};  //DA ESTRARRE IN RESOURCES
+                final String[] listItems = getContext().getResources().getStringArray(R.array.sorting_parameters);
 
                 // the function setSingleChoiceItems is the function which
                 // builds the alert dialog with the single item selection
@@ -250,7 +264,7 @@ public class SearchFragment extends Fragment implements ResponseCallback {
                 AlertDialog.Builder filtersDialog = new AlertDialog.Builder(getContext());
 
                 // title of the alert dialog
-                filtersDialog.setTitle("Search Filters");
+                filtersDialog.setTitle(R.string.search_filters_dialog_title);
 
                 // set the custom layout
                 final View customLayout = getLayoutInflater().inflate(R.layout.dialog_filters, null);
@@ -489,7 +503,7 @@ public class SearchFragment extends Fragment implements ResponseCallback {
                 releaseYearSPN.setAdapter(releaseYearAdapter);
                 releaseYearSPN.setSelection(lastSelectedReleaseYear);
 
-                filtersDialog.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
+                filtersDialog.setPositiveButton(R.string.confirm_text, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         String genreInput, platformInput, releaseyearInput;
@@ -503,12 +517,10 @@ public class SearchFragment extends Fragment implements ResponseCallback {
                         lastSelectedReleaseYear = releaseYearAdapter.getPosition(releaseyearInput);
 
 
-                        if (genreInput.equals("Any genre") || platformInput.equals("Any platform") || releaseyearInput.equals("Any year")) {
+                        if (genreInput.equals(genres[0]) || platformInput.equals(platforms[0]) || releaseyearInput.equals(years.get(0))) {
                             games = new ArrayList<>(gamesCopy);
 
-                            if(sortingParameter != ""){
-
-                                Log.e("TAG", "dentro a sorting");
+                            if(!sortingParameter.isEmpty()){
 
                                 //sorting decrescente
                                 Collections.sort(games, (o1, o2) -> {
@@ -545,7 +557,7 @@ public class SearchFragment extends Fragment implements ResponseCallback {
 
                         }
 
-                            if (!genreInput.equals("Any genre")) {
+                            if (!genreInput.equals(genres[0])) {
                                 for (int i = games.size() - 1; i >= 0; i--) {
                                     boolean hasGenre = false;
 
@@ -568,7 +580,7 @@ public class SearchFragment extends Fragment implements ResponseCallback {
                             }
 
 
-                            if (!platformInput.equals("Any platform")) {
+                            if (!platformInput.equals(platforms[0])) {
                                 for (int i = games.size() - 1; i >= 0; i--) {
                                     boolean hasPlatform = false;
 
@@ -588,7 +600,7 @@ public class SearchFragment extends Fragment implements ResponseCallback {
                                 }
                             }
 
-                            if (!releaseyearInput.equals("Any year")) {
+                            if (!releaseyearInput.equals(years.get(0))) {
                                 for (int i = games.size() - 1; i >= 0; i--) {
                                     String[] dateParts = games.get(i).getFirstReleaseDate().split("/");
                                     String yearOfRelease = dateParts[2];
@@ -597,16 +609,15 @@ public class SearchFragment extends Fragment implements ResponseCallback {
                                 }
                             }
 
-
-
-                        numberOfResults.setText(games.size() + " results found for " + "\"" + userInput + "\"");
+                        String text = String.format(getContext().getResources().getString(R.string.number_of_results), games.size(), userInput);
+                        numberOfResults.setText(text);
                         showGamesOnRecyclerView(games);
                         adapter.notifyDataSetChanged();
                     }
 
                 });
 
-                filtersDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                filtersDialog.setNegativeButton(R.string.cancel_text, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 
@@ -626,10 +637,11 @@ public class SearchFragment extends Fragment implements ResponseCallback {
         games = gamesList;
         gamesCopy = new ArrayList<>(games);
 
-        if(!firstBoot){
+        if(!firstLoad){
             numberOfResults.setTextSize(15);
             numberOfResults.setTypeface(null, Typeface.NORMAL);
-            numberOfResults.setText(games.size() + " results found for " + "\"" + userInput + "\"");
+            String text = String.format(getContext().getResources().getString(R.string.number_of_results), games.size(), userInput);
+            numberOfResults.setText(text);
         }
 
         showGamesOnRecyclerView(games);
@@ -656,19 +668,19 @@ public class SearchFragment extends Fragment implements ResponseCallback {
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString("GAME_NAME", userInput);
-        outState.putString("SORTING_PARAMETER", sortingParameter);
-        outState.putInt("LAST_SORTING_PARAMETER", lastSelectedSortingParameter);
-        outState.putInt("GENRE", lastSelectedGenre);
-        outState.putInt("PLATFORM", lastSelectedPlatform);
-        outState.putInt("RELEASE_YEAR", lastSelectedReleaseYear);
-        outState.putString("RESULTS_NUMBER", numberOfResults.getText().toString());
-        outState.putBoolean("FIRST_BOOT", firstBoot);
+        outState.putString(gameNameKey, userInput);
+        outState.putString(sortingParameterKey, sortingParameter);
+        outState.putInt(lastSelectedSortingParameterKey, lastSelectedSortingParameter);
+        outState.putInt(lastSelectedGenreKey, lastSelectedGenre);
+        outState.putInt(lastSelectedPlatformKey, lastSelectedPlatform);
+        outState.putInt(lastSelectedReleaseYearKey, lastSelectedReleaseYear);
+        outState.putString(resultNumberKey, numberOfResults.getText().toString());
+        outState.putBoolean(firstLoadKey, firstLoad);
 
 
         //tutti i giochi
-        outState.putParcelableArrayList("GAMES", (ArrayList<? extends Parcelable>) games);
-        outState.putParcelableArrayList("GAMES_COPY", (ArrayList<? extends Parcelable>) gamesCopy);
+        outState.putParcelableArrayList(gamesKey, (ArrayList<? extends Parcelable>) games);
+        outState.putParcelableArrayList(gamesCopyKey, (ArrayList<? extends Parcelable>) gamesCopy);
 
     }
 

@@ -17,4 +17,19 @@
     <string name="title_activity_game_saga">GameSagaActivity</string>
     <string name="title_activity_game_version">GameVersionActivity</string>
     <string name="error_retrieving_games">\"error_retrieving_games</string>
+    <string name="explore_title">Explore</string>
+    <string name="sort_by_dialog_title">Sort by</string>
+    <string name="search_filters_dialog_title">Search Filters</string>
+
+    <string-array name="sorting_parameters">
+        <item>Most popular</item>
+        <item>Most recent</item>
+        <item>Best rating</item>
+        <item>Alphabet</item>
+    </string-array>
+
+    <string name="number_of_results"> %1$d results found for &quot;%2$s&quot;</string>
+    <string name="cancel_text">Cancel</string>
+    <string name="confirm_text">Confirm</string>
+
 </resources>
