@@ -1,8 +1,6 @@
-package com.example.gamestorm.Database;
+package com.example.gamestorm.database;
 
 import android.content.Context;
-
-import androidx.room.Database;
 
 
 import java.util.concurrent.ExecutorService;

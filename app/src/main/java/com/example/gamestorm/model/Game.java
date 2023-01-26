@@ -1,6 +1,4 @@
-package com.example.gamestorm.Model;
-
-import com.google.gson.annotations.SerializedName;
+package com.example.gamestorm.model;
 
 import java.util.List;
 

@@ -1,6 +1,6 @@
 package com.example.gamestorm.util;
 
-import com.example.gamestorm.Model.GameApiResponse;
+import com.example.gamestorm.model.GameApiResponse;
 
 import java.util.List;
 

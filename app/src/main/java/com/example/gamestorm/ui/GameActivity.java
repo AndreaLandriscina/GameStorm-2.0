@@ -1,18 +1,13 @@
 package com.example.gamestorm.ui;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 
-import com.example.gamestorm.Model.Cover;
-import com.example.gamestorm.Model.Game;
-import com.example.gamestorm.Model.GameApiResponse;
-import com.example.gamestorm.Model.Genre;
-import com.example.gamestorm.Model.ReleaseDate;
+import com.example.gamestorm.model.GameApiResponse;
 import com.example.gamestorm.R;
-import com.example.gamestorm.Repository.GamesRepository;
-import com.example.gamestorm.Repository.IGamesRepository;
+import com.example.gamestorm.repository.GamesRepository;
+import com.example.gamestorm.repository.IGamesRepository;
 import com.example.gamestorm.databinding.ActivityGameBinding;
 import com.example.gamestorm.util.ResponseCallback;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
@@ -31,13 +26,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import org.json.JSONException;
-
-import java.io.IOException;
-import java.text.DateFormatSymbols;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 

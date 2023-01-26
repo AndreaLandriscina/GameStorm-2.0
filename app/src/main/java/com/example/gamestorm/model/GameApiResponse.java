@@ -1,4 +1,4 @@
-package com.example.gamestorm.Model;
+package com.example.gamestorm.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -43,6 +43,26 @@ public class GameApiResponse implements Parcelable {
         this.firstReleaseDate = firstReleaseDate;
         this.follows = follows;
     }
+
+    protected GameApiResponse(Parcel in) {
+        id = in.readInt();
+        name = in.readString();
+        rating = in.readDouble();
+        firstReleaseDate = in.readInt();
+        follows = in.readInt();
+    }
+
+    public static final Creator<GameApiResponse> CREATOR = new Creator<GameApiResponse>() {
+        @Override
+        public GameApiResponse createFromParcel(Parcel in) {
+            return new GameApiResponse(in);
+        }
+
+        @Override
+        public GameApiResponse[] newArray(int size) {
+            return new GameApiResponse[size];
+        }
+    };
 
     public String getName() {
         return name;
@@ -171,7 +191,11 @@ public class GameApiResponse implements Parcelable {
 
     @Override
     public void writeToParcel(@NonNull Parcel dest, int flags) {
-
+        dest.writeInt(id);
+        dest.writeString(name);
+        dest.writeDouble(rating);
+        dest.writeInt(firstReleaseDate);
+        dest.writeInt(follows);
     }
 }
 

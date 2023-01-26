@@ -18,18 +18,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.example.gamestorm.Model.GameApiResponse;
-import com.example.gamestorm.Model.Genre;
-import com.example.gamestorm.Model.Platform;
+import com.example.gamestorm.model.GameApiResponse;
+import com.example.gamestorm.model.Genre;
+import com.example.gamestorm.model.Platform;
 import com.example.gamestorm.R;
-import com.example.gamestorm.Repository.GamesRepository;
-import com.example.gamestorm.Repository.IGamesRepository;
+import com.example.gamestorm.repository.GamesRepository;
+import com.example.gamestorm.repository.IGamesRepository;
 import com.example.gamestorm.util.ResponseCallback;
 
 import java.text.ParseException;

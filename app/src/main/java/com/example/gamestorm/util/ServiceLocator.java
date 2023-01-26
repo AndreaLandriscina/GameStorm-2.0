@@ -2,10 +2,9 @@ package com.example.gamestorm.util;
 
 import android.app.Application;
 
-import com.example.gamestorm.Database.GamesRoomDatabase;
+import com.example.gamestorm.database.GamesRoomDatabase;
 import com.example.gamestorm.service.GamesApiService;
 
-import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 

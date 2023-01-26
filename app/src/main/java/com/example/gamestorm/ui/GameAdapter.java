@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -15,7 +14,7 @@ import androidx.cardview.widget.CardView;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.gamestorm.Model.GameApiResponse;
+import com.example.gamestorm.model.GameApiResponse;
 import com.example.gamestorm.R;
 import com.squareup.picasso.Picasso;
 import java.util.List;
