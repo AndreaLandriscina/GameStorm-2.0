@@ -5,11 +5,16 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.gamestorm.adapter.RecyclerData;
 import com.example.gamestorm.adapter.RecyclerViewAdapter;
@@ -44,9 +49,18 @@ public class FranchiseActivity extends AppCompatActivity implements ResponseCall
             IGamesRepository iGamesRepository = new GamesRepository(getApplication(), this);
             progressBar.setVisibility(View.VISIBLE);
             String query = "fields name, cover.url; where franchises.name = \"" + franchise + "\"; limit 30;";
+            checkNetwork();
             iGamesRepository.fetchGames(query,10000);
         }  else {
-            franchiseTitleView.setText("No results :(");
+            franchiseTitleView.setText(R.string.no_results);
+        }
+    }
+
+    private void checkNetwork() {
+        ConnectivityManager connectivityManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+        if(connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() != NetworkInfo.State.CONNECTED &&
+                connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() != NetworkInfo.State.CONNECTED) {
+            Toast.makeText(this, R.string.no_connection, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -65,7 +79,8 @@ public class FranchiseActivity extends AppCompatActivity implements ResponseCall
 
     @Override
     public void onFailure(String errorMessage) {
-
+        Toast.makeText(this,errorMessage,Toast.LENGTH_LONG).show();
+        Log.i("onFailure", errorMessage);
     }
 
     @Override

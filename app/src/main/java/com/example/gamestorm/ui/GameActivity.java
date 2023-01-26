@@ -12,7 +12,6 @@ import com.example.gamestorm.adapter.RecyclerScreenshotsViewAdapter;
 import com.example.gamestorm.adapter.RecyclerViewAdapter;
 import com.example.gamestorm.model.GameApiResponse;
 import com.example.gamestorm.R;
-import com.example.gamestorm.model.Genre;
 import com.example.gamestorm.repository.GamesRepository;
 import com.example.gamestorm.repository.IGamesRepository;
 import com.example.gamestorm.databinding.ActivityGameBinding;
@@ -48,7 +47,6 @@ import java.util.Objects;
 public class GameActivity extends AppCompatActivity implements ResponseCallback {
 
     int idGame = 0;
-    private List<GameApiResponse> relatedGamesList;
     private GameApiResponse game;
     private ProgressBar progressBar;
     private RecyclerView recyclerView;
@@ -56,12 +54,11 @@ public class GameActivity extends AppCompatActivity implements ResponseCallback 
     private IGamesRepository iGamesRepository;
     private boolean relatedGames = false;
     private List<String> genres;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setToolbar();
-
 
         Intent intent = getIntent();
         idGame = intent.getIntExtra("idGame", 1020);
@@ -73,7 +70,7 @@ public class GameActivity extends AppCompatActivity implements ResponseCallback 
         checkNetwork();
         iGamesRepository.fetchGames(query, 10000);
         genres = new ArrayList<>();
-        relatedGamesList = new ArrayList<>();
+
     }
 
     @SuppressLint("SetTextI18n")
@@ -98,34 +95,38 @@ public class GameActivity extends AppCompatActivity implements ResponseCallback 
             showScreenshots();
             getRelatedGames(genres);
         } else {
-            int differentGenres = 0;
-            for (GameApiResponse gameApiResponse : gamesList){
-                differentGenres = 0;
-                //il gioco mostrato non viene messo tra quelli simili
-                if (gameApiResponse.getId() != game.getId()){
-                    for (int i = 0; i < gameApiResponse.getGenres().size() && differentGenres < 2; i++){
-                        String genre = gameApiResponse.getGenres().get(i).getName();
-                        boolean isFound = false;
-                        for (int j = 0; j < genres.size() && !isFound; j++ ) {
-                            String genreToFind = genres.get(j);
-                            if (genre.equals(genreToFind)){
-                                isFound = true;
-                            }
-                        }
-                        if (!isFound) {
-                            differentGenres++;
+            ArrayList<GameApiResponse> relatedGamesList = selectRelatedGames(gamesList);
+            progressBar.setVisibility(View.GONE);
+            showRelatedGames(relatedGamesList);
+        }
+    }
+    //dalla risposta ottenuta bisogna fare una selezione
+    private ArrayList<GameApiResponse> selectRelatedGames(List<GameApiResponse> gamesList) {
+        int differentGenres = 0;
+        ArrayList<GameApiResponse> relatedGamesList = new ArrayList<>();
+        for (GameApiResponse gameApiResponse : gamesList){
+            differentGenres = 0;
+            //il gioco mostrato non viene messo tra quelli simili
+            if (gameApiResponse.getId() != game.getId()){
+                for (int i = 0; i < gameApiResponse.getGenres().size() && differentGenres < 2; i++){
+                    String genre = gameApiResponse.getGenres().get(i).getName();
+                    boolean isFound = false;
+                    for (int j = 0; j < genres.size() && !isFound; j++ ) {
+                        String genreToFind = genres.get(j);
+                        if (genre.equals(genreToFind)){
+                            isFound = true;
                         }
                     }
-                    if (differentGenres < 2 && relatedGamesList.size() <= 10){
-                        relatedGamesList.add(gameApiResponse);
+                    if (!isFound) {
+                        differentGenres++;
                     }
-
+                }
+                if (differentGenres < 2 && relatedGamesList.size() <= 10){
+                    relatedGamesList.add(gameApiResponse);
                 }
             }
-            Log.i("n", String.valueOf(relatedGamesList.size()));
-            progressBar.setVisibility(View.GONE);
-            showRelatedGames();
         }
+        return relatedGamesList;
     }
 
     private void getRelatedGames(List<String> genres) {
@@ -143,20 +144,11 @@ public class GameActivity extends AppCompatActivity implements ResponseCallback 
             }
         }
         String query = "fields name, total_rating, cover.url, genres.name, first_release_date; where genres.name = " + subquery + " & total_rating > 85 & first_release_date > 1262304000; limit 30;";
-        checkNetwork();
 
         iGamesRepository.fetchGames(query, 10000);
     }
 
-    private void checkNetwork() {
-        ConnectivityManager connectivityManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
-        if(connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() != NetworkInfo.State.CONNECTED &&
-                connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() != NetworkInfo.State.CONNECTED) {
-            Toast.makeText(this, "No connection :/", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private void showRelatedGames() {
+    private void showRelatedGames(ArrayList<GameApiResponse> relatedGamesList) {
         TextView textView = findViewById(R.id.relatedView);
         textView.setVisibility(View.VISIBLE);
         recyclerView=findViewById(R.id.relatedRecyclerView);
@@ -170,6 +162,14 @@ public class GameActivity extends AppCompatActivity implements ResponseCallback 
             LinearLayoutManager layoutManager=new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false);
             recyclerView.setLayoutManager(layoutManager);
             recyclerView.setAdapter(adapter);
+        }
+    }
+
+    private void checkNetwork() {
+        ConnectivityManager connectivityManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+        if(connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() != NetworkInfo.State.CONNECTED &&
+                connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() != NetworkInfo.State.CONNECTED) {
+            Toast.makeText(this, R.string.no_connection, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -213,7 +213,7 @@ public class GameActivity extends AppCompatActivity implements ResponseCallback 
 
     private void showPlayiedButton(GridLayout buttonsLayout) {
         Button playButton = new Button(this);
-        playButton.setText(R.string.palyied);
+        playButton.setText(R.string.played);
         playButton.setTextSize(18);
         playButton.setGravity(Gravity.CENTER);
         playButton.setBackgroundResource(R.drawable.rounded_corner);
@@ -340,6 +340,7 @@ public class GameActivity extends AppCompatActivity implements ResponseCallback 
 
     @Override
     public void onFailure(String errorMessage) {
+        Toast.makeText(this,errorMessage,Toast.LENGTH_LONG).show();
         Log.i("onFailure", errorMessage);
     }
 

@@ -6,8 +6,8 @@
     <string name="profile">Profilo</string>
     <string name="action_settings">Impostazioni</string>
     <string name="wanted">Desiderato</string>
-    <string name="palyied">Giocato</string>
-    <string name="error_retrieving_games">errore_recupero_giochi</string>
+    <string name="played">Giocato</string>
+    <string name="error_retrieving_games">errore recupero giochi</string>
     <string name="genres">Generi</string>
     <string name="platforms">Piattaforme</string>
     <string name="franchise">SAGA</string>
@@ -18,4 +18,6 @@
     <string name="reviews">Recensioni</string>
     <string name="Unreleased">Non rilisciato</string>
     <string name="related_games">Giochi simili</string>
+    <string name="no_results">Nessun risultato ;(</string>
+    <string name="no_connection">Non sei conncesso :(</string>
 </resources>

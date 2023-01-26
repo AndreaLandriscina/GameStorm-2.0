@@ -16,11 +16,11 @@
     <string name="videogame_saga" translatable="false">Videogame saga</string>
     <string name="title_activity_game_saga" translatable="false">GameSagaActivity</string>
     <string name="title_activity_game_version" translatable="false">GameVersionActivity</string>
-    <string name="error_retrieving_games">error_retrieving_games</string>
+    <string name="error_retrieving_games">error retrieving games</string>
     <string name="rating">Punteggio</string>
     <string name="reviews">Recensioni</string>
     <string name="wanted">Wanted</string>
-    <string name="palyied">Playied</string>
+    <string name="played">Playied</string>
     <string name="genres">Genres</string>
     <string name="platforms">Platforms</string>
     <string name="franchise">FRANCHISE</string>
@@ -29,4 +29,6 @@
     <string name="gameCover">Game\'s cover</string>
     <string name="Unreleased">Unreleased</string>
     <string name="related_games">Related Games</string>
+    <string name="no_results">No results :(</string>
+    <string name="no_connection">No connection :(</string>
 </resources>
