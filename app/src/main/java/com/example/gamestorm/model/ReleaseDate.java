@@ -1,6 +1,7 @@
 package com.example.gamestorm.model;
 
 import com.google.gson.annotations.SerializedName;
+package com.example.gamestorm.model;
 
 public class ReleaseDate {
     int id;
@@ -9,6 +10,7 @@ public class ReleaseDate {
     String date;
 
     public String getDate() {
+
         return date;
     }
 

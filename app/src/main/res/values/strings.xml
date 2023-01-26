@@ -1,8 +1,8 @@
 <resources>
-    <string name="app_name" translatable="false">GameStorm</string>
+    <string name="app_name">GameStorm</string>
     <string name="urlAPI" translatable="false">https://api.igdb.com/v4/</string>
     <string name="clientID" translatable="false">w70u2nsn2gzl9g0xsbe3uvguva3zos</string>
-    <string name="tokenAPI" translatable="false">Bearer 1w5btb4ipqlpouhec20h3vh4qtpzp7</string>
+    <string name="tokenAPI" translatable="false">Bearer sevk2qpth8qd683kwwl5e67m66t5ws</string>
     <string name="contentType" translatable="false">application/json;charset=utf-8</string>
     <string name="home">Home</string>
     <string name="search">Search</string>
@@ -31,4 +31,24 @@
     <string name="related_games">Related Games</string>
     <string name="no_results">No results :(</string>
     <string name="no_connection">No connection :(</string>
+    <string name="title_activity_category">CategoryActivity</string>
+    <string name="videogame_saga">Videogame saga</string>
+    <string name="title_activity_game_saga">GameSagaActivity</string>
+    <string name="title_activity_game_version">GameVersionActivity</string>
+    <string name="error_retrieving_games">\"error_retrieving_games</string>
+    <string name="explore_title">Explore</string>
+    <string name="sort_by_dialog_title">Sort by</string>
+    <string name="search_filters_dialog_title">Search Filters</string>
+
+    <string-array name="sorting_parameters">
+        <item>Most popular</item>
+        <item>Most recent</item>
+        <item>Best rating</item>
+        <item>Alphabet</item>
+    </string-array>
+
+    <string name="number_of_results"> %1$d results found for &quot;%2$s&quot;</string>
+    <string name="cancel_text">Cancel</string>
+    <string name="confirm_text">Confirm</string>
+
 </resources>
