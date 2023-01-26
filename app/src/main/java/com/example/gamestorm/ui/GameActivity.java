@@ -230,13 +230,13 @@ public class GameActivity extends AppCompatActivity implements ResponseCallback 
     private void showReviewsNumber() {
         TextView ratingCount = findViewById(R.id.ratingCount);
         String ratingCountString = "\n" + getString(R.string.reviews);
-        ratingCount.setText(game.getRatingCount() + ratingCountString);
+        ratingCount.setText(game.getTotalRatingCount() + ratingCountString);
     }
 
     @SuppressLint("SetTextI18n")
     private void showRating() {
         DecimalFormat df = new DecimalFormat("0.0");
-        double value = game.getRating() / 10;
+        double value = game.getTotalRating() / 10;
         df.setRoundingMode(RoundingMode.DOWN);
         TextView rating = findViewById(R.id.rating);
         String ratingString = "\n" + getString(R.string.rating);
@@ -282,8 +282,8 @@ public class GameActivity extends AppCompatActivity implements ResponseCallback 
     private void showReleaseDate() {
         TextView releaseDateView = findViewById(R.id.releaseDate);
         String date = "";
-        if (game.getReleaseDate() != null)
-             date = game.getReleaseDate();
+        if (game.getFirstReleaseDate() != null)
+             date = game.getFirstReleaseDate();
         else
             date = getString(R.string.Unreleased);
         releaseDateView.setText(date);

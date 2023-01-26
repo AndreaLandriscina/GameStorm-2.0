@@ -12,11 +12,6 @@
     <string name="title_activity_game" translatable="false">GameActivity</string>
     <string name="action_settings">Settings</string>
     <string name="large_text" translatable="false">ops</string>
-    <string name="title_activity_category" translatable="false">CategoryActivity</string>
-    <string name="videogame_saga" translatable="false">Videogame saga</string>
-    <string name="title_activity_game_saga" translatable="false">GameSagaActivity</string>
-    <string name="title_activity_game_version" translatable="false">GameVersionActivity</string>
-    <string name="error_retrieving_games">error retrieving games</string>
     <string name="rating">Punteggio</string>
     <string name="reviews">Recensioni</string>
     <string name="wanted">Wanted</string>

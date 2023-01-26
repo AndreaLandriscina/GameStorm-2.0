@@ -1,6 +1,7 @@
 package com.example.gamestorm.ui;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -55,9 +56,9 @@ public class GameAdapter extends RecyclerView.Adapter<GameAdapter.RecyclerViewHo
             @Override
             public void onClick(View v) {
                 //link
-                Bundle bundle = new Bundle();
-                bundle.putInt("GAME_ID", game.getId());
-                Navigation.findNavController(v).navigate(R.id.action_searchFragment_to_gameActivity,bundle);
+                Intent i = new Intent(context, GameActivity.class);
+                i.putExtra("idGame", game.getId());
+                context.startActivity(i);
             }
         });
     }
