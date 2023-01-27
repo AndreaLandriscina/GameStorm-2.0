@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -96,7 +97,7 @@ public class HomeFragment extends Fragment implements ResponseCallback {
         super.onCreate(savedInstanceState);
 
         iGamesRepository = new GamesRepository(getActivity().getApplication(), this);
-        queryPopular = "fields id, name, cover.url, follows; sort follows desc; limit 30;";
+        queryPopular = "fields id, name, cover.url;where follows!=null; sort follows desc; limit 30;";
         queryLatestReleases = "fields id, name, cover.url; sort first_release_date desc; limit 30;";
         queryIncoming = "fields id, name, cover.url; where first_release_date > " +Long.toString(currentDate())+";sort first_release_date asc; limit 30;";
         queryBestGames="fields id, name, cover.url;where total_rating_count>1000;sort total_rating desc;limit 30;";
@@ -143,34 +144,56 @@ public class HomeFragment extends Fragment implements ResponseCallback {
         //GALLERY INCOMING
         galleryIncoming=view.findViewById(R.id.homeGalleryIncoming);
 
-        iGamesRepository.fetchGames(queryPopular,10000,0);
-        iGamesRepository.fetchGames(queryLatestReleases,10000,1);
-        iGamesRepository.fetchGames(queryIncoming,10000,2);
-        iGamesRepository.fetchGames(queryBestGames,10000,3);
-        iGamesRepository.fetchGames(queryForYou,10000,4);
+        if(savedInstanceState!=null){
+            Log.i("Ciao","saved");
+            gamesBest = savedInstanceState.getParcelableArrayList("popular");
+            gamesBest = savedInstanceState.getParcelableArrayList("best");
+            gamesForYou = savedInstanceState.getParcelableArrayList("foryou");
+            gamesLatestReleases = savedInstanceState.getParcelableArrayList("latest");
+            gamesIncoming = savedInstanceState.getParcelableArrayList("incoming");
+
+            showGames(0,gamesPopular);
+            showGames(1,gamesLatestReleases);
+            showGames(2,gamesIncoming);
+            showGames(3,gamesBest);
+            showGames(4,gamesForYou);
+        }else{
+            Log.i("Ciao","Not saved");
+            iGamesRepository.fetchGames(queryPopular,10000,0);
+            iGamesRepository.fetchGames(queryLatestReleases,10000,1);
+            iGamesRepository.fetchGames(queryIncoming,10000,2);
+            iGamesRepository.fetchGames(queryBestGames,10000,3);
+            iGamesRepository.fetchGames(queryForYou,10000,4);
+        }
 
     }
 
 
     @Override
     public void onSuccess(List<GameApiResponse> gamesList, long lastUpdate,int countQuery) {
-        if(countQuery==0){
+        if (countQuery == 0) {
             this.gamesPopular.addAll(gamesList);
-        }
-        else if(countQuery==1){
+            showGames(countQuery,gamesPopular);
+        } else if (countQuery == 1) {
             this.gamesLatestReleases.addAll(gamesList);
-        }
-        else if(countQuery==2){
+            showGames(countQuery,gamesLatestReleases);
+        } else if (countQuery == 2) {
             this.gamesIncoming.addAll(gamesList);
-        }else if(countQuery==3){
+            showGames(countQuery,gamesIncoming);
+        } else if (countQuery == 3) {
             this.gamesBest.addAll(gamesList);
-        }else{
+            showGames(countQuery,gamesBest);
+        } else {
             this.gamesForYou.addAll(gamesList);
+            showGames(countQuery,gamesForYou);
         }
+
+    }
+    public void showGames(int countQuery, List<GameApiResponse> gameList){
 
         if(countQuery==0) {
             for (int i = 0; i < 30; i++) {
-                game = gamesPopular.get(i);
+                game = gameList.get(i);
                 Cover cover = game.getCover();
                 if (cover != null) {
                     String uriString = cover.getUrl();
@@ -204,7 +227,7 @@ public class HomeFragment extends Fragment implements ResponseCallback {
             }
         }else if(countQuery==1){
             for(int i=0;i<30;i++){
-                game = gamesLatestReleases.get(i);
+                game = gameList.get(i);
                 Cover cover = game.getCover();
                 if(cover!=null) {
                     String uriString=cover.getUrl();
@@ -238,7 +261,7 @@ public class HomeFragment extends Fragment implements ResponseCallback {
             }
         }else if(countQuery==2){
             for(int i=0;i<30;i++){
-                game = gamesIncoming.get(i);
+                game = gameList.get(i);
                 Cover cover = game.getCover();
                 if(cover!=null) {
                     String uriString=cover.getUrl();
@@ -273,7 +296,7 @@ public class HomeFragment extends Fragment implements ResponseCallback {
         }
         else if(countQuery==3){
             for(int i=0;i<30;i++){
-                game = gamesBest.get(i);
+                game = gameList.get(i);
                 Cover cover = game.getCover();
                 if(cover!=null) {
                     String uriString=cover.getUrl();
@@ -312,7 +335,7 @@ public class HomeFragment extends Fragment implements ResponseCallback {
                 loginButton.setVisibility(View.GONE);
                 forYouScrollView.setVisibility(View.VISIBLE);
                 for (int i = 0; i < 30; i++) {
-                    game = gamesForYou.get(i);
+                    game = gameList.get(i);
                     Cover cover = game.getCover();
                     if (cover != null) {
                         String uriString = cover.getUrl();
@@ -349,6 +372,18 @@ public class HomeFragment extends Fragment implements ResponseCallback {
                 loginButton.setVisibility(View.VISIBLE);
             }
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        //tutti i giochi
+        outState.putParcelableArrayList("popular", (ArrayList<? extends Parcelable>) gamesPopular);
+        outState.putParcelableArrayList("best", (ArrayList<? extends Parcelable>) gamesBest);
+        outState.putParcelableArrayList("foryou", (ArrayList<? extends Parcelable>) gamesForYou);
+        outState.putParcelableArrayList("latest", (ArrayList<? extends Parcelable>) gamesLatestReleases);
+        outState.putParcelableArrayList("incoming", (ArrayList<? extends Parcelable>) gamesIncoming);
     }
 
     @Override
