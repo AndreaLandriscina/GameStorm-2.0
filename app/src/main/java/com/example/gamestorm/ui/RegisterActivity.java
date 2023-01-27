@@ -10,7 +10,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
-import com.example.gamestorm.Model.UserModel;
+import com.example.gamestorm.model.UserModel;
 import com.example.gamestorm.R;
 import com.example.gamestorm.databinding.ActivityRegisterBinding;
 import com.google.android.gms.tasks.OnFailureListener;

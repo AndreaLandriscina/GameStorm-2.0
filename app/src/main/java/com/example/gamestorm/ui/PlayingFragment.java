@@ -18,12 +18,15 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
 
-import com.example.gamestorm.Model.GameApiResponse;
+import com.example.gamestorm.model.GameApiResponse;
 import com.example.gamestorm.R;
-import com.example.gamestorm.Repository.GamesRepository;
-import com.example.gamestorm.Repository.IGamesRepository;
+import com.example.gamestorm.repository.GamesRepository;
+import com.example.gamestorm.repository.IGamesRepository;
 import com.example.gamestorm.databinding.ActivityLoginBinding;
 import com.example.gamestorm.databinding.FragmentPlayingBinding;
+import com.example.gamestorm.model.GameApiResponse;
+import com.example.gamestorm.repository.GamesRepository;
+import com.example.gamestorm.repository.IGamesRepository;
 import com.example.gamestorm.util.ResponseCallback;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -114,7 +117,7 @@ public class PlayingFragment extends Fragment {
                                     IGamesRepository iGamesRepository = new GamesRepository(getActivity().getApplication(),
                                             new ResponseCallback() {
                                                 @Override
-                                                public void onSuccess(List<GameApiResponse> gamesList, long lastUpdate) {
+                                                public void onSuccess(List<GameApiResponse> gamesList, long lastUpdate, int count) {
                                                     progressBar.setVisibility(View.GONE);
                                                     for (GameApiResponse gameApiResponse : gamesList) {
                                                         if (gameApiResponse.getCover() != null)
@@ -138,7 +141,7 @@ public class PlayingFragment extends Fragment {
                                             });
                                     progressBar.setVisibility(View.VISIBLE);
                                     String query = "fields name, cover.url; where id = " + gameID + "; limit 30;";
-                                    iGamesRepository.fetchGames(query, 10000);
+                                    iGamesRepository.fetchGames(query, 10000, 0);
                                 }
                             }
                         } else {

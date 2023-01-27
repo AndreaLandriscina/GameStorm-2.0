@@ -15,7 +15,7 @@
     <string name="rating">Punteggio</string>
     <string name="reviews">Recensioni</string>
     <string name="wanted">Wanted</string>
-    <string name="played">Playied</string>
+    <string name="played">Played</string>
     <string name="genres">Genres</string>
     <string name="platforms">Platforms</string>
     <string name="franchise">FRANCHISE</string>
@@ -32,7 +32,6 @@
     <string name="latestreleases">Latest releases</string>
     <string name="incoming">Incoming</string>
     <string name="loginHome">You must be logged to view suggested games</string>
-    <string name="login">Login</string>
     <string name="title_activity_category">CategoryActivity</string>
     <string name="videogame_saga">Videogame saga</string>
     <string name="title_activity_game_saga">GameSagaActivity</string>
@@ -57,7 +56,7 @@
     <string name="username_empty">Username can\'t be empty</string>
     <string name="desired">Desired</string>
     <string name="playing">Playing</string>
-    <string name="played">Played</string>
+    <string name="playeds">Played</string>
     <string name="login_to_see_this">This function is available only for registered users</string>
     <string name="logout" translatable="false">Logout</string>
     <string name="logout_successfully">Logout Successfully</string>

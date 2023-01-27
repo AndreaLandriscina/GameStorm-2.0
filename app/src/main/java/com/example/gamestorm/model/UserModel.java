@@ -1,4 +1,4 @@
-package com.example.gamestorm.Model;
+package com.example.gamestorm.model;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;

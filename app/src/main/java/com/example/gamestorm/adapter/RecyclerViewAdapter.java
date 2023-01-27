@@ -74,14 +74,14 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
         public RecyclerViewHolder(@NonNull View itemView) {
             super(itemView);
-            smallCover = itemView.findViewById(R.id.smallCover);
+            //smallCover = itemView.findViewById(R.id.smallCover);
             cover = itemView.findViewById(R.id.cover);
             if (isRelatedGames()) {
                 cover.setVisibility(View.GONE);
-                smallCover.setVisibility(View.VISIBLE);
+                //smallCover.setVisibility(View.VISIBLE);
             } else {
                 cover.setVisibility(View.VISIBLE);
-                smallCover.setVisibility(View.GONE);
+                //smallCover.setVisibility(View.GONE);
             }
         }
 

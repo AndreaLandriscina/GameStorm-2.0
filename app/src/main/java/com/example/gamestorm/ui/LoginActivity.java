@@ -12,7 +12,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
-import com.example.gamestorm.Model.UserModel;
+import com.example.gamestorm.model.UserModel;
 import com.example.gamestorm.R;
 import com.example.gamestorm.databinding.ActivityLoginBinding;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
