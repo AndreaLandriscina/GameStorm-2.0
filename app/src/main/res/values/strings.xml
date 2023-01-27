@@ -26,6 +26,13 @@
     <string name="related_games">Related Games</string>
     <string name="no_results">No results :(</string>
     <string name="no_connection">No connection :(</string>
+    <string name="popular">Popular</string>
+    <string name="bestgames">Best games</string>
+    <string name="foryou">For you</string>
+    <string name="latestreleases">Latest releases</string>
+    <string name="incoming">Incoming</string>
+    <string name="loginHome">You must be logged to view suggested games</string>
+    <string name="login">Login</string>
     <string name="title_activity_category">CategoryActivity</string>
     <string name="videogame_saga">Videogame saga</string>
     <string name="title_activity_game_saga">GameSagaActivity</string>
