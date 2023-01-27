@@ -343,9 +343,7 @@ public class HomeFragment extends Fragment implements ResponseCallback {
                 loginButton.setVisibility(View.VISIBLE);
             }
         }
-
     }
-
 
     @Override
     public void onFailure(String errorMessage) {

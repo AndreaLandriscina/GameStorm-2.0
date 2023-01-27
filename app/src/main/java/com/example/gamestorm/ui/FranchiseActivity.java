@@ -65,7 +65,7 @@ public class FranchiseActivity extends AppCompatActivity implements ResponseCall
     }
 
     @Override
-    public void onSuccess(List<GameApiResponse> gamesList, long lastUpdate) {
+    public void onSuccess(List<GameApiResponse> gamesList, long lastUpdate,int count) {
         progressBar.setVisibility(View.GONE);
         for (GameApiResponse gameApiResponse : gamesList) {
             if (gameApiResponse.getCover() != null)

@@ -75,7 +75,7 @@ public class GameActivity extends AppCompatActivity implements ResponseCallback 
 
     @SuppressLint("SetTextI18n")
     @Override
-    public void onSuccess(List<GameApiResponse> gamesList, long lastUpdate) {
+    public void onSuccess(List<GameApiResponse> gamesList, long lastUpdate,int count) {
         if (!relatedGames){
             game = gamesList.get(0);
             showGameCover();

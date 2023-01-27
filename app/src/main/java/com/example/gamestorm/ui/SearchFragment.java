@@ -146,7 +146,7 @@ public class SearchFragment extends Fragment implements ResponseCallback {
             }
             searchLoading.setVisibility(View.VISIBLE);
             String queryToServer = "fields id, name, cover.url, follows, rating, first_release_date, genres.name, platforms.name; where cover.url != null; limit 500;";
-            iGamesRepository.fetchGames(queryToServer, 10000);
+            iGamesRepository.fetchGames(queryToServer, 10000,0);
         }
 
 
@@ -171,7 +171,7 @@ public class SearchFragment extends Fragment implements ResponseCallback {
                 String queryToServer = "fields id, name, cover.url, follows, rating, first_release_date, genres.name, platforms.name; where first_release_date < " + System.currentTimeMillis() / 1000 + " & version_parent = null;search \"" + userInput + "\"; limit 500;";
                 searchLoading.setVisibility(View.VISIBLE);
                 numberOfResults.setText("");
-                iGamesRepository.fetchGames(queryToServer, 10000);
+                iGamesRepository.fetchGames(queryToServer, 10000,0);
                 return false;
             }
 
@@ -631,7 +631,7 @@ public class SearchFragment extends Fragment implements ResponseCallback {
     }
 
     @Override
-    public void onSuccess(List<GameApiResponse> gamesList, long lastUpdate) {
+    public void onSuccess(List<GameApiResponse> gamesList, long lastUpdate,int count) {
         searchLoading.setVisibility(View.GONE);
         games = gamesList;
         gamesCopy = new ArrayList<>(games);

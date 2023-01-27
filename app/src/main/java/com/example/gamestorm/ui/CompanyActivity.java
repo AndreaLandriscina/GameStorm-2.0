@@ -64,7 +64,7 @@ public class CompanyActivity extends AppCompatActivity implements ResponseCallba
     }
 
     @Override
-    public void onSuccess(List<GameApiResponse> gamesList, long lastUpdate) {
+    public void onSuccess(List<GameApiResponse> gamesList, long lastUpdate,int count) {
         progressBar.setVisibility(View.GONE);
         for (GameApiResponse gameApiResponse : gamesList) {
             if (gameApiResponse.getCover() != null)

@@ -58,7 +58,7 @@ public class GamesRepository implements IGamesRepository{
 
                     Log.i("response", gameApiResponses.toString());
 
-                    responseCallback.onSuccess(gameApiResponses, 1000);
+                    responseCallback.onSuccess(gameApiResponses, 1000,count);
                     //saveDataInDatabase(gamesList);
                 } else {
                     responseCallback.onFailure(application.getString(R.string.error_retrieving_games));
