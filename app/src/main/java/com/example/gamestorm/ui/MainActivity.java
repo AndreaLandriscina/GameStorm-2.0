@@ -2,13 +2,20 @@ package com.example.gamestorm.ui;
 
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
 
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.WindowManager;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
 
 import com.example.gamestorm.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -27,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
 
         //evita di spostare tutto il layout in alto quando si usa la tastiera
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
+
+
 
     }
 }
