@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -95,7 +96,7 @@ public class HomeFragment extends Fragment implements ResponseCallback {
         super.onCreate(savedInstanceState);
 
         iGamesRepository = new GamesRepository(getActivity().getApplication(), this);
-        queryPopular = "fields id, name, cover.url; sort follows desc; limit 30;";
+        queryPopular = "fields id, name, cover.url, follows; sort follows desc; limit 30;";
         queryLatestReleases = "fields id, name, cover.url; sort first_release_date desc; limit 30;";
         queryIncoming = "fields id, name, cover.url; where first_release_date > " +Long.toString(currentDate())+";sort first_release_date asc; limit 30;";
         queryBestGames="fields id, name, cover.url;where total_rating_count>1000;sort total_rating desc;limit 30;";
@@ -187,6 +188,7 @@ public class HomeFragment extends Fragment implements ResponseCallback {
                     imageGalleryPopular.setImageResource(R.drawable.background_grey);
                     galleryPopular.addView(viewItemHome);
                 }
+                int idGame=game.getId();
                 imageGalleryPopular.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -195,7 +197,7 @@ public class HomeFragment extends Fragment implements ResponseCallback {
                        Navigation.findNavController(getView()).navigate(R.id.fromHometoGame);
                        */
                         Intent i = new Intent(getContext(), GameActivity.class);
-                        i.putExtra("idGame", game.getId());
+                        i.putExtra("idGame", idGame);
                         startActivity(i);
                     }
                 });
@@ -221,6 +223,7 @@ public class HomeFragment extends Fragment implements ResponseCallback {
                     imageGalleryLatestReleases.setImageResource(R.drawable.background_grey);
                     galleryLatestReleases.addView(viewItemHome);
                 }
+                int idGame=game.getId();
                 imageGalleryLatestReleases.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -228,7 +231,7 @@ public class HomeFragment extends Fragment implements ResponseCallback {
                        bundle.putInt("id",game.getId());
                        Navigation.findNavController(getView()).navigate(R.id.fromHometoGame);*/
                         Intent i = new Intent(getContext(), GameActivity.class);
-                        i.putExtra("idGame", game.getId());
+                        i.putExtra("idGame", idGame);
                         startActivity(i);
                     }
                 });
@@ -254,6 +257,7 @@ public class HomeFragment extends Fragment implements ResponseCallback {
                     imageGalleryIncoming.setImageResource(R.drawable.background_grey);
                     galleryIncoming.addView(viewItemHome);
                 }
+                int idGame=game.getId();
                 imageGalleryIncoming.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -261,7 +265,7 @@ public class HomeFragment extends Fragment implements ResponseCallback {
                        bundle.putInt("id",game.getId());
                        Navigation.findNavController(getView()).navigate(R.id.fromHometoGame);*/
                         Intent i = new Intent(getContext(), GameActivity.class);
-                        i.putExtra("idGame", game.getId());
+                        i.putExtra("idGame", idGame);
                         startActivity(i);
                     }
                 });
@@ -288,6 +292,7 @@ public class HomeFragment extends Fragment implements ResponseCallback {
                     imageGalleryBest.setImageResource(R.drawable.background_grey);
                     galleryBestGames.addView(viewItemHome);
                 }
+                int idGame=game.getId();
                 imageGalleryBest.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -295,7 +300,7 @@ public class HomeFragment extends Fragment implements ResponseCallback {
                        bundle.putInt("id",game.getId());
                        Navigation.findNavController(getView()).navigate(R.id.fromHometoGame);*/
                         Intent i = new Intent(getContext(), GameActivity.class);
-                        i.putExtra("idGame", game.getId());
+                        i.putExtra("idGame", idGame);
                         startActivity(i);
                     }
                 });
@@ -325,6 +330,7 @@ public class HomeFragment extends Fragment implements ResponseCallback {
                         imageGalleryForYou.setImageResource(R.drawable.background_grey);
                         galleryForYou.addView(viewItemHome);
                     }
+                    int idGame=game.getId();
                     imageGalleryForYou.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -332,7 +338,7 @@ public class HomeFragment extends Fragment implements ResponseCallback {
                            bundle.putInt("id", game.getId());
                            Navigation.findNavController(getView()).navigate(R.id.fromHometoGame);*/
                             Intent i = new Intent(getContext(), GameActivity.class);
-                            i.putExtra("idGame", game.getId());
+                            i.putExtra("idGame",idGame);
                             startActivity(i);
                         }
                     });

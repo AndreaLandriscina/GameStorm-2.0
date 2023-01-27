@@ -14,7 +14,7 @@
         android:scaleType="fitXY"
         android:layout_marginLeft="2dp"
         android:layout_marginRight="2dp"
-        app:shapeAppearanceOverlay="@style/rounded_corner"/>
+        app:shapeAppearanceOverlay="@style/roundedCorner"/>
 
     <TextView
         android:id="@+id/imageTextView"
