@@ -68,7 +68,7 @@ public class GameActivity extends AppCompatActivity implements ResponseCallback 
         String query = "fields name, franchises.name, first_release_date, genres.name, total_rating, total_rating_count, cover.url, involved_companies.company.name, platforms.name, summary, screenshots.url; where id = " + idGame + ";";
 
         checkNetwork();
-        iGamesRepository.fetchGames(query, 10000);
+        iGamesRepository.fetchGames(query, 10000,0);
         genres = new ArrayList<>();
 
     }
@@ -145,7 +145,7 @@ public class GameActivity extends AppCompatActivity implements ResponseCallback 
         }
         String query = "fields name, total_rating, cover.url, genres.name, first_release_date; where genres.name = " + subquery + " & total_rating > 85 & first_release_date > 1262304000; limit 30;";
 
-        iGamesRepository.fetchGames(query, 10000);
+        iGamesRepository.fetchGames(query, 10000,0);
     }
 
     private void showRelatedGames(ArrayList<GameApiResponse> relatedGamesList) {

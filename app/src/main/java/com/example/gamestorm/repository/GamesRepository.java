@@ -35,7 +35,7 @@ public class GamesRepository implements IGamesRepository{
     }
 
     @Override
-    public void fetchGames(String query, long lastUpdate) {
+    public void fetchGames(String query, long lastUpdate,int count) {
         long currentTime = System.currentTimeMillis();
 
         // It gets the news from the Web Service if the last download

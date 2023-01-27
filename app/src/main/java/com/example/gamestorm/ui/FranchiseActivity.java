@@ -50,7 +50,7 @@ public class FranchiseActivity extends AppCompatActivity implements ResponseCall
             progressBar.setVisibility(View.VISIBLE);
             String query = "fields name, cover.url; where franchises.name = \"" + franchise + "\"; limit 30;";
             checkNetwork();
-            iGamesRepository.fetchGames(query,10000);
+            iGamesRepository.fetchGames(query,10000,0);
         }  else {
             franchiseTitleView.setText(R.string.no_results);
         }
