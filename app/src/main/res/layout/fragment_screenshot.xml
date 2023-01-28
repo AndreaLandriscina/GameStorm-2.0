@@ -30,7 +30,7 @@
             android:id="@+id/rightButton"
             android:layout_width="100dp"
             android:layout_height="match_parent"
-            android:layout_alignRight="@id/screenshotFragmentView"
+            android:layout_alignEnd="@id/screenshotFragmentView"
             android:background="@android:color/transparent"/>
 
     </RelativeLayout>
