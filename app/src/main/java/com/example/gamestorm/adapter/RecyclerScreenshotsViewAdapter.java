@@ -61,7 +61,7 @@ public class RecyclerScreenshotsViewAdapter extends RecyclerView.Adapter<Recycle
             bundle.putInt("position", position);
             bundle.putStringArrayList("imageUrl",list);
             fragment.setArguments(bundle);
-            activity.getSupportFragmentManager().beginTransaction().replace(R.id.container, fragment).commit();
+            activity.getSupportFragmentManager().beginTransaction().replace(R.id.screeshotContainer, fragment).commit();
         });
     }
 

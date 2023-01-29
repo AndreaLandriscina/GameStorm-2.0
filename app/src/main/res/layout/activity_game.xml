@@ -267,6 +267,9 @@
             android:visibility="gone" />
 
 
-    </androidx.coordinatorlayout.widget.CoordinatorLayout>
-
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
+    <FrameLayout
+        android:id="@+id/screeshotContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 </RelativeLayout>

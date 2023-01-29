@@ -53,6 +53,7 @@ public class ScreenshotFragment extends Fragment {
             currentImage = getArguments().getString("currentImage");
             imageUrls = getArguments().getStringArrayList("imageUrl");
         }
+
     }
 
     @Override
@@ -64,6 +65,7 @@ public class ScreenshotFragment extends Fragment {
         AtomicReference<String> newUrl = new AtomicReference<>(currentImage.replace("thumb", "screenshot_med"));
 
         Picasso.get().load(newUrl.get()).into(imageView);
+
         leftButton.setOnClickListener(v -> {
             Log.i("w", "works");
             //left limit
