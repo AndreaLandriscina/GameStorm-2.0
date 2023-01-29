@@ -10,7 +10,7 @@ public interface IGamesRepository {
         JSON_ERROR
     }
 
-    void fetchGames(String query, long lastUpdate);
+    void fetchGames(String query, long lastUpdate,int count);
 
     void updateGames(GameApiResponse game);
 

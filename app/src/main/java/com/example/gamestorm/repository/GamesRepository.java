@@ -35,7 +35,7 @@ public class GamesRepository implements IGamesRepository{
     }
 
     @Override
-    public void fetchGames(String query, long lastUpdate) {
+    public void fetchGames(String query, long lastUpdate,int count) {
         long currentTime = System.currentTimeMillis();
 
         // It gets the news from the Web Service if the last download
@@ -58,7 +58,7 @@ public class GamesRepository implements IGamesRepository{
 
                     Log.i("response", gameApiResponses.toString());
 
-                    responseCallback.onSuccess(gameApiResponses, 1000);
+                    responseCallback.onSuccess(gameApiResponses, 1000,count);
                     //saveDataInDatabase(gamesList);
                 } else {
                     responseCallback.onFailure(application.getString(R.string.error_retrieving_games));

@@ -50,7 +50,7 @@ public class GenreActivity extends AppCompatActivity implements ResponseCallback
         //1262304000 = 1/1/2010
         String query = "fields name, total_rating, cover.url, genres.name, first_release_date; where genres.name = \"" + genre + "\" & total_rating > 85 & first_release_date > 1262304000; limit 30;";
         checkNetwork();
-        gamesRepository.fetchGames(query, 10000);
+        gamesRepository.fetchGames(query, 10000,0);
     }
 
     private void checkNetwork() {
@@ -62,7 +62,7 @@ public class GenreActivity extends AppCompatActivity implements ResponseCallback
     }
 
     @Override
-    public void onSuccess(List<GameApiResponse> gamesList, long lastUpdate) {
+    public void onSuccess(List<GameApiResponse> gamesList, long lastUpdate,int count) {
         progressBar.setVisibility(View.GONE);
         for (GameApiResponse gameApiResponse : gamesList) {
             if (gameApiResponse.getCover() != null)

@@ -20,4 +20,24 @@
     <string name="related_games">Giochi simili</string>
     <string name="no_results">Nessun risultato ;(</string>
     <string name="no_connection">Non sei conncesso :(</string>
+    <string name="emailAddress">Indirizzo Email</string>
+    <string name="signupnow">Non hai un account? Registrati ora</string>
+    <string name="reset_password">Dimenticato la password?</string>
+    <string name="or">OPPURE</string>
+    <string name="haveAccount">Già registrato?</string>
+    <string name="emailsent">Email inviata. Controlla la casella spam</string>
+    <string name="sending_mail">Inviando la mail...</string>
+    <string name="email_empty">Inserisci la mail</string>
+    <string name="password_empty">Inserisci la password</string>
+    <string name="login_successfully">Login riuscito</string>
+    <string name="check_data">Controlla i dati inseriti</string>
+    <string name="insert_mail_to_reset_password">Per resettare la password, inserisci la tua mail</string>
+    <string name="username_empty">Inserisci l\'username</string>
+    <string name="desired">Desiderati</string>
+    <string name="playing">In gioco</string>
+    <string name="playeds">Giocati</string>
+    <string name="login_to_see_this">Funzionalità disponibile solo per gli utenti registrati</string>
+    <string name="logout_successfully">Logout riuscito</string>
+    <string name="settings">Impostazioni</string>
+    <string name="sign_up">Registrati</string>
 </resources>

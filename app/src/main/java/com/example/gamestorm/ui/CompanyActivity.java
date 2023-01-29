@@ -52,7 +52,7 @@ public class CompanyActivity extends AppCompatActivity implements ResponseCallba
         progressBar.setVisibility(View.VISIBLE);
         String query = "fields name, cover.url; where involved_companies.company.name = \"" + company + "\"; limit 30;";
         checkNetwork();
-        iGamesRepository.fetchGames(query,10000);
+        iGamesRepository.fetchGames(query,10000,0);
     }
 
     private void checkNetwork() {
@@ -64,7 +64,7 @@ public class CompanyActivity extends AppCompatActivity implements ResponseCallba
     }
 
     @Override
-    public void onSuccess(List<GameApiResponse> gamesList, long lastUpdate) {
+    public void onSuccess(List<GameApiResponse> gamesList, long lastUpdate,int count) {
         progressBar.setVisibility(View.GONE);
         for (GameApiResponse gameApiResponse : gamesList) {
             if (gameApiResponse.getCover() != null)

@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1091326442567",
+    "project_id": "gamestorm-e35b0",
+    "storage_bucket": "gamestorm-e35b0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1091326442567:android:d45910fbdf7b9a47194562",
+        "android_client_info": {
+          "package_name": "com.example.gamestorm"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1091326442567-dbkvi0h9877eego2ou819bepnb05h65g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBhBoF70qxrP1Q7PxecV0g6KVa08mkBdxM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1091326442567-dbkvi0h9877eego2ou819bepnb05h65g.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
