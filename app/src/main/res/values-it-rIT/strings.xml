@@ -40,4 +40,20 @@
     <string name="logout_successfully">Logout riuscito</string>
     <string name="settings">Impostazioni</string>
     <string name="sign_up">Registrati</string>
+    <string name="popular">Popolari</string>
+    <string name="bestgames">Giochi migliori</string>
+    <string name="foryou">Per te</string>
+    <string name="latestreleases">Ultime uscite</string>
+    <string name="incoming">In arrivo</string>
+    <string name="loginHome">Devi effettuare l\'accesso per vedere i suggeriti</string>
+    <string name="explore_title">Esplora</string>
+    <string name="sort_by_dialog_title">Ordina per</string>
+    <string name="search_filters_dialog_title">"Filtri "</string>
+    <string name="cancel_text">Cancella</string>
+    <string name="confirm_text">Conferma</string>
+    <string name="alreadyWanted">DESIDERATO</string>
+    <string name="alreadyPlaying">IN GIOCO</string>
+    <string name="alreadyPlayed">GIOCATO</string>
+    <string name="RemoveGame">Sicuro di voler rimuovere il gioco?</string>
+    <string name="NoRating">Punteggio non disponibile</string>
 </resources>

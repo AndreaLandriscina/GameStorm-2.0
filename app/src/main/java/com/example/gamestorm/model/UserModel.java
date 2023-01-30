@@ -8,7 +8,7 @@ import java.util.List;
 public class UserModel {
     private String id;
     private String name,email;
-    private ArrayList<Integer> desiredGames, playedGames, playingGames;
+    public static ArrayList<Integer> desiredGames, playedGames, playingGames;
 
     public UserModel() {
     }

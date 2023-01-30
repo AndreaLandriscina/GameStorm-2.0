@@ -41,8 +41,6 @@ public class RecyclerScreenshotsViewAdapter extends RecyclerView.Adapter<Recycle
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerViewHolder holder, int position) {
-        // Set the data to imageview.
-
         RecyclerData recyclerData = dataArrayList.get(position);
         String newUrl = recyclerData.getImgUrl().replace("thumb", "screenshot_med");
         Picasso.get().load(newUrl).into(holder.screenshot);

@@ -2,7 +2,6 @@ package com.example.gamestorm.ui;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -11,36 +10,37 @@ import android.os.Bundle;
 import com.example.gamestorm.adapter.RecyclerData;
 import com.example.gamestorm.adapter.RecyclerScreenshotsViewAdapter;
 import com.example.gamestorm.adapter.RecyclerViewAdapter;
+import com.example.gamestorm.databinding.ActivityGameBinding;
 import com.example.gamestorm.model.GameApiResponse;
 import com.example.gamestorm.R;
 import com.example.gamestorm.repository.GamesRepository;
 import com.example.gamestorm.repository.IGamesRepository;
-import com.example.gamestorm.databinding.ActivityGameBinding;
 import com.example.gamestorm.util.ResponseCallback;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.squareup.picasso.Picasso;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.widget.NestedScrollView;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
-import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -51,19 +51,23 @@ import java.util.List;
 import java.util.Objects;
 
 public class GameActivity extends AppCompatActivity implements ResponseCallback {
-
-    int idGame = 0;
+    private int idGame;
     private GameApiResponse game;
     private ProgressBar progressBar;
     private RecyclerView recyclerView;
     private ArrayList<RecyclerData> recyclerDataArrayList;
     private IGamesRepository iGamesRepository;
-    private boolean relatedGames = false;
     private List<String> genres;
     private Button wantedButton;
+    private Button playedButton;
+    private String loggedUserID = null;
 
     public Button getWantedButton() {
         return wantedButton;
+    }
+
+    public Button getPlayedButton() {
+        return playedButton;
     }
 
     @Override
@@ -78,17 +82,15 @@ public class GameActivity extends AppCompatActivity implements ResponseCallback 
         progressBar.setVisibility(View.VISIBLE);
         String query = "fields name, franchises.name, first_release_date, genres.name, total_rating, total_rating_count, cover.url, involved_companies.company.name, platforms.name, summary, screenshots.url; where id = " + idGame + ";";
 
-
         checkNetwork();
         iGamesRepository.fetchGames(query, 10000, 0);
         genres = new ArrayList<>();
-
     }
 
     @SuppressLint("SetTextI18n")
     @Override
-    public void onSuccess(List<GameApiResponse> gamesList, long lastUpdate, int count) {
-        switch (count) {
+    public void onSuccess(List<GameApiResponse> gamesList, long lastUpdate, int queryNumber) {
+        switch (queryNumber) {
             case 0:
                 game = gamesList.get(0);
                 showGameCover();
@@ -116,33 +118,109 @@ public class GameActivity extends AppCompatActivity implements ResponseCallback 
 
     private void setButtons() {
         wantedButton = findViewById(R.id.wantedButton);
-        Button playedButton = findViewById(R.id.playedButton);
-
+        playedButton = findViewById(R.id.playedButton);
+        DocumentReference docRef = checkLogin();
+        //abbiamo il docRef se si è loggati
+        if (docRef != null) {
+            docRef.get().addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document != null) {
+                        wantedButton.setVisibility(View.VISIBLE);
+                        playedButton.setVisibility(View.VISIBLE);
+                        ArrayList<Integer> desiredGames = (ArrayList<Integer>) document.get("desiredGames");
+                        if (desiredGames != null && desiredGames.contains((long) game.getId())) {
+                            wantedButton.setText(R.string.alreadyWanted);
+                            playedButton.setVisibility(View.GONE);
+                        }
+                        ArrayList<Integer> playingGames = (ArrayList<Integer>) document.get("playingGames");
+                        if (playingGames != null && playingGames.contains((long) game.getId())) {
+                            playedButton.setText((R.string.alreadyPlaying));
+                            wantedButton.setVisibility(View.GONE);
+                        }
+                        ArrayList<Integer> playedGames = (ArrayList<Integer>) document.get("playedGames");
+                        if (playedGames != null && playedGames.contains((long) game.getId())) {
+                            playedButton.setText(R.string.alreadyPlayed);
+                            wantedButton.setVisibility(View.GONE);
+                        }
+                    }
+                }
+            });
+        } else {
+            //non è loggato
+            wantedButton.setVisibility(View.VISIBLE);
+            playedButton.setVisibility(View.VISIBLE);
+        }
         wantedButton.setOnClickListener(v -> {
-            //check se sei loggato
             if (playedButton.getVisibility() != View.GONE) {
-                playedButton.setVisibility(View.GONE);
+                if (docRef != null) {
+                    //aggiunge ai giochi desiderati
+                    playedButton.setVisibility(View.GONE);
+                    docRef.update("desiredGames", FieldValue.arrayUnion(game.getId()));
+                } else {
+                    goToLoginActivity();
+                }
             } else {
-
-                playedButton.setVisibility(View.VISIBLE);
+                if (docRef != null) {
+                    RemoveGameDialogFragment fragment = new RemoveGameDialogFragment(GameActivity.this);
+                    goToDialog(fragment);
+                } else {
+                    goToLoginActivity();
+                }
             }
         });
         playedButton.setOnClickListener(v -> {
-            if (wantedButton.getVisibility() != View.GONE) {
-                PlayedButtonDialogFragment fragment = new PlayedButtonDialogFragment(GameActivity.this, game.getName());
-                fragment.show();
-                //wantedButton.setVisibility(View.GONE);
-
+            if (docRef != null) {
+                if (wantedButton.getVisibility() != View.GONE) {
+                    PlayedButtonDialogFragment fragment = new PlayedButtonDialogFragment(GameActivity.this);
+                    goToDialog(fragment);
+                } else {
+                    //rimuovo il gioco dai giochi giocati o in gioco
+                    RemoveGameDialogFragment fragment = new RemoveGameDialogFragment(GameActivity.this);
+                    goToDialog(fragment);
+                }
             } else {
-                wantedButton.setVisibility(View.VISIBLE);
+                goToLoginActivity();
             }
         });
     }
 
+    private void goToDialog(DialogFragment fragment) {
+        Bundle bundle = new Bundle();
+        bundle.putInt("idGame", game.getId());
+        bundle.putInt("idGame", game.getId());
+        bundle.putString("idUser", loggedUserID);
+        bundle.putString("gameName", game.getName());
+        fragment.setArguments(bundle);
+        fragment.show(getSupportFragmentManager(), "Dialog");
+    }
+
+    private DocumentReference checkLogin() {
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
+        FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
+        DocumentReference docRef = null;
+        if (firebaseAuth.getCurrentUser() != null) {
+            loggedUserID = firebaseAuth.getCurrentUser().getUid();
+        } else if (account != null) {
+            loggedUserID = account.getId();
+        }
+        if (loggedUserID == null) {
+            goToLoginActivity();
+        } else {
+            docRef = firebaseFirestore.collection("User").document(loggedUserID);
+        }
+        return docRef;
+    }
+
+    private void goToLoginActivity() {
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
+    }
 
     //dalla risposta ottenuta bisogna fare una selezione
     private ArrayList<GameApiResponse> selectRelatedGames(List<GameApiResponse> gamesList) {
-        int differentGenres = 0;
+        int differentGenres;
         ArrayList<GameApiResponse> relatedGamesList = new ArrayList<>();
         for (GameApiResponse gameApiResponse : gamesList) {
             differentGenres = 0;
@@ -170,12 +248,10 @@ public class GameActivity extends AppCompatActivity implements ResponseCallback 
     }
 
     private void getRelatedGames(List<String> genres) {
-        relatedGames = true;
         StringBuilder subquery = new StringBuilder();
         subquery.append("(");
 
         for (int i = 0; i < genres.size(); i++) {
-            Log.i("x", String.valueOf(i));
             subquery.append("\"").append(genres.get(i)).append("\"");
             if (i < genres.size() - 1) {
                 subquery.append(", ");
@@ -183,8 +259,7 @@ public class GameActivity extends AppCompatActivity implements ResponseCallback 
                 subquery.append(")");
             }
         }
-        String query = "fields name, total_rating, cover.url, genres.name, first_release_date; where genres.name = " + subquery + " & total_rating > 85 & first_release_date > 1262304000; limit 30;";
-
+        String query = "fields name, total_rating, cover.url, genres.name, first_release_date; where genres.name = " + subquery + " & total_rating > 80 & first_release_date > 1262304000; limit 30;";
         iGamesRepository.fetchGames(query, 10000, 1);
     }
 
@@ -230,10 +305,12 @@ public class GameActivity extends AppCompatActivity implements ResponseCallback 
 
     @SuppressLint("ClickableViewAccessibility")
     private void showDescription() {
-        TextView descriptionView = findViewById(R.id.descriptionView);
-        descriptionView.setVisibility(View.VISIBLE);
-        TextView descriptionText = findViewById(R.id.descriptionText);
-        descriptionText.setText(game.getDescription());
+        if (game.getDescription() != null) {
+            TextView descriptionView = findViewById(R.id.descriptionView);
+            descriptionView.setVisibility(View.VISIBLE);
+            TextView descriptionText = findViewById(R.id.descriptionText);
+            descriptionText.setText(game.getDescription());
+        }
     }
 
     @SuppressLint("SetTextI18n")
@@ -246,24 +323,32 @@ public class GameActivity extends AppCompatActivity implements ResponseCallback 
     @SuppressLint("SetTextI18n")
     private void showRating() {
         DecimalFormat df = new DecimalFormat("0.0");
-        double value = game.getTotalRating() / 10;
-        df.setRoundingMode(RoundingMode.DOWN);
         TextView rating = findViewById(R.id.rating);
         String ratingString = "\n" + getString(R.string.rating);
-        rating.setText(df.format(value) + ratingString);
+        if (game.getTotalRating() != 0.0){
+            double value = game.getTotalRating() / 10;
+            df.setRoundingMode(RoundingMode.DOWN);
+            rating.setText(df.format(value) + ratingString);
+        } else {
+            rating.setText(R.string.NoRating);
+        }
     }
 
     private void showPlatforms() {
         TextView platformsView = findViewById(R.id.platformsView);
         platformsView.setVisibility(View.VISIBLE);
-        List<String> platforms = game.getPlatformsString();
         TextView platformText = findViewById(R.id.platformText);
         StringBuilder text = new StringBuilder();
-        for (int i = 0; i < platforms.size(); i++) {
-            text.append(platforms.get(i));
-            if (i != platforms.size() - 1) {
-                text.append(" - ");
+        if (game.getPlatforms() != null) {
+            List<String> platforms = game.getPlatformsString();
+            for (int i = 0; i < platforms.size(); i++) {
+                text.append(platforms.get(i));
+                if (i != platforms.size() - 1) {
+                    text.append(" - ");
+                }
             }
+        } else {
+            text.append("No platforms available");
         }
         platformText.setText(text);
     }
@@ -291,7 +376,7 @@ public class GameActivity extends AppCompatActivity implements ResponseCallback 
 
     private void showReleaseDate() {
         TextView releaseDateView = findViewById(R.id.releaseDate);
-        String date = "";
+        String date;
         if (game.getFirstReleaseDate() != null)
             date = game.getFirstReleaseDate();
         else
@@ -301,9 +386,12 @@ public class GameActivity extends AppCompatActivity implements ResponseCallback 
 
     private void showGameCover() {
         ImageView gameImage = findViewById(R.id.gameCover);
-        String uriString = game.getCover().getUrl();
-        String newUri = uriString.replace("thumb", "cover_big_2x");
-        Picasso.get().load(newUri).into(gameImage);
+        if (game.getCover() != null){
+            String uriString = game.getCover().getUrl();
+            String newUri = uriString.replace("thumb", "cover_big_2x");
+            Picasso.get().load(newUri).into(gameImage);
+        }
+        gameImage.setVisibility(View.VISIBLE);
     }
 
     private void showGameName() {
@@ -346,7 +434,6 @@ public class GameActivity extends AppCompatActivity implements ResponseCallback 
         setSupportActionBar(toolbar);
         Objects.requireNonNull(getSupportActionBar()).setDisplayShowTitleEnabled(false);
     }
-//1020
 
     @Override
     public void onFailure(String errorMessage) {
@@ -361,7 +448,7 @@ public class GameActivity extends AppCompatActivity implements ResponseCallback 
 
     @Override
     public void onBackPressed() {
-        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.container);
+        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.screeshotContainer);
         if (!(fragment instanceof ScreenshotFragment)) {
             super.onBackPressed();
         } else {

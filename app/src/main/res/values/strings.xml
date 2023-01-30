@@ -32,10 +32,10 @@
     <string name="latestreleases">Latest releases</string>
     <string name="incoming">Incoming</string>
     <string name="loginHome">You must be logged to view suggested games</string>
-    <string name="title_activity_category">CategoryActivity</string>
-    <string name="videogame_saga">Videogame saga</string>
-    <string name="title_activity_game_saga">GameSagaActivity</string>
-    <string name="title_activity_game_version">GameVersionActivity</string>
+    <string name="title_activity_category" translatable="false">CategoryActivity</string>
+    <string name="videogame_saga" translatable="false">Videogame saga</string>
+    <string name="title_activity_game_saga" translatable="false">GameSagaActivity</string>
+    <string name="title_activity_game_version" translatable="false">GameVersionActivity</string>
     <string name="error_retrieving_games">\"error_retrieving_games</string>
     <string name="username" translatable="false">Username</string>
     <string name="emailAddress">Email Address</string>
@@ -66,6 +66,9 @@
     <string name="explore_title">Explore</string>
     <string name="sort_by_dialog_title">Sort by</string>
     <string name="search_filters_dialog_title">Search Filters</string>
+    <string name="alreadyPlaying">PLAYING</string>
+
+
 
     <string-array name="sorting_parameters">
         <item>Most popular</item>
@@ -77,5 +80,9 @@
     <string name="number_of_results"> %1$d results found for &quot;%2$s&quot;</string>
     <string name="cancel_text">Cancel</string>
     <string name="confirm_text">Confirm</string>
+    <string name="alreadyWanted">WANTED</string>
+    <string name="alreadyPlayed">PLAYED</string>
+    <string name="RemoveGame">Are you sure to remove this game?</string>
+    <string name="NoRating">No rating available</string>
 
 </resources>

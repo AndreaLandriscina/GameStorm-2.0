@@ -1,78 +1,67 @@
 package com.example.gamestorm.ui;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
-import android.widget.Button;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
 import com.example.gamestorm.R;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
 
-public class PlayedButtonDialogFragment extends Dialog implements View.OnClickListener {
-
-    private View dialogView;
-    private String title;
-    private static boolean isPlayed;
-    private static boolean isPlaying;
-    public static boolean isSavePressed;
+public class PlayedButtonDialogFragment extends DialogFragment {
+    private boolean isPlayed = true;
+    private boolean isPlaying;
     GameActivity activity;
-    Button save, cancel;
-    public PlayedButtonDialogFragment(GameActivity activity, String title) {
-        super(activity);
+    Bundle bundle;
+
+    public PlayedButtonDialogFragment(GameActivity activity) {
         this.activity = activity;
-        this.title = title;
     }
 
+    @NonNull
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.dialog_layout);
-        TextView titleView = findViewById(R.id.title);
-        titleView.setText(title);
-        save = findViewById(R.id.saveButton);
-        cancel = findViewById(R.id.cancelButton);
-        RadioGroup radioGroup = findViewById(R.id.radioGroup);
-        radioGroup.setOnCheckedChangeListener((group, checkedId) -> {
-            if (checkedId == R.id.playingButton) {
-                isPlaying = true;
-                isPlayed = false;
-            } else if (checkedId == R.id.playedButton) {
-                isPlaying = false;
-                isPlayed = true;
+    public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
+        bundle = getArguments();
+        String[] options = {getString(R.string.played), getString(R.string.playing)};
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(requireContext(), R.style.CustomAlertDialog);
+        alertDialog.setTitle(bundle.getString("gameName"));
+        alertDialog.setPositiveButton(getString(R.string.confirm_text), (dialog, which) -> {
+            GameActivity gameActivity = activity;
+            gameActivity.getWantedButton().setVisibility(View.GONE);
+            FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
+            DocumentReference docRef = firebaseFirestore.collection("User").document(bundle.getString("idUser"));
+            if (isPlaying) {
+                gameActivity.getPlayedButton().setText(R.string.alreadyPlaying);
+                docRef.update("playingGames", FieldValue.arrayUnion(bundle.get("idGame")));
+            }
+            if (isPlayed) {
+                gameActivity.getPlayedButton().setText(R.string.alreadyPlayed);
+                docRef.update("playedGames", FieldValue.arrayUnion(bundle.get("idGame")));
+            }
+            dismiss();
+        });
+        alertDialog.setNegativeButton(getString(R.string.cancel_text), (dialog, which) -> dismiss());
+        alertDialog.setSingleChoiceItems(options, 0, (dialog, which) -> {
+            switch (which) {
+                case 0:
+                    isPlaying = false;
+                    isPlayed = true;
+                    break;
+                case 1:
+                    isPlaying = true;
+                    isPlayed = false;
+                    break;
             }
         });
-        save.setOnClickListener(this);
-        cancel.setOnClickListener(this);
+
+        return alertDialog.create();
     }
 
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.saveButton:
-                Log.i("ok","ok");
-                GameActivity gameActivity = activity;
-                gameActivity.getWantedButton().setVisibility(View.GONE);
-                isSavePressed = true;
-                break;
-            case R.id.cancelButton:
-                dismiss();
-                break;
-        }
-        dismiss();
-    }
+
 }
