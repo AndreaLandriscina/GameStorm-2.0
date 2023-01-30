@@ -205,9 +205,7 @@ public class GameActivity extends AppCompatActivity implements ResponseCallback 
         } else if (account != null) {
             loggedUserID = account.getId();
         }
-        if (loggedUserID == null) {
-            goToLoginActivity();
-        } else {
+        if (loggedUserID != null) {
             docRef = firebaseFirestore.collection("User").document(loggedUserID);
         }
         return docRef;
