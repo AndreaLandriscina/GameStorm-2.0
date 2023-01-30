@@ -36,7 +36,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     @Override
     public RecyclerViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         // Inflate Layout
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_layout, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_layout_game, parent, false);
         return new RecyclerViewHolder(view);
     }
 
@@ -74,14 +74,14 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
         public RecyclerViewHolder(@NonNull View itemView) {
             super(itemView);
-            //smallCover = itemView.findViewById(R.id.smallCover);
+            smallCover = itemView.findViewById(R.id.smallCover);
             cover = itemView.findViewById(R.id.cover);
             if (isRelatedGames()) {
                 cover.setVisibility(View.GONE);
-                //smallCover.setVisibility(View.VISIBLE);
+                smallCover.setVisibility(View.VISIBLE);
             } else {
                 cover.setVisibility(View.VISIBLE);
-                //smallCover.setVisibility(View.GONE);
+                smallCover.setVisibility(View.GONE);
             }
         }
 

@@ -2,6 +2,7 @@ package com.example.gamestorm.adapter;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,8 +41,6 @@ public class RecyclerScreenshotsViewAdapter extends RecyclerView.Adapter<Recycle
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerViewHolder holder, int position) {
-        // Set the data to imageview.
-
         RecyclerData recyclerData = dataArrayList.get(position);
         String newUrl = recyclerData.getImgUrl().replace("thumb", "screenshot_med");
         Picasso.get().load(newUrl).into(holder.screenshot);
@@ -60,7 +59,7 @@ public class RecyclerScreenshotsViewAdapter extends RecyclerView.Adapter<Recycle
             bundle.putInt("position", position);
             bundle.putStringArrayList("imageUrl",list);
             fragment.setArguments(bundle);
-            activity.getSupportFragmentManager().beginTransaction().replace(R.id.container, fragment).commit();
+            activity.getSupportFragmentManager().beginTransaction().replace(R.id.screeshotContainer, fragment).commit();
         });
     }
 

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/black"
+    android:background="@color/white"
     tools:context=".ui.ScreenshotFragment">
 
     <RelativeLayout
@@ -16,7 +16,11 @@
             android:id="@+id/screenshotFragmentView"
             android:layout_width="371dp"
             android:layout_height="200dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
             android:layout_gravity="center"
+            android:layout_marginEnd="0dp"
+            android:layout_marginBottom="0dp"
             android:scaleType="fitXY"
             tools:src="@tools:sample/avatars" />
 
@@ -24,14 +28,14 @@
             android:id="@+id/leftButton"
             android:layout_width="100dp"
             android:layout_height="match_parent"
-            android:background="@android:color/transparent"/>
+            android:background="@android:color/transparent" />
 
         <Button
             android:id="@+id/rightButton"
             android:layout_width="100dp"
             android:layout_height="match_parent"
-            android:layout_alignRight="@id/screenshotFragmentView"
-            android:background="@android:color/transparent"/>
+            android:layout_alignEnd="@id/screenshotFragmentView"
+            android:background="@android:color/transparent" />
 
     </RelativeLayout>
 
