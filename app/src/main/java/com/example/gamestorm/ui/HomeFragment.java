@@ -17,6 +17,7 @@ import android.widget.Button;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.gamestorm.model.Cover;
@@ -54,6 +55,7 @@ public class HomeFragment extends Fragment implements ResponseCallback {
     private HorizontalScrollView forYouScrollView;
 
     private TextView imageTextView;
+    private ProgressBar progressBar;
 
     LayoutInflater inflater;
 
@@ -125,6 +127,8 @@ public class HomeFragment extends Fragment implements ResponseCallback {
         super.onViewCreated(view, savedInstanceState);
         inflater=LayoutInflater.from(getContext());
 
+        progressBar = view.findViewById(R.id.progressBar);
+
         loginTextView=view.findViewById(R.id.textViewLoginHomePage);
         loginButton=view.findViewById(R.id.buttonLoginHomePage);
         forYouScrollView=view.findViewById(R.id.forYouScrollView);
@@ -144,8 +148,8 @@ public class HomeFragment extends Fragment implements ResponseCallback {
         //GALLERY INCOMING
         galleryIncoming=view.findViewById(R.id.homeGalleryIncoming);
 
+
         if(savedInstanceState!=null){
-            Log.i("Ciao","saved");
             gamesBest = savedInstanceState.getParcelableArrayList("popular");
             gamesBest = savedInstanceState.getParcelableArrayList("best");
             gamesForYou = savedInstanceState.getParcelableArrayList("foryou");
@@ -158,7 +162,7 @@ public class HomeFragment extends Fragment implements ResponseCallback {
             showGames(3,gamesBest);
             showGames(4,gamesForYou);
         }else{
-            Log.i("Ciao","Not saved");
+            progressBar.setVisibility(View.VISIBLE);
             iGamesRepository.fetchGames(queryPopular,10000,0);
             iGamesRepository.fetchGames(queryLatestReleases,10000,1);
             iGamesRepository.fetchGames(queryIncoming,10000,2);
@@ -167,6 +171,7 @@ public class HomeFragment extends Fragment implements ResponseCallback {
         }
 
     }
+
 
 
     @Override
@@ -190,7 +195,7 @@ public class HomeFragment extends Fragment implements ResponseCallback {
 
     }
     public void showGames(int countQuery, List<GameApiResponse> gameList){
-
+        progressBar.setVisibility(View.GONE);
         if(countQuery==0) {
             for (int i = 0; i < 30; i++) {
                 game = gameList.get(i);
