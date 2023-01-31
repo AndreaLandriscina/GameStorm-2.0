@@ -30,6 +30,8 @@ import com.example.gamestorm.R;
 import com.example.gamestorm.repository.GamesRepository;
 import com.example.gamestorm.repository.IGamesRepository;
 import com.example.gamestorm.util.ResponseCallback;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -48,8 +50,8 @@ public class SearchFragment extends Fragment implements ResponseCallback {
     private List<GameApiResponse> gamesCopy;
     private SearchView gameName;
     private String userInput;
-    private ImageButton sorting;
-    private ImageButton filters;
+    private MaterialButton sorting;
+    private MaterialButton filters;
     private TextView numberOfResults;
     private RecyclerView gamesRV;
     private ProgressBar searchLoading;
@@ -187,71 +189,61 @@ public class SearchFragment extends Fragment implements ResponseCallback {
             @Override
             public void onClick(View v) {
 
-                // AlertDialog builder instance to build the alert dialog
-                AlertDialog.Builder alertDialog = new AlertDialog.Builder(getContext());
-
-                // title of the alert dialog
-                alertDialog.setTitle(R.string.sort_by_dialog_title);
-
-                // list of the items to be displayed to the user in the
-                // form of list so that user can select the item from
                 final String[] listItems = getContext().getResources().getStringArray(R.array.sorting_parameters);
 
-                // the function setSingleChoiceItems is the function which
-                // builds the alert dialog with the single item selection
-                alertDialog.setSingleChoiceItems(listItems, lastSelectedSortingParameter, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        sortingParameter = listItems[i];
-                        lastSelectedSortingParameter = i;
+                new MaterialAlertDialogBuilder(getContext())
+                        .setTitle(R.string.sort_by_dialog_title)
+                        .setSingleChoiceItems(listItems, lastSelectedSortingParameter, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int i) {
+                                sortingParameter = listItems[i];
+                                lastSelectedSortingParameter = i;
 
-                        //sorting decrescente
-                        Collections.sort(games, (o1, o2) -> {
-                            //non bello
-                            int result = 0;
-                            switch (sortingParameter) {
-                                case "Most popular":
-                                    result = -Integer.compare(o1.getFollows(), o2.getFollows());
-                                    break;
+                                //sorting decrescente
+                                Collections.sort(games, (o1, o2) -> {
+                                    //non bello
+                                    int result = 0;
+                                    switch (sortingParameter) {
+                                        case "Most popular":
+                                            result = -Integer.compare(o1.getFollows(), o2.getFollows());
+                                            break;
 
-                                case "Most recent":
-                                    try {
-                                        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-                                        Date date1 = formatter.parse(o1.getFirstReleaseDate());
-                                        Date date2 = formatter.parse(o2.getFirstReleaseDate());
-                                        result = -date1.compareTo(date2);
-                                    } catch (ParseException e1) {
-                                        e1.printStackTrace();
+                                        case "Most recent":
+                                            try {
+                                                SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+                                                Date date1 = formatter.parse(o1.getFirstReleaseDate());
+                                                Date date2 = formatter.parse(o2.getFirstReleaseDate());
+                                                result = -date1.compareTo(date2);
+                                            } catch (ParseException e1) {
+                                                e1.printStackTrace();
+                                            }
+                                            break;
+
+                                        case "Best rating":
+                                            result = -Double.compare(o1.getRating(), o2.getRating());
+                                            break;
+
+                                        case "Alphabet":
+                                            result = o1.getName().compareTo(o2.getName());
+                                            break;
+
                                     }
-                                    break;
-
-                                case "Best rating":
-                                    result = -Double.compare(o1.getRating(), o2.getRating());
-                                    break;
-
-                                case "Alphabet":
-                                    result = o1.getName().compareTo(o2.getName());
-                                    break;
+                                    return result;
+                                });
+                                adapter.notifyDataSetChanged();
+                                showGamesOnRecyclerView(games);
+                                dialog.dismiss();
+                            }
+                        })
+                        .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
 
                             }
-                            return result;
-                        });
-                        adapter.notifyDataSetChanged();
-                        showGamesOnRecyclerView(games);
-                        dialogInterface.dismiss();
-                    }
-                });
+                        })
+                        .show();
 
-                // set the negative button if the user is not interested to select or change already selected item
-                alertDialog.setNegativeButton("Cancel", (dialog, which) -> {
 
-                });
-
-                // create and build the AlertDialog instance with the AlertDialog builder instance
-                AlertDialog customAlertDialog = alertDialog.create();
-
-                // show the alert dialog when the button is clicked
-                customAlertDialog.show();
             }
         });
 
@@ -259,16 +251,8 @@ public class SearchFragment extends Fragment implements ResponseCallback {
         filters.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // AlertDialog builder instance to build the alert dialog
-                AlertDialog.Builder filtersDialog = new AlertDialog.Builder(getContext());
 
-                // title of the alert dialog
-                filtersDialog.setTitle(R.string.search_filters_dialog_title);
-
-                // set the custom layout
                 final View customLayout = getLayoutInflater().inflate(R.layout.dialog_filters, null);
-                filtersDialog.setView(customLayout);
-
 
                 Spinner genreSPN = customLayout.findViewById(R.id.genre_SPN);
                 Spinner platformSPN = customLayout.findViewById(R.id.platform_SPN);
@@ -502,130 +486,128 @@ public class SearchFragment extends Fragment implements ResponseCallback {
                 releaseYearSPN.setAdapter(releaseYearAdapter);
                 releaseYearSPN.setSelection(lastSelectedReleaseYear);
 
-                filtersDialog.setPositiveButton(R.string.confirm_text, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        String genreInput, platformInput, releaseyearInput;
+                new MaterialAlertDialogBuilder(getContext())
+                        .setView(customLayout)
+                        .setTitle(R.string.search_filters_dialog_title)
+                        .setPositiveButton(R.string.confirm_text, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int which) {
+                                String genreInput, platformInput, releaseyearInput;
 
-                        genreInput = genreSPN.getSelectedItem().toString();
-                        platformInput = platformSPN.getSelectedItem().toString();
-                        releaseyearInput = releaseYearSPN.getSelectedItem().toString();
+                                genreInput = genreSPN.getSelectedItem().toString();
+                                platformInput = platformSPN.getSelectedItem().toString();
+                                releaseyearInput = releaseYearSPN.getSelectedItem().toString();
 
-                        lastSelectedGenre = genreAdapter.getPosition(genreInput);
-                        lastSelectedPlatform = platformAdapter.getPosition(platformInput);
-                        lastSelectedReleaseYear = releaseYearAdapter.getPosition(releaseyearInput);
+                                lastSelectedGenre = genreAdapter.getPosition(genreInput);
+                                lastSelectedPlatform = platformAdapter.getPosition(platformInput);
+                                lastSelectedReleaseYear = releaseYearAdapter.getPosition(releaseyearInput);
 
 
-                        if (genreInput.equals(genres[0]) || platformInput.equals(platforms[0]) || releaseyearInput.equals(years.get(0))) {
-                            games = new ArrayList<>(gamesCopy);
+                                if (genreInput.equals(genres[0]) || platformInput.equals(platforms[0]) || releaseyearInput.equals(years.get(0))) {
+                                    games = new ArrayList<>(gamesCopy);
 
-                            if(!sortingParameter.isEmpty()){
+                                    if(!sortingParameter.isEmpty()){
 
-                                //sorting decrescente
-                                Collections.sort(games, (o1, o2) -> {
-                                    //non bello
-                                    int result = 0;
-                                    switch (sortingParameter) {
-                                        case "Most popular":
-                                            result = -Integer.compare(o1.getFollows(), o2.getFollows());
-                                            break;
+                                        //sorting decrescente
+                                        Collections.sort(games, (o1, o2) -> {
+                                            //non bello
+                                            int result = 0;
+                                            switch (sortingParameter) {
+                                                case "Most popular":
+                                                    result = -Integer.compare(o1.getFollows(), o2.getFollows());
+                                                    break;
 
-                                        case "Most recent":
-                                            try {
-                                                SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-                                                Date date1 = formatter.parse(o1.getFirstReleaseDate());
-                                                Date date2 = formatter.parse(o2.getFirstReleaseDate());
-                                                result = -date1.compareTo(date2);
-                                            } catch (ParseException e1) {
-                                                e1.printStackTrace();
+                                                case "Most recent":
+                                                    try {
+                                                        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+                                                        Date date1 = formatter.parse(o1.getFirstReleaseDate());
+                                                        Date date2 = formatter.parse(o2.getFirstReleaseDate());
+                                                        result = -date1.compareTo(date2);
+                                                    } catch (ParseException e1) {
+                                                        e1.printStackTrace();
+                                                    }
+                                                    break;
+
+                                                case "Best rating":
+                                                    result = -Double.compare(o1.getRating(), o2.getRating());
+                                                    break;
+
+                                                case "Alphabet":
+                                                    result = o1.getName().compareTo(o2.getName());
+                                                    break;
+
                                             }
-                                            break;
-
-                                        case "Best rating":
-                                            result = -Double.compare(o1.getRating(), o2.getRating());
-                                            break;
-
-                                        case "Alphabet":
-                                            result = o1.getName().compareTo(o2.getName());
-                                            break;
-
+                                            return result;
+                                        });
                                     }
-                                    return result;
-                                });
-                            }
 
-                        }
+                                }
 
-                            if (!genreInput.equals(genres[0])) {
-                                for (int i = games.size() - 1; i >= 0; i--) {
-                                    boolean hasGenre = false;
+                                if (!genreInput.equals(genres[0])) {
+                                    for (int i = games.size() - 1; i >= 0; i--) {
+                                        boolean hasGenre = false;
 
-                                    List<Genre> gameGenres = games.get(i).getGenres();
+                                        List<Genre> gameGenres = games.get(i).getGenres();
 
-                                    if (gameGenres != null) {
-                                        for (Genre genre : gameGenres) {
-                                            if (genre.getName().equals(genreInput)) {
-                                                hasGenre = true;
+                                        if (gameGenres != null) {
+                                            for (Genre genre : gameGenres) {
+                                                if (genre.getName().equals(genreInput)) {
+                                                    hasGenre = true;
+                                                }
+                                            }
+
+                                            if (!hasGenre) {
+                                                games.remove(games.get(i));
                                             }
                                         }
+                                    }
 
-                                        if (!hasGenre) {
+
+                                }
+
+
+                                if (!platformInput.equals(platforms[0])) {
+                                    for (int i = games.size() - 1; i >= 0; i--) {
+                                        boolean hasPlatform = false;
+
+                                        List<Platform> gamePlatforms = games.get(i).getPlatforms();
+
+                                        if (gamePlatforms != null) {
+                                            for (Platform platform : gamePlatforms) {
+                                                if (platform.getName().equals(platformInput)) {
+                                                    hasPlatform = true;
+                                                }
+                                            }
+
+                                            if (!hasPlatform) {
+                                                games.remove(games.get(i));
+                                            }
+                                        }
+                                    }
+                                }
+
+                                if (!releaseyearInput.equals(years.get(0))) {
+                                    for (int i = games.size() - 1; i >= 0; i--) {
+                                        String[] dateParts = games.get(i).getFirstReleaseDate().split("/");
+                                        String yearOfRelease = dateParts[2];
+                                        if (!yearOfRelease.equals(releaseyearInput))
                                             games.remove(games.get(i));
-                                        }
                                     }
                                 }
 
+                                String text = String.format(getContext().getResources().getString(R.string.number_of_results), games.size(), userInput);
+                                numberOfResults.setText(text);
+                                showGamesOnRecyclerView(games);
+                                adapter.notifyDataSetChanged();
+                            }
+                        })
+                        .setNegativeButton(R.string.cancel_text, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
 
                             }
-
-
-                            if (!platformInput.equals(platforms[0])) {
-                                for (int i = games.size() - 1; i >= 0; i--) {
-                                    boolean hasPlatform = false;
-
-                                    List<Platform> gamePlatforms = games.get(i).getPlatforms();
-
-                                    if (gamePlatforms != null) {
-                                        for (Platform platform : gamePlatforms) {
-                                            if (platform.getName().equals(platformInput)) {
-                                                hasPlatform = true;
-                                            }
-                                        }
-
-                                        if (!hasPlatform) {
-                                            games.remove(games.get(i));
-                                        }
-                                    }
-                                }
-                            }
-
-                            if (!releaseyearInput.equals(years.get(0))) {
-                                for (int i = games.size() - 1; i >= 0; i--) {
-                                    String[] dateParts = games.get(i).getFirstReleaseDate().split("/");
-                                    String yearOfRelease = dateParts[2];
-                                    if (!yearOfRelease.equals(releaseyearInput))
-                                        games.remove(games.get(i));
-                                }
-                            }
-
-                        String text = String.format(getContext().getResources().getString(R.string.number_of_results), games.size(), userInput);
-                        numberOfResults.setText(text);
-                        showGamesOnRecyclerView(games);
-                        adapter.notifyDataSetChanged();
-                    }
-
-                });
-
-                filtersDialog.setNegativeButton(R.string.cancel_text, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                    }
-                });
-
-                // create and show the alert dialog
-                AlertDialog dialog = filtersDialog.create();
-                dialog.show();
+                        })
+                        .show();
             }
         });
     }
