@@ -638,7 +638,7 @@ public class SearchFragment extends Fragment implements ResponseCallback {
                                     adapter.notifyDataSetChanged();
                                 }else{
 
-                                    Snackbar.make(view.findViewById(R.id.Coordinatorlyt), "No internet connection, please connect and retry.", Snackbar.LENGTH_INDEFINITE).show();
+                                    Snackbar.make(view.findViewById(R.id.Coordinatorlyt), "No internet connection, please connect and retry.", Snackbar.LENGTH_LONG).show();
                                 }
 
                             }
