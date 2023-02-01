@@ -1,7 +1,10 @@
 package com.example.gamestorm.ui;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -34,6 +37,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -59,7 +63,7 @@ public class DesiredFragment extends Fragment {
     private ArrayList<RecyclerData> recyclerDataArrayList;
     private ProgressBar progressBar;
     String loggedUserID;
-    ArrayList<Integer> desiredGames;
+    private ArrayList<Integer> desiredGames;
     FirebaseFirestore firebaseFirestore;
 
     @Override
@@ -95,70 +99,11 @@ public class DesiredFragment extends Fragment {
             desired_games_layout.setVisibility(View.VISIBLE);
 
             //VISUALIZZAZIONE GIOCHI
-            DocumentReference docRef = firebaseFirestore.collection("User").document(loggedUserID);
-            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                    if (task.isSuccessful()) {
-                        DocumentSnapshot document = task.getResult();
-                        if (document != null) {
-                            Log.i("LOGGER","First "+document.getString("email"));
-                            Log.i("LOGGER","Last "+document.getString("name"));
-                            Log.i("LOGGER","arr "+document.get("desiredGames").toString());
-                            desiredGames = (ArrayList<Integer>) document.get("desiredGames");
-
-                            //RICERCA GIOCHI IN LISTA
-                            if (desiredGames != null){
-                                Integer gameID;
-                                for (int j = 0; j < desiredGames.size(); j++) {
-                                    gameID = Integer.parseInt(String.valueOf(desiredGames.get(j)));
-                                    Log.i("LOGGER","gameid "+gameID);
-
-                                    progressBar = requireView().findViewById(R.id.progressBar);
-                                    recyclerView = requireView().findViewById(R.id.companyRecyclerView);
-                                    recyclerDataArrayList = new ArrayList<>();
-
-                                    IGamesRepository iGamesRepository = new GamesRepository(getActivity().getApplication(),
-                                            new ResponseCallback() {
-                                                @Override
-                                                public void onSuccess(List<GameApiResponse> gamesList, long lastUpdate, int count) {
-                                                    progressBar.setVisibility(View.GONE);
-                                                    for (GameApiResponse gameApiResponse : gamesList) {
-                                                        if (gameApiResponse.getCover() != null)
-                                                            recyclerDataArrayList.add(new RecyclerData(gameApiResponse.getId(), gameApiResponse.getCover().getUrl()));
-                                                    }
-                                                    RecyclerViewAdapter adapter=new RecyclerViewAdapter(recyclerDataArrayList,getContext());
-                                                    GridLayoutManager layoutManager=new GridLayoutManager(getContext(),3);
-                                                    recyclerView.setLayoutManager(layoutManager);
-                                                    recyclerView.setAdapter(adapter);
-                                                }
-
-                                                @Override
-                                                public void onFailure(String errorMessage) {
-
-                                                }
-
-                                                @Override
-                                                public void onGameFavoriteStatusChanged(GameApiResponse game) {
-
-                                                }
-                                            });
-                                    progressBar.setVisibility(View.VISIBLE);
-                                    String query = "fields name, cover.url; where id = " + gameID + "; limit 30;";
-                                    Log.i("LOGGER","str "+query);
-                                    Log.i("LOGGER","visible "+desired_games_layout.getVisibility());
-                                    iGamesRepository.fetchGames(query, 10000, 0);
-                                }
-                            }
-                        } else {
-                            Log.d("LOGGER", "No such document");
-                        }
-                    } else {
-                        Log.d("LOGGER", "get failed with ", task.getException());
-                    }
-                }
-            });
-
+            if(isNetworkAvailable(getContext())) {
+                viewGames();
+            }else{
+                Snackbar.make(view.findViewById(R.id.Coordinatorlyt), "No internet connection, please connect and retry.", Snackbar.LENGTH_LONG).show();
+            }
 
             }
 
@@ -167,4 +112,99 @@ public class DesiredFragment extends Fragment {
         requireActivity().startActivity(myIntent);
     });
 }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        //viewAll();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if(isNetworkAvailable(getContext())) {
+            viewGames();
+        }else{
+            Snackbar.make(requireView().findViewById(R.id.Coordinatorlyt), "No internet connection, please connect and retry.", Snackbar.LENGTH_LONG).show();
+        }
+    }
+
+    private void viewGames(){
+        firebaseAuth = FirebaseAuth.getInstance();
+        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(getContext());
+        if (firebaseAuth.getCurrentUser()!=null){
+            loggedUserID=firebaseAuth.getCurrentUser().getUid();
+        } else if(account!=null){
+            loggedUserID= account.getId();
+        }
+        firebaseFirestore=FirebaseFirestore.getInstance();
+        DocumentReference docRef = firebaseFirestore.collection("User").document(loggedUserID);
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document != null) {
+                        desiredGames = (ArrayList<Integer>) document.get("desiredGames");
+
+                        //RICERCA GIOCHI IN LISTA
+                        if (desiredGames != null){
+                            Integer gameID;
+                            for (int j = 0; j < desiredGames.size(); j++) {
+                                gameID = Integer.parseInt(String.valueOf(desiredGames.get(j)));
+                                Log.i("LOGGER","gameid "+gameID);
+
+                                progressBar = requireView().findViewById(R.id.progressBar);
+                                recyclerView = requireView().findViewById(R.id.companyRecyclerView);
+                                recyclerDataArrayList = new ArrayList<>();
+
+                                IGamesRepository iGamesRepository = new GamesRepository(getActivity().getApplication(),
+                                        new ResponseCallback() {
+                                            @Override
+                                            public void onSuccess(List<GameApiResponse> gamesList, long lastUpdate, int count) {
+                                                progressBar.setVisibility(View.GONE);
+                                                for (GameApiResponse gameApiResponse : gamesList) {
+                                                    if (gameApiResponse.getCover() != null)
+                                                        recyclerDataArrayList.add(new RecyclerData(gameApiResponse.getId(), gameApiResponse.getCover().getUrl()));
+                                                }
+                                                RecyclerViewAdapter adapter=new RecyclerViewAdapter(recyclerDataArrayList,getContext());
+                                                GridLayoutManager layoutManager=new GridLayoutManager(getContext(),3);
+                                                recyclerView.setLayoutManager(layoutManager);
+                                                recyclerView.setAdapter(adapter);
+                                            }
+
+                                            @Override
+                                            public void onFailure(String errorMessage) {
+
+                                            }
+
+                                            @Override
+                                            public void onGameFavoriteStatusChanged(GameApiResponse game) {
+
+                                            }
+                                        });
+                                progressBar.setVisibility(View.VISIBLE);
+                                String query = "fields name, cover.url; where id = " + gameID + "; limit 30;";
+                                Log.i("LOGGER","str "+query);
+                                Log.i("LOGGER","visible "+desired_games_layout.getVisibility());
+                                iGamesRepository.fetchGames(query, 10000, 0);
+                            }
+                        }
+                    } else {
+                        Log.d("LOGGER", "No such document");
+                    }
+                } else {
+                    Log.d("LOGGER", "get failed with ", task.getException());
+                }
+            }
+        });
+    }
+
+    private boolean isNetworkAvailable(Context context) {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null;
+    }
+
 }

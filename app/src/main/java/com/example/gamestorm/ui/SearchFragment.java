@@ -1,8 +1,11 @@
 package com.example.gamestorm.ui;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Typeface;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -30,7 +33,14 @@ import com.example.gamestorm.R;
 import com.example.gamestorm.repository.GamesRepository;
 import com.example.gamestorm.repository.IGamesRepository;
 import com.example.gamestorm.util.ResponseCallback;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.snackbar.Snackbar;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -48,8 +58,8 @@ public class SearchFragment extends Fragment implements ResponseCallback {
     private List<GameApiResponse> gamesCopy;
     private SearchView gameName;
     private String userInput;
-    private ImageButton sorting;
-    private ImageButton filters;
+    private MaterialButton sorting;
+    private MaterialButton filters;
     private TextView numberOfResults;
     private RecyclerView gamesRV;
     private ProgressBar searchLoading;
@@ -118,10 +128,16 @@ public class SearchFragment extends Fragment implements ResponseCallback {
             firstLoad = savedInstanceState.getBoolean(firstLoadKey);
 
             if(firstLoad){
-                numberOfResults.setTextSize(30);
-                numberOfResults.setTypeface(null, Typeface.BOLD);
-                numberOfResults.setText(R.string.explore_title);
-
+                if(isNetworkAvailable(getContext())){
+                    numberOfResults.setTextSize(30);
+                    numberOfResults.setTypeface(null, Typeface.BOLD);
+                    numberOfResults.setText(R.string.explore_title);
+                    searchLoading.setVisibility(View.VISIBLE);
+                    String queryToServer = "fields id, name, cover.url, follows, rating, first_release_date, genres.name, platforms.name; where cover.url != null; limit 500;";
+                    iGamesRepository.fetchGames(queryToServer, 10000,0);
+                }else{
+                    Snackbar.make(view.findViewById(R.id.Coordinatorlyt), "No internet connection, please connect and retry.", Snackbar.LENGTH_LONG).show();
+                }
             }else {
                 numberOfResults.setTextSize(15);
                 numberOfResults.setTypeface(null, Typeface.NORMAL);
@@ -138,15 +154,21 @@ public class SearchFragment extends Fragment implements ResponseCallback {
             }
 
         }else{
-            //mostro i piu popolari la prima volta che si accede al fragment
-            if(firstLoad){
-                numberOfResults.setText(R.string.explore_title);
-                numberOfResults.setTextSize(30);
-                numberOfResults.setTypeface(null, Typeface.BOLD);
+            if(isNetworkAvailable(getContext())){
+                //mostro i piu popolari la prima volta che si accede al fragment
+                if(firstLoad){
+                    numberOfResults.setText(R.string.explore_title);
+                    numberOfResults.setTextSize(30);
+                    numberOfResults.setTypeface(null, Typeface.BOLD);
+                }
+                searchLoading.setVisibility(View.VISIBLE);
+                String queryToServer = "fields id, name, cover.url, follows, rating, first_release_date, genres.name, platforms.name; where cover.url != null; limit 500;";
+                iGamesRepository.fetchGames(queryToServer, 10000,0);
+            }else{
+
+                Snackbar.make(view.findViewById(R.id.Coordinatorlyt), "No internet connection, please connect and retry.", Snackbar.LENGTH_LONG).show();
             }
-            searchLoading.setVisibility(View.VISIBLE);
-            String queryToServer = "fields id, name, cover.url, follows, rating, first_release_date, genres.name, platforms.name; where cover.url != null; limit 500;";
-            iGamesRepository.fetchGames(queryToServer, 10000,0);
+
         }
 
 
@@ -158,6 +180,7 @@ public class SearchFragment extends Fragment implements ResponseCallback {
 
                 if(!games.isEmpty()){
                     games.clear();
+                    gamesCopy.clear();
                     adapter.notifyDataSetChanged();
                 }
 
@@ -165,13 +188,19 @@ public class SearchFragment extends Fragment implements ResponseCallback {
                 lastSelectedGenre = 0;
                 lastSelectedPlatform = 0;
                 lastSelectedReleaseYear = 0;
-
-                userInput = query;
-                //timestamp per ottenere solo giochi già usciti(su igdb si sono giochi che devono ancora uscire e che non hanno informazioni utili per l'utente)
-                String queryToServer = "fields id, name, cover.url, follows, rating, first_release_date, genres.name, platforms.name; where first_release_date < " + System.currentTimeMillis() / 1000 + " & version_parent = null;search \"" + userInput + "\"; limit 500;";
-                searchLoading.setVisibility(View.VISIBLE);
                 numberOfResults.setText("");
-                iGamesRepository.fetchGames(queryToServer, 10000,0);
+
+                if(isNetworkAvailable(getContext())){
+
+                    userInput = query;
+                    //timestamp per ottenere solo giochi già usciti(su igdb si sono giochi che devono ancora uscire e che non hanno informazioni utili per l'utente)
+                    String queryToServer = "fields id, name, cover.url, follows, rating, first_release_date, genres.name, platforms.name; where first_release_date < " + System.currentTimeMillis() / 1000 + " & version_parent = null;search \"" + userInput + "\"; limit 500;";
+                    searchLoading.setVisibility(View.VISIBLE);
+                    numberOfResults.setText("");
+                    iGamesRepository.fetchGames(queryToServer, 10000,0);
+                }else{
+                    Snackbar.make(view.findViewById(R.id.Coordinatorlyt), "No internet connection, please connect and retry.", Snackbar.LENGTH_LONG).show();
+                }
                 return false;
             }
 
@@ -187,71 +216,69 @@ public class SearchFragment extends Fragment implements ResponseCallback {
             @Override
             public void onClick(View v) {
 
-                // AlertDialog builder instance to build the alert dialog
-                AlertDialog.Builder alertDialog = new AlertDialog.Builder(getContext());
-
-                // title of the alert dialog
-                alertDialog.setTitle(R.string.sort_by_dialog_title);
-
-                // list of the items to be displayed to the user in the
-                // form of list so that user can select the item from
                 final String[] listItems = getContext().getResources().getStringArray(R.array.sorting_parameters);
 
-                // the function setSingleChoiceItems is the function which
-                // builds the alert dialog with the single item selection
-                alertDialog.setSingleChoiceItems(listItems, lastSelectedSortingParameter, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        sortingParameter = listItems[i];
-                        lastSelectedSortingParameter = i;
+                new MaterialAlertDialogBuilder(getContext())
+                        .setTitle(R.string.sort_by_dialog_title)
+                        .setSingleChoiceItems(listItems, lastSelectedSortingParameter, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int i) {
+                                sortingParameter = listItems[i];
+                                lastSelectedSortingParameter = i;
 
-                        //sorting decrescente
-                        Collections.sort(games, (o1, o2) -> {
-                            //non bello
-                            int result = 0;
-                            switch (sortingParameter) {
-                                case "Most popular":
-                                    result = -Integer.compare(o1.getFollows(), o2.getFollows());
-                                    break;
+                                if(isNetworkAvailable(getContext()) || !games.isEmpty()){
+                                    //sorting decrescente
+                                    Collections.sort(games, (o1, o2) -> {
+                                        //non bello
+                                        int result = 0;
+                                        switch (sortingParameter) {
+                                            case "Most popular":
+                                                result = -Integer.compare(o1.getFollows(), o2.getFollows());
+                                                break;
 
-                                case "Most recent":
-                                    try {
-                                        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-                                        Date date1 = formatter.parse(o1.getFirstReleaseDate());
-                                        Date date2 = formatter.parse(o2.getFirstReleaseDate());
-                                        result = -date1.compareTo(date2);
-                                    } catch (ParseException e1) {
-                                        e1.printStackTrace();
-                                    }
-                                    break;
+                                            case "Most recent":
+                                                try {
+                                                    SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+                                                    Date date1 = formatter.parse(o1.getFirstReleaseDate());
+                                                    Date date2 = formatter.parse(o2.getFirstReleaseDate());
+                                                    result = -date1.compareTo(date2);
+                                                } catch (ParseException e1) {
+                                                    e1.printStackTrace();
+                                                }
+                                                break;
 
-                                case "Best rating":
-                                    result = -Double.compare(o1.getRating(), o2.getRating());
-                                    break;
+                                            case "Best rating":
+                                                result = -Double.compare(o1.getRating(), o2.getRating());
+                                                break;
 
-                                case "Alphabet":
-                                    result = o1.getName().compareTo(o2.getName());
-                                    break;
+                                            case "Alphabet":
+                                                result = o1.getName().compareTo(o2.getName());
+                                                break;
+
+                                        }
+                                        return result;
+                                    });
+                                    adapter.notifyDataSetChanged();
+                                    showGamesOnRecyclerView(games);
+
+                                }else{
+
+                                    Snackbar.make(view.findViewById(R.id.Coordinatorlyt), "No internet connection, please connect and retry.", Snackbar.LENGTH_LONG).show();
+                                }
+
+                                dialog.dismiss();
 
                             }
-                            return result;
-                        });
-                        adapter.notifyDataSetChanged();
-                        showGamesOnRecyclerView(games);
-                        dialogInterface.dismiss();
-                    }
-                });
+                        })
+                        .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
 
-                // set the negative button if the user is not interested to select or change already selected item
-                alertDialog.setNegativeButton("Cancel", (dialog, which) -> {
+                            }
+                        })
+                        .show();
 
-                });
 
-                // create and build the AlertDialog instance with the AlertDialog builder instance
-                AlertDialog customAlertDialog = alertDialog.create();
-
-                // show the alert dialog when the button is clicked
-                customAlertDialog.show();
             }
         });
 
@@ -259,16 +286,8 @@ public class SearchFragment extends Fragment implements ResponseCallback {
         filters.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // AlertDialog builder instance to build the alert dialog
-                AlertDialog.Builder filtersDialog = new AlertDialog.Builder(getContext());
 
-                // title of the alert dialog
-                filtersDialog.setTitle(R.string.search_filters_dialog_title);
-
-                // set the custom layout
                 final View customLayout = getLayoutInflater().inflate(R.layout.dialog_filters, null);
-                filtersDialog.setView(customLayout);
-
 
                 Spinner genreSPN = customLayout.findViewById(R.id.genre_SPN);
                 Spinner platformSPN = customLayout.findViewById(R.id.platform_SPN);
@@ -502,130 +521,135 @@ public class SearchFragment extends Fragment implements ResponseCallback {
                 releaseYearSPN.setAdapter(releaseYearAdapter);
                 releaseYearSPN.setSelection(lastSelectedReleaseYear);
 
-                filtersDialog.setPositiveButton(R.string.confirm_text, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        String genreInput, platformInput, releaseyearInput;
+                new MaterialAlertDialogBuilder(getContext())
+                        .setView(customLayout)
+                        .setTitle(R.string.search_filters_dialog_title)
+                        .setPositiveButton(R.string.confirm_text, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int which) {
 
-                        genreInput = genreSPN.getSelectedItem().toString();
-                        platformInput = platformSPN.getSelectedItem().toString();
-                        releaseyearInput = releaseYearSPN.getSelectedItem().toString();
+                                String genreInput, platformInput, releaseyearInput;
 
-                        lastSelectedGenre = genreAdapter.getPosition(genreInput);
-                        lastSelectedPlatform = platformAdapter.getPosition(platformInput);
-                        lastSelectedReleaseYear = releaseYearAdapter.getPosition(releaseyearInput);
+                                genreInput = genreSPN.getSelectedItem().toString();
+                                platformInput = platformSPN.getSelectedItem().toString();
+                                releaseyearInput = releaseYearSPN.getSelectedItem().toString();
 
+                                lastSelectedGenre = genreAdapter.getPosition(genreInput);
+                                lastSelectedPlatform = platformAdapter.getPosition(platformInput);
+                                lastSelectedReleaseYear = releaseYearAdapter.getPosition(releaseyearInput);
 
-                        if (genreInput.equals(genres[0]) || platformInput.equals(platforms[0]) || releaseyearInput.equals(years.get(0))) {
-                            games = new ArrayList<>(gamesCopy);
+                                if(isNetworkAvailable(getContext()) || !games.isEmpty()){
 
-                            if(!sortingParameter.isEmpty()){
+                                    if (genreInput.equals(genres[0]) || platformInput.equals(platforms[0]) || releaseyearInput.equals(years.get(0))) {
+                                        games = new ArrayList<>(gamesCopy);
 
-                                //sorting decrescente
-                                Collections.sort(games, (o1, o2) -> {
-                                    //non bello
-                                    int result = 0;
-                                    switch (sortingParameter) {
-                                        case "Most popular":
-                                            result = -Integer.compare(o1.getFollows(), o2.getFollows());
-                                            break;
+                                        if(!sortingParameter.isEmpty()){
 
-                                        case "Most recent":
-                                            try {
-                                                SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-                                                Date date1 = formatter.parse(o1.getFirstReleaseDate());
-                                                Date date2 = formatter.parse(o2.getFirstReleaseDate());
-                                                result = -date1.compareTo(date2);
-                                            } catch (ParseException e1) {
-                                                e1.printStackTrace();
-                                            }
-                                            break;
+                                            //sorting decrescente
+                                            Collections.sort(games, (o1, o2) -> {
+                                                //non bello
+                                                int result = 0;
+                                                switch (sortingParameter) {
+                                                    case "Most popular":
+                                                        result = -Integer.compare(o1.getFollows(), o2.getFollows());
+                                                        break;
 
-                                        case "Best rating":
-                                            result = -Double.compare(o1.getRating(), o2.getRating());
-                                            break;
+                                                    case "Most recent":
+                                                        try {
+                                                            SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+                                                            Date date1 = formatter.parse(o1.getFirstReleaseDate());
+                                                            Date date2 = formatter.parse(o2.getFirstReleaseDate());
+                                                            result = -date1.compareTo(date2);
+                                                        } catch (ParseException e1) {
+                                                            e1.printStackTrace();
+                                                        }
+                                                        break;
 
-                                        case "Alphabet":
-                                            result = o1.getName().compareTo(o2.getName());
-                                            break;
+                                                    case "Best rating":
+                                                        result = -Double.compare(o1.getRating(), o2.getRating());
+                                                        break;
 
-                                    }
-                                    return result;
-                                });
-                            }
+                                                    case "Alphabet":
+                                                        result = o1.getName().compareTo(o2.getName());
+                                                        break;
 
-                        }
-
-                            if (!genreInput.equals(genres[0])) {
-                                for (int i = games.size() - 1; i >= 0; i--) {
-                                    boolean hasGenre = false;
-
-                                    List<Genre> gameGenres = games.get(i).getGenres();
-
-                                    if (gameGenres != null) {
-                                        for (Genre genre : gameGenres) {
-                                            if (genre.getName().equals(genreInput)) {
-                                                hasGenre = true;
-                                            }
+                                                }
+                                                return result;
+                                            });
                                         }
 
-                                        if (!hasGenre) {
-                                            games.remove(games.get(i));
-                                        }
                                     }
-                                }
 
+                                    if (!genreInput.equals(genres[0])) {
+                                        for (int i = games.size() - 1; i >= 0; i--) {
+                                            boolean hasGenre = false;
 
-                            }
+                                            List<Genre> gameGenres = games.get(i).getGenres();
 
+                                            if (gameGenres != null) {
+                                                for (Genre genre : gameGenres) {
+                                                    if (genre.getName().equals(genreInput)) {
+                                                        hasGenre = true;
+                                                    }
+                                                }
 
-                            if (!platformInput.equals(platforms[0])) {
-                                for (int i = games.size() - 1; i >= 0; i--) {
-                                    boolean hasPlatform = false;
-
-                                    List<Platform> gamePlatforms = games.get(i).getPlatforms();
-
-                                    if (gamePlatforms != null) {
-                                        for (Platform platform : gamePlatforms) {
-                                            if (platform.getName().equals(platformInput)) {
-                                                hasPlatform = true;
+                                                if (!hasGenre) {
+                                                    games.remove(games.get(i));
+                                                }
                                             }
                                         }
 
-                                        if (!hasPlatform) {
-                                            games.remove(games.get(i));
+
+                                    }
+
+
+                                    if (!platformInput.equals(platforms[0])) {
+                                        for (int i = games.size() - 1; i >= 0; i--) {
+                                            boolean hasPlatform = false;
+
+                                            List<Platform> gamePlatforms = games.get(i).getPlatforms();
+
+                                            if (gamePlatforms != null) {
+                                                for (Platform platform : gamePlatforms) {
+                                                    if (platform.getName().equals(platformInput)) {
+                                                        hasPlatform = true;
+                                                    }
+                                                }
+
+                                                if (!hasPlatform) {
+                                                    games.remove(games.get(i));
+                                                }
+                                            }
                                         }
                                     }
+
+                                    if (!releaseyearInput.equals(years.get(0))) {
+                                        for (int i = games.size() - 1; i >= 0; i--) {
+                                            String[] dateParts = games.get(i).getFirstReleaseDate().split("/");
+                                            String yearOfRelease = dateParts[2];
+                                            if (!yearOfRelease.equals(releaseyearInput))
+                                                games.remove(games.get(i));
+                                        }
+                                    }
+
+                                    String text = String.format(getContext().getResources().getString(R.string.number_of_results), games.size(), userInput);
+                                    numberOfResults.setText(text);
+                                    showGamesOnRecyclerView(games);
+                                    adapter.notifyDataSetChanged();
+                                }else{
+
+                                    Snackbar.make(view.findViewById(R.id.Coordinatorlyt), "No internet connection, please connect and retry.", Snackbar.LENGTH_LONG).show();
                                 }
+
                             }
+                        })
+                        .setNegativeButton(R.string.cancel_text, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
 
-                            if (!releaseyearInput.equals(years.get(0))) {
-                                for (int i = games.size() - 1; i >= 0; i--) {
-                                    String[] dateParts = games.get(i).getFirstReleaseDate().split("/");
-                                    String yearOfRelease = dateParts[2];
-                                    if (!yearOfRelease.equals(releaseyearInput))
-                                        games.remove(games.get(i));
-                                }
                             }
-
-                        String text = String.format(getContext().getResources().getString(R.string.number_of_results), games.size(), userInput);
-                        numberOfResults.setText(text);
-                        showGamesOnRecyclerView(games);
-                        adapter.notifyDataSetChanged();
-                    }
-
-                });
-
-                filtersDialog.setNegativeButton(R.string.cancel_text, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                    }
-                });
-
-                // create and show the alert dialog
-                AlertDialog dialog = filtersDialog.create();
-                dialog.show();
+                        })
+                        .show();
             }
         });
     }
@@ -696,4 +720,14 @@ public class SearchFragment extends Fragment implements ResponseCallback {
         gamesRV.setLayoutManager(layoutManager);
         gamesRV.setAdapter(adapter);
     }
+
+
+    private boolean isNetworkAvailable(Context context) {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null;
+    }
+
+
 }

@@ -121,6 +121,7 @@ public class ProfileFragment extends Fragment {
                             nDesiredGames.setText("Giochi desiderati: " + desiredGames.size());
                             ArrayList<Integer> playedGames = (ArrayList<Integer>) document.get("playedGames");
                             nPlayedGames.setText("Giochi giocati: " + playedGames.size());
+                            //DesiredFragment.desiredGames = desiredGames;
                         }
                     }
                 }
