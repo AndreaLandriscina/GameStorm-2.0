@@ -69,7 +69,6 @@
     <string name="alreadyPlaying">PLAYING</string>
 
 
-
     <string-array name="sorting_parameters">
         <item>Most popular</item>
         <item>Most recent</item>

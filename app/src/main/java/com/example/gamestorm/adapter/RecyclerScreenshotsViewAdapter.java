@@ -2,11 +2,9 @@ package com.example.gamestorm.adapter;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
@@ -59,7 +57,7 @@ public class RecyclerScreenshotsViewAdapter extends RecyclerView.Adapter<Recycle
             bundle.putInt("position", position);
             bundle.putStringArrayList("imageUrl",list);
             fragment.setArguments(bundle);
-            activity.getSupportFragmentManager().beginTransaction().replace(R.id.screeshotContainer, fragment).commit();
+            activity.getSupportFragmentManager().beginTransaction().replace(R.id.screenshotContainer, fragment).commit();
         });
     }
 

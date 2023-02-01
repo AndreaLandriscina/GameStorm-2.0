@@ -3,6 +3,7 @@ package com.example.gamestorm.ui;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -18,6 +19,7 @@ import com.example.gamestorm.repository.IGamesRepository;
 import com.example.gamestorm.util.ResponseCallback;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -37,6 +39,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -51,7 +54,6 @@ import java.util.List;
 import java.util.Objects;
 
 public class GameActivity extends AppCompatActivity implements ResponseCallback {
-    private int idGame;
     private GameApiResponse game;
     private ProgressBar progressBar;
     private RecyclerView recyclerView;
@@ -76,7 +78,7 @@ public class GameActivity extends AppCompatActivity implements ResponseCallback 
         setToolbar();
 
         Intent intent = getIntent();
-        idGame = intent.getIntExtra("idGame", 1020);
+        int idGame = intent.getIntExtra("idGame", 1020);
         progressBar = findViewById(R.id.progressBar);
         iGamesRepository = new GamesRepository(getApplication(), this);
         progressBar.setVisibility(View.VISIBLE);
@@ -187,7 +189,6 @@ public class GameActivity extends AppCompatActivity implements ResponseCallback 
 
     private void goToDialog(DialogFragment fragment) {
         Bundle bundle = new Bundle();
-        bundle.putInt("idGame", game.getId());
         bundle.putInt("idGame", game.getId());
         bundle.putString("idUser", loggedUserID);
         bundle.putString("gameName", game.getName());
@@ -353,22 +354,28 @@ public class GameActivity extends AppCompatActivity implements ResponseCallback 
 
     private void showGenres(List<String> genres) {
         LinearLayout linearLayout = findViewById(R.id.genresLayout);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        );
+        params.setMarginEnd(20);
         TextView genresView = findViewById(R.id.genresView);
         genresView.setVisibility(View.VISIBLE);
 
         for (String genre : genres) {
-            TextView textView = new TextView(this);
-            textView.setTextSize(20);
-            textView.setPadding(15, 15, 15, 15);
-            textView.setBackgroundResource(R.drawable.rounded_corner);
+            MaterialButton button = new MaterialButton(this);
+            button.setLayoutParams(params);
+            button.setTextSize(16);
 
-            textView.setText(genre);
-            textView.setOnClickListener(v -> {
+            button.setPadding(20, 20, 20, 20);
+            button.setCornerRadius(30);
+            button.setText(genre);
+            button.setOnClickListener(v -> {
                 Intent myIntent = new Intent(getApplicationContext(), GenreActivity.class);
                 myIntent.putExtra("genreName", genre);
                 startActivity(myIntent);
             });
-            linearLayout.addView(textView);
+            linearLayout.addView(button);
         }
     }
 
@@ -446,7 +453,7 @@ public class GameActivity extends AppCompatActivity implements ResponseCallback 
 
     @Override
     public void onBackPressed() {
-        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.screeshotContainer);
+        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.screenshotContainer);
         if (!(fragment instanceof ScreenshotFragment)) {
             super.onBackPressed();
         } else {
