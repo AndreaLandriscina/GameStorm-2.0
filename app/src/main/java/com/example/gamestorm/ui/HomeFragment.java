@@ -17,6 +17,7 @@ import android.widget.Button;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.gamestorm.model.Cover;
@@ -54,6 +55,7 @@ public class HomeFragment extends Fragment implements ResponseCallback {
     private HorizontalScrollView forYouScrollView;
 
     private TextView imageTextView;
+    private ProgressBar progressBar;
 
     LayoutInflater inflater;
 
@@ -64,6 +66,7 @@ public class HomeFragment extends Fragment implements ResponseCallback {
     private List<GameApiResponse> gamesForYou;
     private List<GameApiResponse> gamesLatestReleases;
     private List<GameApiResponse> gamesIncoming;
+
     private GameApiResponse game;
     String queryPopular;
     String queryForYou;
@@ -96,22 +99,13 @@ public class HomeFragment extends Fragment implements ResponseCallback {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+
         iGamesRepository = new GamesRepository(getActivity().getApplication(), this);
         queryPopular = "fields id, name, cover.url;where follows!=null; sort follows desc; limit 30;";
         queryLatestReleases = "fields id, name, cover.url; sort first_release_date desc; limit 30;";
         queryIncoming = "fields id, name, cover.url; where first_release_date > " +Long.toString(currentDate())+";sort first_release_date asc; limit 30;";
         queryBestGames="fields id, name, cover.url;where total_rating_count>1000;sort total_rating desc;limit 30;";
         queryForYou="fields id, name, cover.url; sort follows desc; limit 30;";
-
-        //multiQuery="query games \"Popular\" {" + queryPopular + "};" +"query games \"Latest\" {" + queryLatestReleases  + "};" +"query games \"Incoming\" {" + queryIncoming + "};";
-        multiQuery="query games \"Popular\" {fields id, cover.url; sort rating desc; limit 30;};  " +
-                "query games \"Latest\" {fields id, cover.url; sort date desc; limit 30;}; " +
-                "query games \"Incoming\" {fields id, cover.url; sort date asc; limit 30;};";
-        gamesPopular = new ArrayList<>();
-        gamesBest=new ArrayList<>();
-        gamesForYou=new ArrayList<>();
-        gamesLatestReleases=new ArrayList<>();
-        gamesIncoming=new ArrayList<>();
 
     }
 
@@ -124,6 +118,8 @@ public class HomeFragment extends Fragment implements ResponseCallback {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         inflater=LayoutInflater.from(getContext());
+
+        progressBar = view.findViewById(R.id.progressBar);
 
         loginTextView=view.findViewById(R.id.textViewLoginHomePage);
         loginButton=view.findViewById(R.id.buttonLoginHomePage);
@@ -144,9 +140,11 @@ public class HomeFragment extends Fragment implements ResponseCallback {
         //GALLERY INCOMING
         galleryIncoming=view.findViewById(R.id.homeGalleryIncoming);
 
+
         if(savedInstanceState!=null){
-            Log.i("Ciao","saved");
-            gamesBest = savedInstanceState.getParcelableArrayList("popular");
+            Log.i("CIAO", "SALVATO");
+
+            gamesPopular = savedInstanceState.getParcelableArrayList("popular");
             gamesBest = savedInstanceState.getParcelableArrayList("best");
             gamesForYou = savedInstanceState.getParcelableArrayList("foryou");
             gamesLatestReleases = savedInstanceState.getParcelableArrayList("latest");
@@ -158,7 +156,15 @@ public class HomeFragment extends Fragment implements ResponseCallback {
             showGames(3,gamesBest);
             showGames(4,gamesForYou);
         }else{
-            Log.i("Ciao","Not saved");
+            Log.i("CIAO","NON SALVATO");
+            progressBar.setVisibility(View.VISIBLE);
+
+            gamesPopular = new ArrayList<>();
+            gamesBest=new ArrayList<>();
+            gamesForYou=new ArrayList<>();
+            gamesLatestReleases=new ArrayList<>();
+            gamesIncoming=new ArrayList<>();
+
             iGamesRepository.fetchGames(queryPopular,10000,0);
             iGamesRepository.fetchGames(queryLatestReleases,10000,1);
             iGamesRepository.fetchGames(queryIncoming,10000,2);
@@ -167,6 +173,7 @@ public class HomeFragment extends Fragment implements ResponseCallback {
         }
 
     }
+
 
 
     @Override
@@ -190,7 +197,7 @@ public class HomeFragment extends Fragment implements ResponseCallback {
 
     }
     public void showGames(int countQuery, List<GameApiResponse> gameList){
-
+        progressBar.setVisibility(View.GONE);
         if(countQuery==0) {
             for (int i = 0; i < 30; i++) {
                 game = gameList.get(i);
@@ -384,6 +391,7 @@ public class HomeFragment extends Fragment implements ResponseCallback {
         outState.putParcelableArrayList("foryou", (ArrayList<? extends Parcelable>) gamesForYou);
         outState.putParcelableArrayList("latest", (ArrayList<? extends Parcelable>) gamesLatestReleases);
         outState.putParcelableArrayList("incoming", (ArrayList<? extends Parcelable>) gamesIncoming);
+
     }
 
     @Override
