@@ -59,7 +59,6 @@ public class PlayedButtonDialogFragment extends DialogFragment {
                     break;
             }
         });
-
         return alertDialog.create();
     }
 
