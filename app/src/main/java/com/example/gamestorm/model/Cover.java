@@ -10,7 +10,12 @@ public class Cover {
     }
 
     public String getUrl() {
-        return "https:" + url;
+        if(!url.contains("https:")) {
+            return "https:" + url;
+        }
+        else{
+            return url;
+        }
     }
 
     @Override

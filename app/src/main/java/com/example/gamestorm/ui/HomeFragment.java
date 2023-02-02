@@ -126,14 +126,11 @@ public class HomeFragment extends Fragment implements ResponseCallback {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
         iGamesRepository = new GamesRepository(getActivity().getApplication(), this);
         queryPopular = "fields id, name, cover.url;where follows!=null; sort follows desc; limit 30;";
         queryLatestReleases = "fields id, name, cover.url; sort first_release_date desc; limit 30;";
         queryIncoming = "fields id, name, cover.url; where first_release_date > " +Long.toString(currentDate())+";sort first_release_date asc; limit 30;";
         queryBestGames="fields id, name, cover.url;where total_rating_count>1000;sort total_rating desc;limit 30;";
-        //queryForYou="fields id, name, cover.url; sort follows desc; limit 30;";
-
     }
 
     @Override
@@ -169,8 +166,6 @@ public class HomeFragment extends Fragment implements ResponseCallback {
 
         //LOGIN
         if(!isLogged()) {
-            Log.i("LOGIN","NON LOGGATO");
-
             forYouScrollView.setVisibility(View.GONE);
             loginTextView.setVisibility(View.VISIBLE);
             loginButton.setVisibility(View.VISIBLE);
@@ -181,7 +176,6 @@ public class HomeFragment extends Fragment implements ResponseCallback {
                 }
             });
         }else{
-            Log.i("LOGIN","LOGGATO");
             DocumentReference docRef = firebaseFirestore.collection("User").document(loggedUserID);
             docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                 @Override
@@ -197,50 +191,22 @@ public class HomeFragment extends Fragment implements ResponseCallback {
                                 loginButton.setVisibility(View.GONE);
                                 forYouScrollView.setVisibility(View.VISIBLE);
 
-                                Log.i("LISTA",playedGames.toString());
                                 String games = "";
                                 for (int i = 0; i < playedGames.size(); i++) {
                                     if (i < playedGames.size() - 1) {
                                         gameId = Integer.parseInt(String.valueOf(playedGames.get(i)));
-                                        Log.i("LOG ID",gameId.toString());
                                         games=games+gameId+",";
                                     } else {
                                         gameId = Integer.parseInt(String.valueOf(playedGames.get(i)));
-                                        Log.i("LOG ID",gameId.toString());
                                         games=games+gameId;
                                     }
                                 }
-                                Log.i("GIOCHI",games);
                                 String queryGenres = "fields genres.name;where id=(" + games + ");";
                                 iGamesRepository.fetchGames(queryGenres, 10000, 5); //query per recuperare generi dei giochi giocati dall'utente
-                                /*HashMap<String, Integer> mapGenreCount = new HashMap<>();
-                                for (int i = 0; i < genres.size(); i++) {
-                                    if (!mapGenreCount.containsValue(genres.get(i))) {
-                                        mapGenreCount.put(genres.get(i), 1);
-                                    } else {
-                                        int value = mapGenreCount.get(genres.get(i));
-                                        mapGenreCount.put(genres.get(i), value++);
-                                    }
-                                }
-                                int maxValue = Integer.MIN_VALUE;
-                                for (Map.Entry<String, Integer> entry : mapGenreCount.entrySet()) {
-                                    int value = entry.getValue();
-                                    if (value > maxValue) {
-                                        maxValue = value;
-                                    }
-                                }
-                                String preferredGenre = "";
-                                for (Map.Entry<String, Integer> entry : mapGenreCount.entrySet()) {
-                                    if (entry.getValue().equals(maxValue)) {
-                                        preferredGenre = entry.getKey();
-                                        break;
-                                    }
-                                }
-                                queryForYou = "fields id,name,cover.url;where genres.id=" + preferredGenre + ";limit 30;";*/
                             }else{
                                 forYouScrollView.setVisibility(View.GONE);
                                 loginButton.setVisibility(View.GONE);
-                                loginTextView.setText("Devi aggiungere almeno un gioco nella sezione \"giocato\"");
+                                loginTextView.setText(R.string.loginPlayedGame); //setta textView con scritto che deve aggiungere almeno un gioco nella sezione "Giocato" per poter visualizzare i giochi consigliati
                                 loginTextView.setVisibility(View.VISIBLE);
                             }
                         }
@@ -276,7 +242,6 @@ public class HomeFragment extends Fragment implements ResponseCallback {
 
                 gamesPopular = new ArrayList<>();
                 gamesBest = new ArrayList<>();
-                //gamesForYou = new ArrayList<>();
                 gamesLatestReleases = new ArrayList<>();
                 gamesIncoming = new ArrayList<>();
                 gamesUser=new ArrayList<>();
@@ -286,9 +251,6 @@ public class HomeFragment extends Fragment implements ResponseCallback {
                 iGamesRepository.fetchGames(queryIncoming, 10000, 2);
                 iGamesRepository.fetchGames(queryBestGames, 10000, 3);
 
-                /*if(isLogged() && queryForYou!=null) {
-                    iGamesRepository.fetchGames(queryForYou, 10000, 4);
-                }*/
             } else {
                 Snackbar.make(view.findViewById(R.id.Coordinatorlyt), "No internet connection, please connect and retry.", Snackbar.LENGTH_LONG).show();
             }
@@ -310,26 +272,20 @@ public class HomeFragment extends Fragment implements ResponseCallback {
             this.gamesIncoming.addAll(gamesList);
             showGames(countQuery,gamesIncoming);
         } else if (countQuery == 3) {
-            Log.i("QUERY 3:","COUNT QUERY 3");
             this.gamesBest.addAll(gamesList);
             showGames(countQuery,gamesBest);
         } else if(countQuery==4) {
-            Log.i("QUERY 4:","COUNT QUERY 4");
             this.gamesForYou.addAll(gamesList);
             showGames(countQuery,gamesForYou);
         }else if(countQuery==5){
-            Log.i("QUERY 5:","COUNT QUERY 5");
-            Log.i("QUERY 5",gamesList.toString());
             genres=new ArrayList<>();
             this.gamesUser.addAll(gamesList);
             for(int i=0;i<gamesUser.size();i++){
                 game=gamesUser.get(i);
                 for(int j=0;j<game.getGenres().size() && game.getGenres()!=null;j++) {
-                    Log.i("GENERE", game.getGenresString().toString());
                     genres.add(game.getGenresString().get(j).toString());
                 }
             }
-            Log.i("GENERI",genres.toString());
             HashMap<String, Integer> mapGenreCount = new HashMap<>();
             for (int i = 0; i < genres.size(); i++) {
                 if (!mapGenreCount.containsKey(genres.get(i))) {
@@ -353,12 +309,9 @@ public class HomeFragment extends Fragment implements ResponseCallback {
                     break;
                 }
             }
-            Log.i("HASHMAP",mapGenreCount.toString());
-            Log.i("GENERE PREFERITO",preferredGenre);
             queryForYou = "fields id,name,cover.url;where genres.name= \"" + preferredGenre + "\";limit 30;";
             if(isLogged() && queryForYou!=null) {
                 gamesForYou = new ArrayList<>();
-                Log.i("ENTRA IF QUERY 4","IF QUERY 4");
                 iGamesRepository.fetchGames(queryForYou, 10000, 4);
             }
         }
@@ -390,10 +343,6 @@ public class HomeFragment extends Fragment implements ResponseCallback {
                 imageGalleryPopular.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                      /* Bundle bundle=new Bundle();
-                       bundle.putInt("id",game.getId());
-                       Navigation.findNavController(getView()).navigate(R.id.fromHometoGame);
-                       */
                         Intent i = new Intent(getContext(), GameActivity.class);
                         i.putExtra("idGame", idGame);
                         startActivity(i);
@@ -425,9 +374,6 @@ public class HomeFragment extends Fragment implements ResponseCallback {
                 imageGalleryLatestReleases.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                       /*Bundle bundle=new Bundle();
-                       bundle.putInt("id",game.getId());
-                       Navigation.findNavController(getView()).navigate(R.id.fromHometoGame);*/
                         Intent i = new Intent(getContext(), GameActivity.class);
                         i.putExtra("idGame", idGame);
                         startActivity(i);
@@ -459,9 +405,6 @@ public class HomeFragment extends Fragment implements ResponseCallback {
                 imageGalleryIncoming.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                       /*Bundle bundle=new Bundle();
-                       bundle.putInt("id",game.getId());
-                       Navigation.findNavController(getView()).navigate(R.id.fromHometoGame);*/
                         Intent i = new Intent(getContext(), GameActivity.class);
                         i.putExtra("idGame", idGame);
                         startActivity(i);
@@ -494,9 +437,6 @@ public class HomeFragment extends Fragment implements ResponseCallback {
                 imageGalleryBest.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                       /*Bundle bundle=new Bundle();
-                       bundle.putInt("id",game.getId());
-                       Navigation.findNavController(getView()).navigate(R.id.fromHometoGame);*/
                         Intent i = new Intent(getContext(), GameActivity.class);
                         i.putExtra("idGame", idGame);
                         startActivity(i);
@@ -527,9 +467,6 @@ public class HomeFragment extends Fragment implements ResponseCallback {
                     imageGalleryForYou.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                           /*Bundle bundle = new Bundle();
-                           bundle.putInt("id", game.getId());
-                           Navigation.findNavController(getView()).navigate(R.id.fromHometoGame);*/
                             Intent i = new Intent(getContext(), GameActivity.class);
                             i.putExtra("idGame",idGame);
                             startActivity(i);
@@ -544,6 +481,7 @@ public class HomeFragment extends Fragment implements ResponseCallback {
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
 
+        Log.i("HOME FRAGMENT","ONSAVEINSTANCESTATE");
         //tutti i giochi
         outState.putParcelableArrayList("popular", (ArrayList<? extends Parcelable>) gamesPopular);
         outState.putParcelableArrayList("best", (ArrayList<? extends Parcelable>) gamesBest);
