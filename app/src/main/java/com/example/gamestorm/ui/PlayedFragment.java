@@ -117,16 +117,10 @@ public class PlayedFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(getContext());
         if(isNetworkAvailable(getContext())) {
-            if (firebaseAuth.getCurrentUser() == null && account == null) {
+            if (!isLogged()) {
                 //UTENTE NON LOGGATO
             } else {
-                if (firebaseAuth.getCurrentUser() != null) {
-                    loggedUserID = firebaseAuth.getCurrentUser().getUid();
-                } else if (account != null) {
-                    loggedUserID = account.getId();
-                }
                 viewGames();
             }
         }else{
@@ -203,5 +197,19 @@ public class PlayedFragment extends Fragment {
                 = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null;
+    }
+
+    private boolean isLogged(){
+        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(getContext());
+        if (firebaseAuth.getCurrentUser() == null && account == null) {
+            return false;
+        } else {
+            if (firebaseAuth.getCurrentUser() != null) {
+                loggedUserID = firebaseAuth.getCurrentUser().getUid();
+            } else if (account != null) {
+                loggedUserID = account.getId();
+            }
+            return true;
+        }
     }
 }
