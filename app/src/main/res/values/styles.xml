@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="roundedCorner">
-        <item name="cornerSize">35dp</item>
+        <item name="cornerSize">5dp</item>
     </style>
     <style name="CustomAlertDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
         <item name="android:windowBackground">@drawable/popup_background</item>
