@@ -9,7 +9,7 @@
         android:id="@+id/genre_TV"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Genre"
+        android:text="@string/genre_text"
         android:layout_marginLeft="24dp"/>
 
     <Spinner
@@ -24,7 +24,7 @@
         android:id="@+id/platform_TV"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Platform"
+        android:text="@string/platform_text"
         android:layout_marginLeft="24dp"/>
 
     <Spinner
@@ -39,7 +39,7 @@
         android:id="@+id/releaseyear_TV"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Release Year"
+        android:text="@string/release_year_text"
         android:layout_marginLeft="24dp"/>
 
     <Spinner

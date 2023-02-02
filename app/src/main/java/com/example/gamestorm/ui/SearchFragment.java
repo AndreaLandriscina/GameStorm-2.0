@@ -100,7 +100,8 @@ public class SearchFragment extends Fragment implements ResponseCallback {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        iGamesRepository = new GamesRepository(getActivity().getApplication(), this);
+        if(getActivity() != null)
+            iGamesRepository = new GamesRepository(getActivity().getApplication(), this);
         firstLoad = true;
         games = new ArrayList<>();
         gameName = view.findViewById(R.id.game_name_SV);
@@ -128,7 +129,7 @@ public class SearchFragment extends Fragment implements ResponseCallback {
             firstLoad = savedInstanceState.getBoolean(firstLoadKey);
 
             if(firstLoad){
-                if(isNetworkAvailable(getContext())){
+                if(getContext()!= null && isNetworkAvailable(getContext())){
                     numberOfResults.setTextSize(30);
                     numberOfResults.setTypeface(null, Typeface.BOLD);
                     numberOfResults.setText(R.string.explore_title);
@@ -154,7 +155,7 @@ public class SearchFragment extends Fragment implements ResponseCallback {
             }
 
         }else{
-            if(isNetworkAvailable(getContext())){
+            if(getContext()!= null && isNetworkAvailable(getContext())){
                 //mostro i piu popolari la prima volta che si accede al fragment
                 if(firstLoad){
                     numberOfResults.setText(R.string.explore_title);
@@ -190,7 +191,7 @@ public class SearchFragment extends Fragment implements ResponseCallback {
                 lastSelectedReleaseYear = 0;
                 numberOfResults.setText("");
 
-                if(isNetworkAvailable(getContext())){
+                if(getContext()!= null && isNetworkAvailable(getContext())){
 
                     userInput = query;
                     //timestamp per ottenere solo giochi già usciti(su igdb si sono giochi che devono ancora uscire e che non hanno informazioni utili per l'utente)
@@ -212,21 +213,332 @@ public class SearchFragment extends Fragment implements ResponseCallback {
 
 
 
-        sorting.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        sorting.setOnClickListener(v -> {
 
-                final String[] listItems = getContext().getResources().getStringArray(R.array.sorting_parameters);
+            final String[] listItems = getContext().getResources().getStringArray(R.array.sorting_parameters);
 
-                new MaterialAlertDialogBuilder(getContext())
-                        .setTitle(R.string.sort_by_dialog_title)
-                        .setSingleChoiceItems(listItems, lastSelectedSortingParameter, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int i) {
-                                sortingParameter = listItems[i];
-                                lastSelectedSortingParameter = i;
+            new MaterialAlertDialogBuilder(getContext())
+                    .setTitle(R.string.sort_by_dialog_title)
+                    .setSingleChoiceItems(listItems, lastSelectedSortingParameter, (dialog, i) -> {
+                        sortingParameter = listItems[i];
+                        lastSelectedSortingParameter = i;
 
-                                if(isNetworkAvailable(getContext()) || !games.isEmpty()){
+                        if(isNetworkAvailable(getContext()) || !games.isEmpty()){
+                            //sorting decrescente
+                            Collections.sort(games, (o1, o2) -> {
+                                //non bello
+                                int result = 0;
+                                switch (sortingParameter) {
+                                    case "Most popular":
+                                    case "Più popolare":
+                                        result = -Integer.compare(o1.getFollows(), o2.getFollows());
+                                        break;
+                                    case "Most recent":
+                                    case "Più recente":
+                                        try {
+                                            SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+                                            Date date1 = formatter.parse(o1.getFirstReleaseDate());
+                                            Date date2 = formatter.parse(o2.getFirstReleaseDate());
+                                            result = -date1.compareTo(date2);
+                                        } catch (ParseException e1) {
+                                            e1.printStackTrace();
+                                        }
+                                        break;
+                                    case "Best rating":
+                                    case "Voto migliore":
+                                        result = -Double.compare(o1.getRating(), o2.getRating());
+                                        break;
+
+                                    case "Alphabet":
+                                    case "Alfabeto":
+                                        result = o1.getName().compareTo(o2.getName());
+                                        break;
+
+                                }
+                                return result;
+                            });
+                            adapter.notifyDataSetChanged();
+                            showGamesOnRecyclerView(games);
+
+                        }else{
+
+                            Snackbar.make(view.findViewById(R.id.Coordinatorlyt), "No internet connection, please connect and retry.", Snackbar.LENGTH_LONG).show();
+                        }
+
+                        dialog.dismiss();
+
+                    })
+                    .setNegativeButton(R.string.cancel_text, (dialogInterface, i) -> {
+
+                    })
+                    .show();
+
+
+        });
+
+
+        filters.setOnClickListener(v -> {
+
+            final View customLayout = getLayoutInflater().inflate(R.layout.dialog_filters, null);
+
+            Spinner genreSPN = customLayout.findViewById(R.id.genre_SPN);
+            Spinner platformSPN = customLayout.findViewById(R.id.platform_SPN);
+            Spinner releaseYearSPN = customLayout.findViewById(R.id.releaseyear_SPN);
+
+
+
+            String[] genres = {"Any genre", "Fighting", "Shooter", "Music", "Platform", "Puzzle", "Racing", "Real Time Strategy (RTS)", "Role-playing (RPG)"
+                    , "Simulator", "Sport", "Strategy", "Turn-based strategy (TBS)", "Tactical", "Quiz/Trivia",
+                    "Hack and slash/Beat 'em up", "Pinball", "Adventure", "Arcade", "Visual Novel", "Indie",
+                    "Card & Board Game", "MOBA", "Point-and-click"};
+            genres[0] = getContext().getResources().getString(R.string.any_genre);
+
+            String[] platforms = {"Any platform", "Commodore CDTV",
+                    "Sega Pico",
+                    "PlayStation 2",
+                    "iOS",
+                    "Commodore Plus/4",
+                    "AY-3-8710",
+                    "Odyssey",
+                    "Commodore PET",
+                    "Sol-20",
+                    "PC (Microsoft Windows)",
+                    "Tapwave Zodiac",
+                    "ColecoVision",
+                    "PlayStation VR",
+                    "Texas Instruments TI-99",
+                    "Acorn Electron",
+                    "Gamate",
+                    "Hyper Neo Geo 64",
+                    "Thomson MO5",
+                    "Odyssey 2 / Videopac G7000",
+                    "SteamVR",
+                    "PC-50X Family",
+                    "AY-3-8607",
+                    "AY-3-8605",
+                    "AY-3-8606",
+                    "PC-98",
+                    "Amstrad CPC",
+                    "Playdate",
+                    "Family Computer Disk System",
+                    "WonderSwan Color",
+                    "Neo Geo CD",
+                    "Sega Game Gear",
+                    "Atari Jaguar",
+                    "3DO Interactive Multiplayer",
+                    "Microvision",
+                    "PC Engine SuperGrafx",
+                    "Turbografx-16/PC Engine CD",
+                    "Dreamcast",
+                    "Atari 8-bit",
+                    "Vectrex",
+                    "Donner Model 30",
+                    "PDP-8",
+                    "DEC GT40",
+                    "Microcomputer",
+                    "Ferranti Nimrod Computer",
+                    "Apple IIGS",
+                    "DOS",
+                    "SwanCrystal",
+                    "Fairchild Channel F",
+                    "PC-8801",
+                    "Virtual Boy",
+                    "TRS-80",
+                    "Nintendo Switch",
+                    "Amazon Fire TV",
+                    "VC 4000",
+                    "1292 Advanced Programmable Video System",
+                    "Tatung Einstein",
+                    "Nintendo DSi",
+                    "Neo Geo Pocket",
+                    "Dragon 32/64",
+                    "Amstrad PCW",
+                    "Xbox",
+                    "PDP-11",
+                    "Virtual Console (Nintendo)",
+                    "MSX2",
+                    "Atari 7800",
+                    "Sega CD",
+                    "Game Boy Advance",
+                    "Sega 32X",
+                    "AY-3-8500",
+                    "AY-3-8760",
+                    "AY-3-8603",
+                    "Nintendo 64",
+                    "Neo Geo Pocket Color",
+                    "Wii U",
+                    "Sharp X1",
+                    "Web browser",
+                    "CDC Cyber 70",
+                    "OnLive Game System",
+                    "Acorn Archimedes",
+                    "Amiga CD32",
+                    "Philips CD-i",
+                    "Sharp X68000",
+                    "Nuon",
+                    "Nintendo Entertainment System",
+                    "AY-3-8610",
+                    "Nintendo 3DS",
+                    "Game Boy Color",
+                    "Sega Master System/Mark III",
+                    "Amiga",
+                    "PlayStation Portable",
+                    "TurboGrafx-16/PC Engine",
+                    "Oculus VR",
+                    "Playdia",
+                    "PlayStation 3",
+                    "Mac",
+                    "Satellaview",
+                    "Sega Saturn",
+                    "Android",
+                    "Commodore C64/128/MAX",
+                    "Atari 5200",
+                    "Intellivision",
+                    "BlackBerry OS",
+                    "Game & Watch",
+                    "Imlac PDS-1",
+                    "FM Towns",
+                    "Nintendo PlayStation",
+                    "NEC PC-6000 Series",
+                    "FM-7",
+                    "Nintendo DS",
+                    "Atari ST/STE",
+                    "PlayStation Vita",
+                    "PlayStation 4",
+                    "Atari Lynx",
+                    "Commodore 16",
+                    "Nintendo GameCube",
+                    "N-Gage",
+                    "Super Nintendo Entertainment System",
+                    "Sharp MZ-2200",
+                    "Super Famicom",
+                    "Epoch Cassette Vision",
+                    "Gear VR",
+                    "PDP-10",
+                    "Arcade",
+                    "New Nintendo 3DS",
+                    "Plug & Play",
+                    "WonderSwan",
+                    "Commodore VIC-20",
+                    "Apple II",
+                    "Windows Phone",
+                    "Neo Geo AES",
+                    "SG-1000",
+                    "Windows Mixed Reality",
+                    "Neo Geo MVS",
+                    "Game Boy",
+                    "Epoch Super Cassette Vision",
+                    "Wii",
+                    "Intellivision Amico",
+                    "Google Stadia",
+                    "PlayStation 5",
+                    "Oculus Go",
+                    "Oculus Rift",
+                    "Bally Astrocade",
+                    "Oculus Quest",
+                    "BBC Microcomputer System",
+                    "Legacy Mobile Device",
+                    "Game.com",
+                    "Linux",
+                    "Ouya",
+                    "PDP-1",
+                    "TRS-80 Color Computer",
+                    "Analogue electronics",
+                    "Pokémon mini",
+                    "EDSAC",
+                    "HP 2100",
+                    "Exidy Sorcerer",
+                    "PDP-7",
+                    "DVD Player",
+                    "HP 3000",
+                    "SDS Sigma 7",
+                    "Daydream",
+                    "Call-A-Computer time-shared mainframe computer system",
+                    "Zeebo",
+                    "PLATO",
+                    "Blu-ray Player",
+                    "ZX Spectrum",
+                    "PC-FX",
+                    "MSX",
+                    "Evercade",
+                    "OOParts",
+                    "Sinclair ZX81",
+                    "DUPLICATE Stadia",
+                    "Casio Loopy",
+                    "Xbox Series X|S",
+                    "Atari 2600",
+                    "Xbox 360",
+                    "Xbox One",
+                    "PlayStation",
+                    "Family Computer",
+                    "AirConsole",
+                    "PlayStation VR2",
+                    "Windows Mobile",
+                    "Legacy Computer",
+                    "Sinclair QL",
+                    "Handheld Electronic LCD",
+                    "Leapster Explorer/LeadPad Explorer",
+                    "Nintendo 64DD",
+                    "HyperScan",
+                    "Palm OS",
+                    "Mega Duck/Cougar Boy",
+                    "Atari Jaguar CD",
+                    "Watara/QuickShot Supervision",
+                    "LeapTV",
+                    "Leapster",
+                    "Arduboy",
+                    "V.Smile",
+                    "Visual Memory Unit / Visual Memory System",
+                    "PocketStation",
+                    "Sega Mega Drive/Genesis",
+                    "Meta Quest 2"};
+
+            platforms[0] = getContext().getResources().getString(R.string.any_platform);
+
+
+            List<String> years = new ArrayList<>();
+            years.add(getContext().getResources().getString(R.string.any_year));
+            for (int i = Calendar.getInstance().get(Calendar.YEAR); i >= 1958; i--) {
+                years.add("" + i);
+            }
+
+            ArrayAdapter<String> genreAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_dropdown_item, genres);
+            genreAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            genreSPN.setAdapter(genreAdapter);
+            genreSPN.setSelection(lastSelectedGenre);
+
+            ArrayAdapter<String> platformAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_dropdown_item, platforms);
+            platformAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            platformSPN.setAdapter(platformAdapter);
+            platformSPN.setSelection(lastSelectedPlatform);
+
+            ArrayAdapter<String> releaseYearAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_dropdown_item, years);
+            releaseYearAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            releaseYearSPN.setAdapter(releaseYearAdapter);
+            releaseYearSPN.setSelection(lastSelectedReleaseYear);
+
+            new MaterialAlertDialogBuilder(getContext())
+                    .setView(customLayout)
+                    .setTitle(R.string.search_filters_dialog_title)
+                    .setPositiveButton(R.string.confirm_text, (dialogInterface, which) -> {
+
+                        String genreInput, platformInput, releaseyearInput;
+
+                        genreInput = genreSPN.getSelectedItem().toString();
+                        platformInput = platformSPN.getSelectedItem().toString();
+                        releaseyearInput = releaseYearSPN.getSelectedItem().toString();
+
+                        lastSelectedGenre = genreAdapter.getPosition(genreInput);
+                        lastSelectedPlatform = platformAdapter.getPosition(platformInput);
+                        lastSelectedReleaseYear = releaseYearAdapter.getPosition(releaseyearInput);
+
+                        if(isNetworkAvailable(getContext()) || !games.isEmpty()){
+
+                            if (genreInput.equals(genres[0]) || platformInput.equals(platforms[0]) || releaseyearInput.equals(years.get(0))) {
+                                games = new ArrayList<>(gamesCopy);
+
+                                if(!sortingParameter.isEmpty()){
+
                                     //sorting decrescente
                                     Collections.sort(games, (o1, o2) -> {
                                         //non bello
@@ -258,399 +570,84 @@ public class SearchFragment extends Fragment implements ResponseCallback {
                                         }
                                         return result;
                                     });
-                                    adapter.notifyDataSetChanged();
-                                    showGamesOnRecyclerView(games);
-
-                                }else{
-
-                                    Snackbar.make(view.findViewById(R.id.Coordinatorlyt), "No internet connection, please connect and retry.", Snackbar.LENGTH_LONG).show();
-                                }
-
-                                dialog.dismiss();
-
-                            }
-                        })
-                        .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-
-                            }
-                        })
-                        .show();
-
-
-            }
-        });
-
-
-        filters.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                final View customLayout = getLayoutInflater().inflate(R.layout.dialog_filters, null);
-
-                Spinner genreSPN = customLayout.findViewById(R.id.genre_SPN);
-                Spinner platformSPN = customLayout.findViewById(R.id.platform_SPN);
-                Spinner releaseYearSPN = customLayout.findViewById(R.id.releaseyear_SPN);
-
-
-
-                String[] genres = {"Any genre", "Fighting", "Shooter", "Music", "Platform", "Puzzle", "Racing", "Real Time Strategy (RTS)", "Role-playing (RPG)"
-                        , "Simulator", "Sport", "Strategy", "Turn-based strategy (TBS)", "Tactical", "Quiz/Trivia",
-                        "Hack and slash/Beat 'em up", "Pinball", "Adventure", "Arcade", "Visual Novel", "Indie",
-                        "Card & Board Game", "MOBA", "Point-and-click"};
-
-                String[] platforms = {"Any platform", "Commodore CDTV",
-                        "Sega Pico",
-                        "PlayStation 2",
-                        "iOS",
-                        "Commodore Plus/4",
-                        "AY-3-8710",
-                        "Odyssey",
-                        "Commodore PET",
-                        "Sol-20",
-                        "PC (Microsoft Windows)",
-                        "Tapwave Zodiac",
-                        "ColecoVision",
-                        "PlayStation VR",
-                        "Texas Instruments TI-99",
-                        "Acorn Electron",
-                        "Gamate",
-                        "Hyper Neo Geo 64",
-                        "Thomson MO5",
-                        "Odyssey 2 / Videopac G7000",
-                        "SteamVR",
-                        "PC-50X Family",
-                        "AY-3-8607",
-                        "AY-3-8605",
-                        "AY-3-8606",
-                        "PC-98",
-                        "Amstrad CPC",
-                        "Playdate",
-                        "Family Computer Disk System",
-                        "WonderSwan Color",
-                        "Neo Geo CD",
-                        "Sega Game Gear",
-                        "Atari Jaguar",
-                        "3DO Interactive Multiplayer",
-                        "Microvision",
-                        "PC Engine SuperGrafx",
-                        "Turbografx-16/PC Engine CD",
-                        "Dreamcast",
-                        "Atari 8-bit",
-                        "Vectrex",
-                        "Donner Model 30",
-                        "PDP-8",
-                        "DEC GT40",
-                        "Microcomputer",
-                        "Ferranti Nimrod Computer",
-                        "Apple IIGS",
-                        "DOS",
-                        "SwanCrystal",
-                        "Fairchild Channel F",
-                        "PC-8801",
-                        "Virtual Boy",
-                        "TRS-80",
-                        "Nintendo Switch",
-                        "Amazon Fire TV",
-                        "VC 4000",
-                        "1292 Advanced Programmable Video System",
-                        "Tatung Einstein",
-                        "Nintendo DSi",
-                        "Neo Geo Pocket",
-                        "Dragon 32/64",
-                        "Amstrad PCW",
-                        "Xbox",
-                        "PDP-11",
-                        "Virtual Console (Nintendo)",
-                        "MSX2",
-                        "Atari 7800",
-                        "Sega CD",
-                        "Game Boy Advance",
-                        "Sega 32X",
-                        "AY-3-8500",
-                        "AY-3-8760",
-                        "AY-3-8603",
-                        "Nintendo 64",
-                        "Neo Geo Pocket Color",
-                        "Wii U",
-                        "Sharp X1",
-                        "Web browser",
-                        "CDC Cyber 70",
-                        "OnLive Game System",
-                        "Acorn Archimedes",
-                        "Amiga CD32",
-                        "Philips CD-i",
-                        "Sharp X68000",
-                        "Nuon",
-                        "Nintendo Entertainment System",
-                        "AY-3-8610",
-                        "Nintendo 3DS",
-                        "Game Boy Color",
-                        "Sega Master System/Mark III",
-                        "Amiga",
-                        "PlayStation Portable",
-                        "TurboGrafx-16/PC Engine",
-                        "Oculus VR",
-                        "Playdia",
-                        "PlayStation 3",
-                        "Mac",
-                        "Satellaview",
-                        "Sega Saturn",
-                        "Android",
-                        "Commodore C64/128/MAX",
-                        "Atari 5200",
-                        "Intellivision",
-                        "BlackBerry OS",
-                        "Game & Watch",
-                        "Imlac PDS-1",
-                        "FM Towns",
-                        "Nintendo PlayStation",
-                        "NEC PC-6000 Series",
-                        "FM-7",
-                        "Nintendo DS",
-                        "Atari ST/STE",
-                        "PlayStation Vita",
-                        "PlayStation 4",
-                        "Atari Lynx",
-                        "Commodore 16",
-                        "Nintendo GameCube",
-                        "N-Gage",
-                        "Super Nintendo Entertainment System",
-                        "Sharp MZ-2200",
-                        "Super Famicom",
-                        "Epoch Cassette Vision",
-                        "Gear VR",
-                        "PDP-10",
-                        "Arcade",
-                        "New Nintendo 3DS",
-                        "Plug & Play",
-                        "WonderSwan",
-                        "Commodore VIC-20",
-                        "Apple II",
-                        "Windows Phone",
-                        "Neo Geo AES",
-                        "SG-1000",
-                        "Windows Mixed Reality",
-                        "Neo Geo MVS",
-                        "Game Boy",
-                        "Epoch Super Cassette Vision",
-                        "Wii",
-                        "Intellivision Amico",
-                        "Google Stadia",
-                        "PlayStation 5",
-                        "Oculus Go",
-                        "Oculus Rift",
-                        "Bally Astrocade",
-                        "Oculus Quest",
-                        "BBC Microcomputer System",
-                        "Legacy Mobile Device",
-                        "Game.com",
-                        "Linux",
-                        "Ouya",
-                        "PDP-1",
-                        "TRS-80 Color Computer",
-                        "Analogue electronics",
-                        "Pokémon mini",
-                        "EDSAC",
-                        "HP 2100",
-                        "Exidy Sorcerer",
-                        "PDP-7",
-                        "DVD Player",
-                        "HP 3000",
-                        "SDS Sigma 7",
-                        "Daydream",
-                        "Call-A-Computer time-shared mainframe computer system",
-                        "Zeebo",
-                        "PLATO",
-                        "Blu-ray Player",
-                        "ZX Spectrum",
-                        "PC-FX",
-                        "MSX",
-                        "Evercade",
-                        "OOParts",
-                        "Sinclair ZX81",
-                        "DUPLICATE Stadia",
-                        "Casio Loopy",
-                        "Xbox Series X|S",
-                        "Atari 2600",
-                        "Xbox 360",
-                        "Xbox One",
-                        "PlayStation",
-                        "Family Computer",
-                        "AirConsole",
-                        "PlayStation VR2",
-                        "Windows Mobile",
-                        "Legacy Computer",
-                        "Sinclair QL",
-                        "Handheld Electronic LCD",
-                        "Leapster Explorer/LeadPad Explorer",
-                        "Nintendo 64DD",
-                        "HyperScan",
-                        "Palm OS",
-                        "Mega Duck/Cougar Boy",
-                        "Atari Jaguar CD",
-                        "Watara/QuickShot Supervision",
-                        "LeapTV",
-                        "Leapster",
-                        "Arduboy",
-                        "V.Smile",
-                        "Visual Memory Unit / Visual Memory System",
-                        "PocketStation",
-                        "Sega Mega Drive/Genesis",
-                        "Meta Quest 2"};
-
-                List<String> years = new ArrayList<>();
-                years.add("Any year");
-                for (int i = Calendar.getInstance().get(Calendar.YEAR); i >= 1958; i--) {
-                    years.add("" + i);
-                }
-
-                ArrayAdapter<String> genreAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_dropdown_item, genres);
-                genreAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                genreSPN.setAdapter(genreAdapter);
-                genreSPN.setSelection(lastSelectedGenre);
-
-                ArrayAdapter<String> platformAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_dropdown_item, platforms);
-                platformAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                platformSPN.setAdapter(platformAdapter);
-                platformSPN.setSelection(lastSelectedPlatform);
-
-                ArrayAdapter<String> releaseYearAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_dropdown_item, years);
-                releaseYearAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                releaseYearSPN.setAdapter(releaseYearAdapter);
-                releaseYearSPN.setSelection(lastSelectedReleaseYear);
-
-                new MaterialAlertDialogBuilder(getContext())
-                        .setView(customLayout)
-                        .setTitle(R.string.search_filters_dialog_title)
-                        .setPositiveButton(R.string.confirm_text, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int which) {
-
-                                String genreInput, platformInput, releaseyearInput;
-
-                                genreInput = genreSPN.getSelectedItem().toString();
-                                platformInput = platformSPN.getSelectedItem().toString();
-                                releaseyearInput = releaseYearSPN.getSelectedItem().toString();
-
-                                lastSelectedGenre = genreAdapter.getPosition(genreInput);
-                                lastSelectedPlatform = platformAdapter.getPosition(platformInput);
-                                lastSelectedReleaseYear = releaseYearAdapter.getPosition(releaseyearInput);
-
-                                if(isNetworkAvailable(getContext()) || !games.isEmpty()){
-
-                                    if (genreInput.equals(genres[0]) || platformInput.equals(platforms[0]) || releaseyearInput.equals(years.get(0))) {
-                                        games = new ArrayList<>(gamesCopy);
-
-                                        if(!sortingParameter.isEmpty()){
-
-                                            //sorting decrescente
-                                            Collections.sort(games, (o1, o2) -> {
-                                                //non bello
-                                                int result = 0;
-                                                switch (sortingParameter) {
-                                                    case "Most popular":
-                                                        result = -Integer.compare(o1.getFollows(), o2.getFollows());
-                                                        break;
-
-                                                    case "Most recent":
-                                                        try {
-                                                            SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-                                                            Date date1 = formatter.parse(o1.getFirstReleaseDate());
-                                                            Date date2 = formatter.parse(o2.getFirstReleaseDate());
-                                                            result = -date1.compareTo(date2);
-                                                        } catch (ParseException e1) {
-                                                            e1.printStackTrace();
-                                                        }
-                                                        break;
-
-                                                    case "Best rating":
-                                                        result = -Double.compare(o1.getRating(), o2.getRating());
-                                                        break;
-
-                                                    case "Alphabet":
-                                                        result = o1.getName().compareTo(o2.getName());
-                                                        break;
-
-                                                }
-                                                return result;
-                                            });
-                                        }
-
-                                    }
-
-                                    if (!genreInput.equals(genres[0])) {
-                                        for (int i = games.size() - 1; i >= 0; i--) {
-                                            boolean hasGenre = false;
-
-                                            List<Genre> gameGenres = games.get(i).getGenres();
-
-                                            if (gameGenres != null) {
-                                                for (Genre genre : gameGenres) {
-                                                    if (genre.getName().equals(genreInput)) {
-                                                        hasGenre = true;
-                                                    }
-                                                }
-
-                                                if (!hasGenre) {
-                                                    games.remove(games.get(i));
-                                                }
-                                            }
-                                        }
-
-
-                                    }
-
-
-                                    if (!platformInput.equals(platforms[0])) {
-                                        for (int i = games.size() - 1; i >= 0; i--) {
-                                            boolean hasPlatform = false;
-
-                                            List<Platform> gamePlatforms = games.get(i).getPlatforms();
-
-                                            if (gamePlatforms != null) {
-                                                for (Platform platform : gamePlatforms) {
-                                                    if (platform.getName().equals(platformInput)) {
-                                                        hasPlatform = true;
-                                                    }
-                                                }
-
-                                                if (!hasPlatform) {
-                                                    games.remove(games.get(i));
-                                                }
-                                            }
-                                        }
-                                    }
-
-                                    if (!releaseyearInput.equals(years.get(0))) {
-                                        for (int i = games.size() - 1; i >= 0; i--) {
-                                            String[] dateParts = games.get(i).getFirstReleaseDate().split("/");
-                                            String yearOfRelease = dateParts[2];
-                                            if (!yearOfRelease.equals(releaseyearInput))
-                                                games.remove(games.get(i));
-                                        }
-                                    }
-
-                                    String text = String.format(getContext().getResources().getString(R.string.number_of_results), games.size(), userInput);
-                                    numberOfResults.setText(text);
-                                    showGamesOnRecyclerView(games);
-                                    adapter.notifyDataSetChanged();
-                                }else{
-
-                                    Snackbar.make(view.findViewById(R.id.Coordinatorlyt), "No internet connection, please connect and retry.", Snackbar.LENGTH_LONG).show();
                                 }
 
                             }
-                        })
-                        .setNegativeButton(R.string.cancel_text, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
+
+                            if (!genreInput.equals(genres[0])) {
+                                for (int i = games.size() - 1; i >= 0; i--) {
+                                    boolean hasGenre = false;
+
+                                    List<Genre> gameGenres = games.get(i).getGenres();
+
+                                    if (gameGenres != null) {
+                                        for (Genre genre : gameGenres) {
+                                            if (genre.getName().equals(genreInput)) {
+                                                hasGenre = true;
+                                                break;
+                                            }
+                                        }
+
+                                        if (!hasGenre) {
+                                            games.remove(games.get(i));
+                                        }
+                                    }
+                                }
+
 
                             }
-                        })
-                        .show();
-            }
+
+
+                            if (!platformInput.equals(platforms[0])) {
+                                for (int i = games.size() - 1; i >= 0; i--) {
+                                    boolean hasPlatform = false;
+
+                                    List<Platform> gamePlatforms = games.get(i).getPlatforms();
+
+                                    if (gamePlatforms != null) {
+                                        for (Platform platform : gamePlatforms) {
+                                            if (platform.getName().equals(platformInput)) {
+                                                hasPlatform = true;
+                                                break;
+                                            }
+                                        }
+
+                                        if (!hasPlatform) {
+                                            games.remove(games.get(i));
+                                        }
+                                    }
+                                }
+                            }
+
+                            if (!releaseyearInput.equals(years.get(0))) {
+                                for (int i = games.size() - 1; i >= 0; i--) {
+                                    String[] dateParts = games.get(i).getFirstReleaseDate().split("/");
+                                    String yearOfRelease = dateParts[2];
+                                    if (!yearOfRelease.equals(releaseyearInput))
+                                        games.remove(games.get(i));
+                                }
+                            }
+
+                            if(!firstLoad){
+                                String text = String.format(getContext().getResources().getString(R.string.number_of_results), games.size(), userInput);
+                                numberOfResults.setText(text);
+                            }else{
+                                numberOfResults.setText(R.string.explore_title);
+
+                            }
+
+                            showGamesOnRecyclerView(games);
+                            adapter.notifyDataSetChanged();
+                        }else{
+
+                            Snackbar.make(view.findViewById(R.id.Coordinatorlyt), "No internet connection, please connect and retry.", Snackbar.LENGTH_LONG).show();
+                        }
+
+                    })
+                    .setNegativeButton(R.string.cancel_text, (dialogInterface, i) -> {
+
+                    })
+                    .show();
         });
     }
 
@@ -663,7 +660,9 @@ public class SearchFragment extends Fragment implements ResponseCallback {
         if(!firstLoad){
             numberOfResults.setTextSize(15);
             numberOfResults.setTypeface(null, Typeface.NORMAL);
-            String text = String.format(getContext().getResources().getString(R.string.number_of_results), games.size(), userInput);
+            String text = "";
+            if(getContext() != null)
+                 text = String.format(getContext().getResources().getString(R.string.number_of_results), games.size(), userInput);
             numberOfResults.setText(text);
         }
 

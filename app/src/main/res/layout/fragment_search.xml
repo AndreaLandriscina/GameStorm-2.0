@@ -19,6 +19,7 @@
 
     <androidx.appcompat.widget.SearchView
         android:id="@+id/game_name_SV"
+        style="@style/Widget.Material3.SearchView"
         android:layout_width="225dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -30,7 +31,7 @@
         app:iconifiedByDefault="false"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:queryHint="Search games" />
+        app:queryHint="@string/search_games_hint" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/sorting_B"
@@ -56,11 +57,21 @@
         app:layout_constraintStart_toEndOf="@+id/game_name_SV"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <TextView
+        android:id="@+id/number_of_results_TV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="40dp"
+        android:text=""
+        app:layout_constraintBottom_toTopOf="@+id/games_RV"
+        app:layout_constraintStart_toStartOf="parent" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/games_RV"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="100dp"
+        android:layout_marginTop="120dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -77,14 +88,6 @@
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
-    <TextView
-        android:id="@+id/number_of_results_TV"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginBottom="32dp"
-        android:text=""
-        app:layout_constraintBottom_toTopOf="@+id/games_RV"
-        app:layout_constraintStart_toStartOf="parent" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

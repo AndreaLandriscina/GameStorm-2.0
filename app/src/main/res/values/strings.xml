@@ -84,5 +84,13 @@
     <string name="alreadyPlayed">PLAYED</string>
     <string name="RemoveGame">Are you sure to remove this game?</string>
     <string name="NoRating">No rating available</string>
+    <string name="search_games_hint">Search games</string>
+    <string name="any_genre">Any genre</string>
+    <string name="any_platform">Any platform</string>
+    <string name="any_year">Any year</string>
+    <string name="genre_text">Genre</string>
+    <string name="platform_text">Platform</string>
+    <string name="release_year_text">Release Year</string>
+
 
 </resources>
