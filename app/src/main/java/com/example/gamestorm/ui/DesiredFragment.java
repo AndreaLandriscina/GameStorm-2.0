@@ -122,8 +122,18 @@ public class DesiredFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(getContext());
         if(isNetworkAvailable(getContext())) {
-            viewGames();
+            if (firebaseAuth.getCurrentUser() == null && account == null) {
+                //UTENTE NON LOGGATO
+            } else {
+                if (firebaseAuth.getCurrentUser() != null) {
+                    loggedUserID = firebaseAuth.getCurrentUser().getUid();
+                } else if (account != null) {
+                    loggedUserID = account.getId();
+                }
+                viewGames();
+            }
         }else{
             Snackbar.make(requireView().findViewById(R.id.Coordinatorlyt), "No internet connection, please connect and retry.", Snackbar.LENGTH_LONG).show();
         }
