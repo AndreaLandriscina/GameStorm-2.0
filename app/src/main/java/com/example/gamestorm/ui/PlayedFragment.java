@@ -118,7 +118,11 @@ public class PlayedFragment extends Fragment {
     public void onResume() {
         super.onResume();
         if(isNetworkAvailable(getContext())) {
-            viewGames();
+            if (!isLogged()) {
+                //UTENTE NON LOGGATO
+            } else {
+                viewGames();
+            }
         }else{
             Snackbar.make(requireView().findViewById(R.id.Coordinatorlyt), "No internet connection, please connect and retry.", Snackbar.LENGTH_LONG).show();
         }
@@ -193,5 +197,19 @@ public class PlayedFragment extends Fragment {
                 = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null;
+    }
+
+    private boolean isLogged(){
+        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(getContext());
+        if (firebaseAuth.getCurrentUser() == null && account == null) {
+            return false;
+        } else {
+            if (firebaseAuth.getCurrentUser() != null) {
+                loggedUserID = firebaseAuth.getCurrentUser().getUid();
+            } else if (account != null) {
+                loggedUserID = account.getId();
+            }
+            return true;
+        }
     }
 }
