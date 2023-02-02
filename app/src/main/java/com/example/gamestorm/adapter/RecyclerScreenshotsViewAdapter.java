@@ -2,9 +2,11 @@ package com.example.gamestorm.adapter;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
@@ -40,7 +42,7 @@ public class RecyclerScreenshotsViewAdapter extends RecyclerView.Adapter<Recycle
     @Override
     public void onBindViewHolder(@NonNull RecyclerViewHolder holder, int position) {
         RecyclerData recyclerData = dataArrayList.get(position);
-        String newUrl = recyclerData.getImgUrl().replace("thumb", "screenshot_med");
+        String newUrl = recyclerData.getImgUrl().replace("thumb", "screenshot_huge");
         Picasso.get().load(newUrl).into(holder.screenshot);
         holder.screenshot.setOnClickListener(v -> {
             AppCompatActivity activity = (AppCompatActivity) v.getContext();
@@ -51,7 +53,7 @@ public class RecyclerScreenshotsViewAdapter extends RecyclerView.Adapter<Recycle
             Bundle bundle = new Bundle();
             ArrayList<String> list = new ArrayList<>();
             for (RecyclerData data : dataArrayList){
-                list.add(data.getImgUrl());
+                list.add(data.getImgUrl().replace("thumb", "screenshot_huge"));
             }
             bundle.putString("currentImage", newUrl);
             bundle.putInt("position", position);
@@ -69,11 +71,14 @@ public class RecyclerScreenshotsViewAdapter extends RecyclerView.Adapter<Recycle
     // View Holder Class to handle Recycler View.
     public class RecyclerViewHolder extends RecyclerView.ViewHolder {
         private ImageView screenshot;
+        private ImageView screenshotBig;
 
         public RecyclerViewHolder(@NonNull View itemView) {
             super(itemView);
             screenshot = itemView.findViewById(R.id.screenshot);
+            screenshot.setVisibility(View.VISIBLE);
+            screenshotBig = itemView.findViewById(R.id.screenshotBig);
+            screenshotBig.setVisibility(View.GONE);
         }
     }
 }
-
