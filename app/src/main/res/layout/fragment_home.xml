@@ -23,6 +23,7 @@
             android:text="@string/home"
             android:textSize="20dp" />
 
+
         <TextView
             android:id="@+id/textViewPopular"
             android:layout_width="match_parent"
@@ -72,6 +73,16 @@
             android:textSize="30dp"
             android:textStyle="bold" />
 
+        <androidx.coordinatorlayout.widget.CoordinatorLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/Coordinatorlyt"
+            android:layout_marginBottom="32dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
         <HorizontalScrollView
             android:layout_width="match_parent"
             android:layout_height="200dp"
@@ -86,6 +97,7 @@
                 android:layout_height="match_parent"
                 android:orientation="horizontal" />
         </HorizontalScrollView>
+
 
         <TextView
             android:id="@+id/textViewForYou"
@@ -189,6 +201,7 @@
                 android:layout_height="match_parent"
                 android:orientation="horizontal" />
         </HorizontalScrollView>
+
         <Button
             android:layout_width="match_parent"
             android:layout_height="70dp"

@@ -1,7 +1,10 @@
 package com.example.gamestorm.ui;
 
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -26,11 +29,24 @@ import com.example.gamestorm.R;
 import com.example.gamestorm.repository.GamesRepository;
 import com.example.gamestorm.repository.IGamesRepository;
 import com.example.gamestorm.util.ResponseCallback;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -76,6 +92,17 @@ public class HomeFragment extends Fragment implements ResponseCallback {
 
     String multiQuery;
 
+    //LOGIN
+    FirebaseAuth firebaseAuth;
+    GoogleSignInOptions gso;
+    GoogleSignInClient gsc;
+    FirebaseFirestore firebaseFirestore;
+    String loggedUserID;
+
+    private List<GameApiResponse> gamesUser;
+    private List<String> genres;
+
+
     public HomeFragment() {
 
     }
@@ -105,7 +132,7 @@ public class HomeFragment extends Fragment implements ResponseCallback {
         queryLatestReleases = "fields id, name, cover.url; sort first_release_date desc; limit 30;";
         queryIncoming = "fields id, name, cover.url; where first_release_date > " +Long.toString(currentDate())+";sort first_release_date asc; limit 30;";
         queryBestGames="fields id, name, cover.url;where total_rating_count>1000;sort total_rating desc;limit 30;";
-        queryForYou="fields id, name, cover.url; sort follows desc; limit 30;";
+        //queryForYou="fields id, name, cover.url; sort follows desc; limit 30;";
 
     }
 
@@ -117,61 +144,156 @@ public class HomeFragment extends Fragment implements ResponseCallback {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        inflater=LayoutInflater.from(getContext());
+        inflater = LayoutInflater.from(getContext());
 
         progressBar = view.findViewById(R.id.progressBar);
 
-        loginTextView=view.findViewById(R.id.textViewLoginHomePage);
-        loginButton=view.findViewById(R.id.buttonLoginHomePage);
-        forYouScrollView=view.findViewById(R.id.forYouScrollView);
+        loginTextView = view.findViewById(R.id.textViewLoginHomePage);
+        loginButton = view.findViewById(R.id.buttonLoginHomePage);
+        forYouScrollView = view.findViewById(R.id.forYouScrollView);
 
         //GALLERY POPULAR
-        galleryPopular=view.findViewById(R.id.homeGalleryPopular);
+        galleryPopular = view.findViewById(R.id.homeGalleryPopular);
 
         //GALLERY BEST GAMES
-        galleryBestGames=view.findViewById(R.id.homeGalleryBestGames);
+        galleryBestGames = view.findViewById(R.id.homeGalleryBestGames);
 
         //GALLERY FOR YOU
-        galleryForYou=view.findViewById(R.id.homeGalleryForYou);
+        galleryForYou = view.findViewById(R.id.homeGalleryForYou);
 
         //GALLERY LATEST RELEASES
-        galleryLatestReleases=view.findViewById(R.id.homeGalleryLatestReleases);
+        galleryLatestReleases = view.findViewById(R.id.homeGalleryLatestReleases);
 
         //GALLERY INCOMING
-        galleryIncoming=view.findViewById(R.id.homeGalleryIncoming);
+        galleryIncoming = view.findViewById(R.id.homeGalleryIncoming);
 
+        //LOGIN
+        if(!isLogged()) {
+            Log.i("LOGIN","NON LOGGATO");
 
-        if(savedInstanceState!=null){
-            Log.i("CIAO", "SALVATO");
-
-            gamesPopular = savedInstanceState.getParcelableArrayList("popular");
-            gamesBest = savedInstanceState.getParcelableArrayList("best");
-            gamesForYou = savedInstanceState.getParcelableArrayList("foryou");
-            gamesLatestReleases = savedInstanceState.getParcelableArrayList("latest");
-            gamesIncoming = savedInstanceState.getParcelableArrayList("incoming");
-
-            showGames(0,gamesPopular);
-            showGames(1,gamesLatestReleases);
-            showGames(2,gamesIncoming);
-            showGames(3,gamesBest);
-            showGames(4,gamesForYou);
+            forYouScrollView.setVisibility(View.GONE);
+            loginTextView.setVisibility(View.VISIBLE);
+            loginButton.setVisibility(View.VISIBLE);
+            loginButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    startActivity(new Intent(getContext(), LoginActivity.class));
+                }
+            });
         }else{
-            Log.i("CIAO","NON SALVATO");
-            progressBar.setVisibility(View.VISIBLE);
+            Log.i("LOGIN","LOGGATO");
+            DocumentReference docRef = firebaseFirestore.collection("User").document(loggedUserID);
+            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document != null) {
+                            ArrayList<Integer> playedGames = (ArrayList<Integer>) document.get("playedGames");
+                            Integer gameId=0;
+                            if (!playedGames.isEmpty()) {
 
-            gamesPopular = new ArrayList<>();
-            gamesBest=new ArrayList<>();
-            gamesForYou=new ArrayList<>();
-            gamesLatestReleases=new ArrayList<>();
-            gamesIncoming=new ArrayList<>();
+                                loginTextView.setVisibility(View.GONE);
+                                loginButton.setVisibility(View.GONE);
+                                forYouScrollView.setVisibility(View.VISIBLE);
 
-            iGamesRepository.fetchGames(queryPopular,10000,0);
-            iGamesRepository.fetchGames(queryLatestReleases,10000,1);
-            iGamesRepository.fetchGames(queryIncoming,10000,2);
-            iGamesRepository.fetchGames(queryBestGames,10000,3);
-            iGamesRepository.fetchGames(queryForYou,10000,4);
+                                Log.i("LISTA",playedGames.toString());
+                                String games = "";
+                                for (int i = 0; i < playedGames.size(); i++) {
+                                    if (i < playedGames.size() - 1) {
+                                        gameId = Integer.parseInt(String.valueOf(playedGames.get(i)));
+                                        Log.i("LOG ID",gameId.toString());
+                                        games=games+gameId+",";
+                                    } else {
+                                        gameId = Integer.parseInt(String.valueOf(playedGames.get(i)));
+                                        Log.i("LOG ID",gameId.toString());
+                                        games=games+gameId;
+                                    }
+                                }
+                                Log.i("GIOCHI",games);
+                                String queryGenres = "fields genres.name;where id=(" + games + ");";
+                                iGamesRepository.fetchGames(queryGenres, 10000, 5); //query per recuperare generi dei giochi giocati dall'utente
+                                /*HashMap<String, Integer> mapGenreCount = new HashMap<>();
+                                for (int i = 0; i < genres.size(); i++) {
+                                    if (!mapGenreCount.containsValue(genres.get(i))) {
+                                        mapGenreCount.put(genres.get(i), 1);
+                                    } else {
+                                        int value = mapGenreCount.get(genres.get(i));
+                                        mapGenreCount.put(genres.get(i), value++);
+                                    }
+                                }
+                                int maxValue = Integer.MIN_VALUE;
+                                for (Map.Entry<String, Integer> entry : mapGenreCount.entrySet()) {
+                                    int value = entry.getValue();
+                                    if (value > maxValue) {
+                                        maxValue = value;
+                                    }
+                                }
+                                String preferredGenre = "";
+                                for (Map.Entry<String, Integer> entry : mapGenreCount.entrySet()) {
+                                    if (entry.getValue().equals(maxValue)) {
+                                        preferredGenre = entry.getKey();
+                                        break;
+                                    }
+                                }
+                                queryForYou = "fields id,name,cover.url;where genres.id=" + preferredGenre + ";limit 30;";*/
+                            }else{
+                                forYouScrollView.setVisibility(View.GONE);
+                                loginButton.setVisibility(View.GONE);
+                                loginTextView.setText("Devi aggiungere almeno un gioco nella sezione \"giocato\"");
+                                loginTextView.setVisibility(View.VISIBLE);
+                            }
+                        }
+                    }
+                }
+            });
         }
 
+
+        if (savedInstanceState != null) {
+            if (isNetworkAvailable(getContext())) {
+                Log.i("CIAO", "SALVATO");
+
+                gamesPopular = savedInstanceState.getParcelableArrayList("popular");
+                gamesBest = savedInstanceState.getParcelableArrayList("best");
+                gamesForYou = savedInstanceState.getParcelableArrayList("foryou");
+                gamesLatestReleases = savedInstanceState.getParcelableArrayList("latest");
+                gamesIncoming = savedInstanceState.getParcelableArrayList("incoming");
+
+                showGames(0, gamesPopular);
+                showGames(1, gamesLatestReleases);
+                showGames(2, gamesIncoming);
+                showGames(3, gamesBest);
+                showGames(4, gamesForYou);
+            }else{
+                Snackbar.make(view.findViewById(R.id.Coordinatorlyt), "No internet connection, please connect and retry.", Snackbar.LENGTH_LONG).show();
+            }
+        } else {
+
+            if (isNetworkAvailable(getContext())) {
+                Log.i("CIAO", "NON SALVATO");
+                progressBar.setVisibility(View.VISIBLE);
+
+                gamesPopular = new ArrayList<>();
+                gamesBest = new ArrayList<>();
+                //gamesForYou = new ArrayList<>();
+                gamesLatestReleases = new ArrayList<>();
+                gamesIncoming = new ArrayList<>();
+                gamesUser=new ArrayList<>();
+
+                iGamesRepository.fetchGames(queryPopular, 10000, 0);
+                iGamesRepository.fetchGames(queryLatestReleases, 10000, 1);
+                iGamesRepository.fetchGames(queryIncoming, 10000, 2);
+                iGamesRepository.fetchGames(queryBestGames, 10000, 3);
+
+                /*if(isLogged() && queryForYou!=null) {
+                    iGamesRepository.fetchGames(queryForYou, 10000, 4);
+                }*/
+            } else {
+                Snackbar.make(view.findViewById(R.id.Coordinatorlyt), "No internet connection, please connect and retry.", Snackbar.LENGTH_LONG).show();
+            }
+
+        }
     }
 
 
@@ -188,11 +310,57 @@ public class HomeFragment extends Fragment implements ResponseCallback {
             this.gamesIncoming.addAll(gamesList);
             showGames(countQuery,gamesIncoming);
         } else if (countQuery == 3) {
+            Log.i("QUERY 3:","COUNT QUERY 3");
             this.gamesBest.addAll(gamesList);
             showGames(countQuery,gamesBest);
-        } else {
+        } else if(countQuery==4) {
+            Log.i("QUERY 4:","COUNT QUERY 4");
             this.gamesForYou.addAll(gamesList);
             showGames(countQuery,gamesForYou);
+        }else if(countQuery==5){
+            Log.i("QUERY 5:","COUNT QUERY 5");
+            Log.i("QUERY 5",gamesList.toString());
+            genres=new ArrayList<>();
+            this.gamesUser.addAll(gamesList);
+            for(int i=0;i<gamesUser.size();i++){
+                game=gamesUser.get(i);
+                for(int j=0;j<game.getGenres().size() && game.getGenres()!=null;j++) {
+                    Log.i("GENERE", game.getGenresString().toString());
+                    genres.add(game.getGenresString().get(j).toString());
+                }
+            }
+            Log.i("GENERI",genres.toString());
+            HashMap<String, Integer> mapGenreCount = new HashMap<>();
+            for (int i = 0; i < genres.size(); i++) {
+                if (!mapGenreCount.containsKey(genres.get(i))) {
+                    mapGenreCount.put(genres.get(i), 1);
+                } else {
+                    int value = mapGenreCount.get(genres.get(i)) + 1;
+                    mapGenreCount.put(genres.get(i), value);
+                }
+            }
+            int maxValue = Integer.MIN_VALUE;
+            for (Map.Entry<String, Integer> entry : mapGenreCount.entrySet()) {
+                int value = entry.getValue();
+                if (value > maxValue) {
+                    maxValue = value;
+                }
+            }
+            String preferredGenre = "";
+            for (Map.Entry<String, Integer> entry : mapGenreCount.entrySet()) {
+                if (entry.getValue().equals(maxValue)) {
+                    preferredGenre = entry.getKey();
+                    break;
+                }
+            }
+            Log.i("HASHMAP",mapGenreCount.toString());
+            Log.i("GENERE PREFERITO",preferredGenre);
+            queryForYou = "fields id,name,cover.url;where genres.name= \"" + preferredGenre + "\";limit 30;";
+            if(isLogged() && queryForYou!=null) {
+                gamesForYou = new ArrayList<>();
+                Log.i("ENTRA IF QUERY 4","IF QUERY 4");
+                iGamesRepository.fetchGames(queryForYou, 10000, 4);
+            }
         }
 
     }
@@ -335,12 +503,7 @@ public class HomeFragment extends Fragment implements ResponseCallback {
                     }
                 });
             }
-        }else { //FOR YOU
-            boolean logged = false;
-            if (logged) {
-                loginTextView.setVisibility(View.GONE);
-                loginButton.setVisibility(View.GONE);
-                forYouScrollView.setVisibility(View.VISIBLE);
+        }else if(countQuery==4) { //FOR YOU
                 for (int i = 0; i < 30; i++) {
                     game = gameList.get(i);
                     Cover cover = game.getCover();
@@ -373,13 +536,9 @@ public class HomeFragment extends Fragment implements ResponseCallback {
                         }
                     });
                 }
-            }else{
-                forYouScrollView.setVisibility(View.GONE);
-                loginTextView.setVisibility(View.VISIBLE);
-                loginButton.setVisibility(View.VISIBLE);
             }
         }
-    }
+
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
@@ -402,5 +561,32 @@ public class HomeFragment extends Fragment implements ResponseCallback {
     @Override
     public void onGameFavoriteStatusChanged(GameApiResponse game) {
 
+    }
+
+    private boolean isNetworkAvailable(Context context) {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null;
+    }
+
+    private boolean isLogged() {
+        firebaseAuth=FirebaseAuth.getInstance();
+        gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
+        gsc = GoogleSignIn.getClient(getContext(), gso);
+        firebaseFirestore = FirebaseFirestore.getInstance();
+
+        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(getContext());
+
+        if (firebaseAuth.getCurrentUser() == null && account == null) {
+            return false;
+        } else {
+            if (firebaseAuth.getCurrentUser() != null) {
+                loggedUserID = firebaseAuth.getCurrentUser().getUid();
+            } else if (account != null) {
+                loggedUserID = account.getId();
+            }
+        }
+        return true;
     }
 }
