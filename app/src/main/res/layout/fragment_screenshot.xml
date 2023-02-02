@@ -13,6 +13,5 @@
         android:layout_gravity="center"
         android:layout_marginHorizontal="10dp"
         app:sliderAnimationDuration="600"
-        app:sliderIndicatorEnabled="false"
-        />
+        app:sliderIndicatorEnabled="false" />
 </FrameLayout>

@@ -68,6 +68,5 @@ public class ScreenshotFragment extends Fragment {
         SliderAdapter sliderAdapter = new SliderAdapter(list);
         sliderView.setSliderAdapter(sliderAdapter);
         sliderView.setCurrentPagePosition(position);
-
     }
 }

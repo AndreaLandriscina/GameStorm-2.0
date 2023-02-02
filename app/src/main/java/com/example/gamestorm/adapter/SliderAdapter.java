@@ -1,5 +1,6 @@
 package com.example.gamestorm.adapter;
 
+import android.graphics.Matrix;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,8 +14,7 @@ import java.util.ArrayList;
 
 
 public class SliderAdapter extends SliderViewAdapter<SliderAdapter.Holder> {
-    private ArrayList<String> images;
-
+    ArrayList<String> images;
     public SliderAdapter(ArrayList<String> images){
         this.images = images;
     }
@@ -27,6 +27,7 @@ public class SliderAdapter extends SliderViewAdapter<SliderAdapter.Holder> {
     @Override
     public void onBindViewHolder(Holder viewHolder, int position) {
         Picasso.get().load(images.get(position)).into(viewHolder.imageViewBig);
+        viewHolder.imageViewBig.setImageMatrix(new Matrix());
     }
 
     @Override
@@ -40,8 +41,10 @@ public class SliderAdapter extends SliderViewAdapter<SliderAdapter.Holder> {
             super(itemView);
             imageViewBig = itemView.findViewById(R.id.screenshotBig);
             imageViewBig.setVisibility(View.VISIBLE);
+
             imageView = itemView.findViewById(R.id.screenshot);
             imageView.setVisibility(View.GONE);
+
         }
     }
 }
