@@ -40,13 +40,6 @@ public class MainActivity extends AppCompatActivity {
         //evita di spostare tutto il layout in alto quando si usa la tastiera
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
 
-        if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES) {
-            setTheme(R.style.darkTheme); //when dark mode is enabled, we use the dark theme
-        } else {
-            setTheme(R.style.AppTheme);  //default app theme
-        }
-        setTheme(R.style.AppTheme);
-
 
     }
 }
