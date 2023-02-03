@@ -27,7 +27,6 @@ public class SliderAdapter extends SliderViewAdapter<SliderAdapter.Holder> {
     @Override
     public void onBindViewHolder(Holder viewHolder, int position) {
         Picasso.get().load(images.get(position)).into(viewHolder.imageViewBig);
-        viewHolder.imageViewBig.setImageMatrix(new Matrix());
     }
 
     @Override
