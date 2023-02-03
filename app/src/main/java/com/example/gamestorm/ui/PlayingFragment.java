@@ -132,7 +132,7 @@ public class PlayingFragment extends Fragment {
                         playingGames = (ArrayList<Integer>) document.get("playingGames");
 
                         //RICERCA GIOCHI IN LISTA
-                        if (playingGames != null){
+                        if (!playingGames.isEmpty()){
                             Integer gameID;
                             for (int j = 0; j < playingGames.size(); j++) {
                                 gameID = Integer.parseInt(String.valueOf(playingGames.get(j)));
@@ -170,6 +170,13 @@ public class PlayingFragment extends Fragment {
                                 String query = "fields name, cover.url; where id = " + gameID + "; limit 30;";
                                 iGamesRepository.fetchGames(query, 10000, 0);
                             }
+                        } else {
+                            recyclerView = requireView().findViewById(R.id.playingRecyclerView);
+                            recyclerDataArrayList = new ArrayList<>();
+                            RecyclerViewAdapter adapter=new RecyclerViewAdapter(recyclerDataArrayList,getContext());
+                            GridLayoutManager layoutManager=new GridLayoutManager(getContext(),3);
+                            recyclerView.setLayoutManager(layoutManager);
+                            recyclerView.setAdapter(adapter);
                         }
                     } else {
                         Log.d("LOGGER", "No such document");

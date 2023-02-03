@@ -210,17 +210,36 @@ public class ProfileFragment extends Fragment {
                     });
                 }
                 return true;
-            case R.id.settings_option:
-                Toast.makeText(getContext(), "settings da fare", Toast.LENGTH_SHORT).show();
-                return true;
+
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-
+    public void onResume() {
+        super.onResume();
+        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(getContext());
+        if (firebaseAuth.getCurrentUser()==null && account == null) {
+            logoutLayout.setVisibility(View.GONE);
+        }else{
+            logoutLayout.setVisibility(View.VISIBLE);
+            DocumentReference docRef = firebaseFirestore.collection("User").document(loggedUserID);
+            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document != null) {
+                            ArrayList<Integer> desiredGames = (ArrayList<Integer>) document.get("desiredGames");
+                            nDesiredGames.setText("Giochi desiderati: " + desiredGames.size());
+                            ArrayList<Integer> playedGames = (ArrayList<Integer>) document.get("playedGames");
+                            nPlayedGames.setText("Giochi giocati: " + playedGames.size());
+                            //DesiredFragment.desiredGames = desiredGames;
+                        }
+                    }
+                }
+            });
+        }
     }
 }

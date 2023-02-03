@@ -50,7 +50,7 @@
         >
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/companyRecyclerView"
+            android:id="@+id/desiredRecyclerView"
             android:layout_marginTop="5dp"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
