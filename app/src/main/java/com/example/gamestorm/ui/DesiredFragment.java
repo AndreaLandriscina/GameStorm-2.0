@@ -90,15 +90,6 @@ public class DesiredFragment extends Fragment {
         } else {
             function_not_available_layout.setVisibility(View.GONE);
             desired_games_layout.setVisibility(View.VISIBLE);
-
-            //VISUALIZZAZIONE GIOCHI
-            if(isNetworkAvailable(getContext())) {
-                    //viewGames();
-                Log.i("LOGGER","oncreateview");
-            }  else{
-                Snackbar.make(view.findViewById(R.id.Coordinatorlyt), R.string.no_connection_message, Snackbar.LENGTH_LONG).show();
-            }
-
         }
 
         loginButton.setOnClickListener(view1 -> {
