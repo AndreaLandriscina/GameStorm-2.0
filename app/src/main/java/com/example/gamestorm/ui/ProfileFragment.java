@@ -10,6 +10,8 @@ import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.os.Handler;
@@ -82,7 +84,7 @@ public class ProfileFragment extends Fragment {
         viewPager2.setAdapter(myViewPagerAdapter);
         firebaseAuth=FirebaseAuth.getInstance();
         logoutLayout = requireView().findViewById(R.id.logout_layout);
-        gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
+        gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestIdToken("1091326442567-dbkvi0h9877eego2ou819bepnb05h65g.apps.googleusercontent.com").requestEmail().build();
         gsc = GoogleSignIn.getClient(getContext(),gso);
         nDesiredGames = requireView().findViewById(R.id.nDesiredGames);
         nPlayedGames = requireView().findViewById(R.id.nPlayedGames);

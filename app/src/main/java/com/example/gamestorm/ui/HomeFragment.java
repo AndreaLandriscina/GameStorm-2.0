@@ -510,7 +510,7 @@ public class HomeFragment extends Fragment implements ResponseCallback {
 
     private boolean isLogged() {
         firebaseAuth=FirebaseAuth.getInstance();
-        gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
+        gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestIdToken("1091326442567-dbkvi0h9877eego2ou819bepnb05h65g.apps.googleusercontent.com").requestEmail().build();
         gsc = GoogleSignIn.getClient(getContext(), gso);
         firebaseFirestore = FirebaseFirestore.getInstance();
 

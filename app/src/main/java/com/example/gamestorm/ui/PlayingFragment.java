@@ -78,23 +78,17 @@ public class PlayingFragment extends Fragment {
         firebaseAuth=FirebaseAuth.getInstance();
         function_not_available_layout=requireView().findViewById(R.id.function_not_available_layout);
         loginButton=requireView().findViewById(R.id.loginButton);
-        gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
+        gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestIdToken("1091326442567-dbkvi0h9877eego2ou819bepnb05h65g.apps.googleusercontent.com").requestEmail().build();
         gsc = GoogleSignIn.getClient(getContext(),gso);
         firebaseFirestore=FirebaseFirestore.getInstance();
         playing_games_layout = requireView().findViewById(R.id.playing_games_layout);
 
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(getContext());
 
-        if(firebaseAuth.getCurrentUser()==null && account == null){
+        if(!isLogged()){
             function_not_available_layout.setVisibility(View.VISIBLE);
             playing_games_layout.setVisibility(View.GONE);
         }else{
-            function_not_available_layout.setVisibility(View.GONE);
-            if (firebaseAuth.getCurrentUser()!=null){
-                loggedUserID=firebaseAuth.getCurrentUser().getUid();
-            } else if(account!=null){
-                loggedUserID= account.getId();
-            }
             function_not_available_layout.setVisibility(View.GONE);
             playing_games_layout.setVisibility(View.VISIBLE);
 
@@ -119,9 +113,7 @@ public class PlayingFragment extends Fragment {
     public void onResume() {
         super.onResume();
         if(isNetworkAvailable(getContext())) {
-            if (!isLogged()) {
-                //UTENTE NON LOGGATO
-            } else {
+            if (isLogged()) {
                 viewGames();
             }
         }else{

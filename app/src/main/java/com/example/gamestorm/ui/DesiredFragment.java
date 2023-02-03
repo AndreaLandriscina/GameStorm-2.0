@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -65,6 +66,8 @@ public class DesiredFragment extends Fragment {
     String loggedUserID;
     private ArrayList<Integer> desiredGames;
     FirebaseFirestore firebaseFirestore;
+    public static String desiredTag;
+    public static View desiredContainer;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -76,15 +79,10 @@ public class DesiredFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = FragmentDesiredBinding.inflate(getLayoutInflater());
-        firebaseAuth = FirebaseAuth.getInstance();
         function_not_available_layout = requireView().findViewById(R.id.function_not_available_layout);
         desired_games_layout = requireView().findViewById(R.id.desired_games_layout);
         loginButton = requireView().findViewById(R.id.loginButton);
-        gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
-        gsc = GoogleSignIn.getClient(getContext(), gso);
-        firebaseFirestore=FirebaseFirestore.getInstance();
 
-        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(getContext());
 
         if (!isLogged()) {
             function_not_available_layout.setVisibility(View.VISIBLE);
@@ -95,12 +93,13 @@ public class DesiredFragment extends Fragment {
 
             //VISUALIZZAZIONE GIOCHI
             if(isNetworkAvailable(getContext())) {
-                //viewGames();
-            }else{
+                    //viewGames();
+                Log.i("LOGGER","oncreateview");
+            }  else{
                 Snackbar.make(view.findViewById(R.id.Coordinatorlyt), "No internet connection, please connect and retry.", Snackbar.LENGTH_LONG).show();
             }
 
-            }
+        }
 
         loginButton.setOnClickListener(view1 -> {
         Intent myIntent = new Intent(getContext(), LoginActivity.class);
@@ -109,18 +108,20 @@ public class DesiredFragment extends Fragment {
 }
 
     @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-        //viewAll();
+    public void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
     }
 
     @Override
     public void onResume() {
         super.onResume();
         if(isNetworkAvailable(getContext())) {
-            if (!isLogged()) {
-                //UTENTE NON LOGGATO
-            } else {
+            if (isLogged()) {
                 viewGames();
             }
         }else{
@@ -129,13 +130,6 @@ public class DesiredFragment extends Fragment {
     }
 
     private void viewGames(){
-        firebaseAuth = FirebaseAuth.getInstance();
-        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(getContext());
-        if (firebaseAuth.getCurrentUser()!=null){
-            loggedUserID=firebaseAuth.getCurrentUser().getUid();
-        } else if(account!=null){
-            loggedUserID= account.getId();
-        }
         firebaseFirestore=FirebaseFirestore.getInstance();
         DocumentReference docRef = firebaseFirestore.collection("User").document(loggedUserID);
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -145,9 +139,10 @@ public class DesiredFragment extends Fragment {
                     DocumentSnapshot document = task.getResult();
                     if (document != null) {
                         desiredGames = (ArrayList<Integer>) document.get("desiredGames");
-
+                        //Log.i("LOGGER","desired games: "+desiredGames.toString());
                         //RICERCA GIOCHI IN LISTA
                         if (desiredGames != null){
+                            Log.i("LOGGER","desired games: "+desiredGames.toString());
                             Integer gameID;
                             for (int j = 0; j < desiredGames.size(); j++) {
                                 gameID = Integer.parseInt(String.valueOf(desiredGames.get(j)));
@@ -170,6 +165,7 @@ public class DesiredFragment extends Fragment {
                                                 GridLayoutManager layoutManager=new GridLayoutManager(getContext(),3);
                                                 recyclerView.setLayoutManager(layoutManager);
                                                 recyclerView.setAdapter(adapter);
+                                                adapter.notifyDataSetChanged();
                                             }
 
                                             @Override
@@ -184,8 +180,6 @@ public class DesiredFragment extends Fragment {
                                         });
                                 progressBar.setVisibility(View.VISIBLE);
                                 String query = "fields name, cover.url; where id = " + gameID + "; limit 30;";
-                                Log.i("LOGGER","str "+query);
-                                Log.i("LOGGER","visible "+desired_games_layout.getVisibility());
                                 iGamesRepository.fetchGames(query, 10000, 0);
                             }
                         }
@@ -207,6 +201,11 @@ public class DesiredFragment extends Fragment {
     }
 
     private boolean isLogged(){
+        firebaseAuth = FirebaseAuth.getInstance();
+        gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestIdToken("1091326442567-dbkvi0h9877eego2ou819bepnb05h65g.apps.googleusercontent.com").requestEmail().build();
+        //gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
+        gsc = GoogleSignIn.getClient(getContext(), gso);
+        firebaseFirestore=FirebaseFirestore.getInstance();
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(getContext());
         if (firebaseAuth.getCurrentUser() == null && account == null) {
             return false;
