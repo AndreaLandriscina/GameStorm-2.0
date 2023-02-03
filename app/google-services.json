@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "1091326442567-q64rgbrf70finr4t7l35icch8ttagn24.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.gamestorm",
+            "certificate_hash": "09ac55b8b20ba63e994b77dae856f1115b1e4ad2"
+          }
+        },
+        {
           "client_id": "1091326442567-dbkvi0h9877eego2ou819bepnb05h65g.apps.googleusercontent.com",
           "client_type": 3
         }

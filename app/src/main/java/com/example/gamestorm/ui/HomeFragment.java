@@ -23,6 +23,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.example.gamestorm.database.TinyDB;
 import com.example.gamestorm.model.Cover;
 import com.example.gamestorm.model.GameApiResponse;
 import com.example.gamestorm.R;
@@ -99,6 +100,9 @@ public class HomeFragment extends Fragment implements ResponseCallback {
     FirebaseFirestore firebaseFirestore;
     String loggedUserID;
 
+    //SHAREDPREFERENCE
+    TinyDB tinydb;
+
     private List<GameApiResponse> gamesUser;
     private List<String> genres;
 
@@ -125,6 +129,8 @@ public class HomeFragment extends Fragment implements ResponseCallback {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        tinydb = new TinyDB(getActivity().getApplication());
 
         iGamesRepository = new GamesRepository(getActivity().getApplication(), this);
         queryPopular = "fields id, name, cover.url;where follows!=null; sort follows desc; limit 30;";
@@ -215,14 +221,11 @@ public class HomeFragment extends Fragment implements ResponseCallback {
             });
         }
 
-
         if (savedInstanceState != null) {
             if (isNetworkAvailable(getContext())) {
-                Log.i("CIAO", "SALVATO");
 
                 gamesPopular = savedInstanceState.getParcelableArrayList("popular");
                 gamesBest = savedInstanceState.getParcelableArrayList("best");
-                gamesForYou = savedInstanceState.getParcelableArrayList("foryou");
                 gamesLatestReleases = savedInstanceState.getParcelableArrayList("latest");
                 gamesIncoming = savedInstanceState.getParcelableArrayList("incoming");
 
@@ -230,14 +233,25 @@ public class HomeFragment extends Fragment implements ResponseCallback {
                 showGames(1, gamesLatestReleases);
                 showGames(2, gamesIncoming);
                 showGames(3, gamesBest);
-                showGames(4, gamesForYou);
+                //showGames(4, gamesForYou); //NON SALVO I GIOCHI FOR YOU PERCHè ALMENO VENGONO SEMPRE AGGIORNATI SE L'UTENTE CAMBIA IL GENERE PREFERITO
             }else{
                 Snackbar.make(view.findViewById(R.id.Coordinatorlyt), "No internet connection, please connect and retry.", Snackbar.LENGTH_LONG).show();
             }
-        } else {
+        }else if(gamesPopular!=null){ //SHARED PREFERENCE SALVATA
 
+            gamesPopular = tinydb.getListObject("popular",GameApiResponse.class);
+            gamesBest = tinydb.getListObject("best",GameApiResponse.class);
+            gamesLatestReleases = tinydb.getListObject("latest",GameApiResponse.class);
+            gamesIncoming = tinydb.getListObject("incoming",GameApiResponse.class);
+
+            showGames(0, gamesPopular);
+            showGames(1, gamesLatestReleases);
+            showGames(2, gamesIncoming);
+            showGames(3, gamesBest);
+            //showGames(4, gamesForYou); //NON SALVO I GIOCHI FOR YOU PERCHè ALMENO VENGONO SEMPRE AGGIORNATI SE L'UTENTE CAMBIA IL GENERE PREFERITO
+        }
+        else { //SE SIA SHARED PREFERENCE E SIA ONSAVEINSTANCESTATE NON SONO STATI SALVATI ALLORA RI FA LE QUERY PER PRENDERE I DATI
             if (isNetworkAvailable(getContext())) {
-                Log.i("CIAO", "NON SALVATO");
                 progressBar.setVisibility(View.VISIBLE);
 
                 gamesPopular = new ArrayList<>();
@@ -259,23 +273,27 @@ public class HomeFragment extends Fragment implements ResponseCallback {
     }
 
 
-
     @Override
     public void onSuccess(List<GameApiResponse> gamesList, long lastUpdate,int countQuery) {
         if (countQuery == 0) {
             this.gamesPopular.addAll(gamesList);
+            tinydb.putListObject("popular",gamesPopular);
             showGames(countQuery,gamesPopular);
         } else if (countQuery == 1) {
             this.gamesLatestReleases.addAll(gamesList);
+            tinydb.putListObject("latest",gamesLatestReleases);
             showGames(countQuery,gamesLatestReleases);
         } else if (countQuery == 2) {
             this.gamesIncoming.addAll(gamesList);
+            tinydb.putListObject("incoming",gamesIncoming);
             showGames(countQuery,gamesIncoming);
         } else if (countQuery == 3) {
             this.gamesBest.addAll(gamesList);
+            tinydb.putListObject("best",gamesBest);
             showGames(countQuery,gamesBest);
         } else if(countQuery==4) {
             this.gamesForYou.addAll(gamesList);
+            tinydb.putListObject("forYou",gamesForYou);
             showGames(countQuery,gamesForYou);
         }else if(countQuery==5){
             genres=new ArrayList<>();
@@ -481,7 +499,6 @@ public class HomeFragment extends Fragment implements ResponseCallback {
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        Log.i("HOME FRAGMENT","ONSAVEINSTANCESTATE");
         //tutti i giochi
         outState.putParcelableArrayList("popular", (ArrayList<? extends Parcelable>) gamesPopular);
         outState.putParcelableArrayList("best", (ArrayList<? extends Parcelable>) gamesBest);
