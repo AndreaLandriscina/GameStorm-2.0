@@ -73,5 +73,7 @@
     <string name="genre_text">Genere</string>
     <string name="platform_text">Piattaforma</string>
     <string name="release_year_text">Anno di rilascio</string>
+    <string name="no_connection_message">Nessuna connessione ad internet, connettiti e riprova.</string>
+
 
 </resources>

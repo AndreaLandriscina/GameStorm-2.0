@@ -137,7 +137,7 @@ public class SearchFragment extends Fragment implements ResponseCallback {
                     String queryToServer = "fields id, name, cover.url, follows, rating, first_release_date, genres.name, platforms.name; where cover.url != null; limit 500;";
                     iGamesRepository.fetchGames(queryToServer, 10000,0);
                 }else{
-                    Snackbar.make(view.findViewById(R.id.Coordinatorlyt), "No internet connection, please connect and retry.", Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(view.findViewById(R.id.Coordinatorlyt), R.string.no_connection_message, Snackbar.LENGTH_LONG).show();
                 }
             }else {
                 numberOfResults.setTextSize(15);
@@ -167,7 +167,7 @@ public class SearchFragment extends Fragment implements ResponseCallback {
                 iGamesRepository.fetchGames(queryToServer, 10000,0);
             }else{
 
-                Snackbar.make(view.findViewById(R.id.Coordinatorlyt), "No internet connection, please connect and retry.", Snackbar.LENGTH_LONG).show();
+                Snackbar.make(view.findViewById(R.id.Coordinatorlyt), R.string.no_connection_message, Snackbar.LENGTH_LONG).show();
             }
 
         }
@@ -200,7 +200,7 @@ public class SearchFragment extends Fragment implements ResponseCallback {
                     numberOfResults.setText("");
                     iGamesRepository.fetchGames(queryToServer, 10000,0);
                 }else{
-                    Snackbar.make(view.findViewById(R.id.Coordinatorlyt), "No internet connection, please connect and retry.", Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(view.findViewById(R.id.Coordinatorlyt), R.string.no_connection_message, Snackbar.LENGTH_LONG).show();
                 }
                 return false;
             }
@@ -262,7 +262,7 @@ public class SearchFragment extends Fragment implements ResponseCallback {
 
                         }else{
 
-                            Snackbar.make(view.findViewById(R.id.Coordinatorlyt), "No internet connection, please connect and retry.", Snackbar.LENGTH_LONG).show();
+                            Snackbar.make(view.findViewById(R.id.Coordinatorlyt), R.string.no_connection_message, Snackbar.LENGTH_LONG).show();
                         }
 
                         dialog.dismiss();
@@ -640,7 +640,7 @@ public class SearchFragment extends Fragment implements ResponseCallback {
                             adapter.notifyDataSetChanged();
                         }else{
 
-                            Snackbar.make(view.findViewById(R.id.Coordinatorlyt), "No internet connection, please connect and retry.", Snackbar.LENGTH_LONG).show();
+                            Snackbar.make(view.findViewById(R.id.Coordinatorlyt), R.string.no_connection_message, Snackbar.LENGTH_LONG).show();
                         }
 
                     })
@@ -703,6 +703,8 @@ public class SearchFragment extends Fragment implements ResponseCallback {
         //tutti i giochi
         outState.putParcelableArrayList(gamesKey, (ArrayList<? extends Parcelable>) games);
         outState.putParcelableArrayList(gamesCopyKey, (ArrayList<? extends Parcelable>) gamesCopy);
+
+        Log.e("SEARCH FRAGMENT","ONSAVEINSTANCESTATE");
 
     }
 

@@ -96,7 +96,7 @@ public class PlayingFragment extends Fragment {
             if(isNetworkAvailable(getContext())) {
                 viewGames();
             }else{
-                Snackbar.make(view.findViewById(R.id.Coordinatorlyt), "No internet connection, please connect and retry.", Snackbar.LENGTH_LONG).show();
+                Snackbar.make(view.findViewById(R.id.Coordinatorlyt), R.string.no_connection_message, Snackbar.LENGTH_LONG).show();
             }
 
         }
@@ -117,7 +117,7 @@ public class PlayingFragment extends Fragment {
                 viewGames();
             }
         }else{
-            Snackbar.make(requireView().findViewById(R.id.Coordinatorlyt), "No internet connection, please connect and retry.", Snackbar.LENGTH_LONG).show();
+            Snackbar.make(requireView().findViewById(R.id.Coordinatorlyt), R.string.no_connection_message, Snackbar.LENGTH_LONG).show();
         }
     }
 

@@ -91,6 +91,7 @@
     <string name="genre_text">Genre</string>
     <string name="platform_text">Platform</string>
     <string name="release_year_text">Release Year</string>
+    <string name="no_connection_message">No internet connection, please connect and retry.</string>
 
 
 </resources>

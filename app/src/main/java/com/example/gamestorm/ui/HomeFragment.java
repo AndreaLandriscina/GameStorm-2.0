@@ -235,7 +235,7 @@ public class HomeFragment extends Fragment implements ResponseCallback {
                 showGames(3, gamesBest);
                 //showGames(4, gamesForYou); //NON SALVO I GIOCHI FOR YOU PERCHè ALMENO VENGONO SEMPRE AGGIORNATI SE L'UTENTE CAMBIA IL GENERE PREFERITO
             }else{
-                Snackbar.make(view.findViewById(R.id.Coordinatorlyt), "No internet connection, please connect and retry.", Snackbar.LENGTH_LONG).show();
+                Snackbar.make(view.findViewById(R.id.Coordinatorlyt), R.string.no_connection_message, Snackbar.LENGTH_LONG).show();
             }
         }else if(gamesPopular!=null){ //SHARED PREFERENCE SALVATA
 
@@ -266,7 +266,7 @@ public class HomeFragment extends Fragment implements ResponseCallback {
                 iGamesRepository.fetchGames(queryBestGames, 10000, 3);
 
             } else {
-                Snackbar.make(view.findViewById(R.id.Coordinatorlyt), "No internet connection, please connect and retry.", Snackbar.LENGTH_LONG).show();
+                Snackbar.make(view.findViewById(R.id.Coordinatorlyt), R.string.no_connection_message, Snackbar.LENGTH_LONG).show();
             }
 
         }
