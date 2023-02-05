@@ -84,6 +84,8 @@ public class HomeFragment extends Fragment implements ResponseCallback {
     private List<GameApiResponse> gamesLatestReleases;
     private List<GameApiResponse> gamesIncoming;
 
+    private static HashMap<String, Integer> mapGenreCount;
+
     private GameApiResponse game;
     String queryPopular;
     String queryForYou;
@@ -104,7 +106,6 @@ public class HomeFragment extends Fragment implements ResponseCallback {
     TinyDB tinydb;
 
     private List<GameApiResponse> gamesUser;
-    private List<String> genres;
 
 
     public HomeFragment() {
@@ -181,44 +182,6 @@ public class HomeFragment extends Fragment implements ResponseCallback {
                     startActivity(new Intent(getContext(), LoginActivity.class));
                 }
             });
-        }else{
-            DocumentReference docRef = firebaseFirestore.collection("User").document(loggedUserID);
-            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                    if (task.isSuccessful()) {
-                        DocumentSnapshot document = task.getResult();
-                        if (document != null) {
-                            ArrayList<Integer> playedGames = (ArrayList<Integer>) document.get("playedGames");
-                            Integer gameId=0;
-                            if (!playedGames.isEmpty()) {
-
-                                loginTextView.setVisibility(View.GONE);
-                                loginButton.setVisibility(View.GONE);
-                                forYouScrollView.setVisibility(View.VISIBLE);
-
-                                String games = "";
-                                for (int i = 0; i < playedGames.size(); i++) {
-                                    if (i < playedGames.size() - 1) {
-                                        gameId = Integer.parseInt(String.valueOf(playedGames.get(i)));
-                                        games=games+gameId+",";
-                                    } else {
-                                        gameId = Integer.parseInt(String.valueOf(playedGames.get(i)));
-                                        games=games+gameId;
-                                    }
-                                }
-                                String queryGenres = "fields genres.name;where id=(" + games + ");";
-                                iGamesRepository.fetchGames(queryGenres, 10000, 5); //query per recuperare generi dei giochi giocati dall'utente
-                            }else{
-                                forYouScrollView.setVisibility(View.GONE);
-                                loginButton.setVisibility(View.GONE);
-                                loginTextView.setText(R.string.loginPlayedGame); //setta textView con scritto che deve aggiungere almeno un gioco nella sezione "Giocato" per poter visualizzare i giochi consigliati
-                                loginTextView.setVisibility(View.VISIBLE);
-                            }
-                        }
-                    }
-                }
-            });
         }
 
         if (savedInstanceState != null) {
@@ -258,7 +221,7 @@ public class HomeFragment extends Fragment implements ResponseCallback {
                 gamesBest = new ArrayList<>();
                 gamesLatestReleases = new ArrayList<>();
                 gamesIncoming = new ArrayList<>();
-                gamesUser=new ArrayList<>();
+
 
                 iGamesRepository.fetchGames(queryPopular, 10000, 0);
                 iGamesRepository.fetchGames(queryLatestReleases, 10000, 1);
@@ -293,24 +256,37 @@ public class HomeFragment extends Fragment implements ResponseCallback {
             showGames(countQuery,gamesBest);
         } else if(countQuery==4) {
             this.gamesForYou.addAll(gamesList);
-            tinydb.putListObject("forYou",gamesForYou);
             showGames(countQuery,gamesForYou);
         }else if(countQuery==5){
-            genres=new ArrayList<>();
+            List<String> genres=new ArrayList<>();
+            gamesUser=new ArrayList<>();
             this.gamesUser.addAll(gamesList);
             for(int i=0;i<gamesUser.size();i++){
                 game=gamesUser.get(i);
-                for(int j=0;j<game.getGenres().size() && game.getGenres()!=null;j++) {
-                    genres.add(game.getGenresString().get(j).toString());
+                if(game.getGenres()!=null) {
+                    for (int j = 0; !game.getGenres().isEmpty() && j < game.getGenres().size(); j++) {
+                        genres.add(game.getGenresString().get(j).toString());
+                    }
+                }else{
+                    if(gamesUser.size()==1) {
+                        forYouScrollView.setVisibility(View.GONE);
+                        loginButton.setVisibility(View.GONE);
+                        loginTextView.setText(R.string.gameNoGenre); //setta textView con scritto che deve aggiungere almeno un gioco nella sezione "Giocato" per poter visualizzare i giochi consigliati
+                        loginTextView.setVisibility(View.VISIBLE);
+                        return;
+                    }
                 }
             }
-            HashMap<String, Integer> mapGenreCount = new HashMap<>();
+            mapGenreCount = new HashMap<>();
+
             for (int i = 0; i < genres.size(); i++) {
-                if (!mapGenreCount.containsKey(genres.get(i))) {
-                    mapGenreCount.put(genres.get(i), 1);
-                } else {
-                    int value = mapGenreCount.get(genres.get(i)) + 1;
-                    mapGenreCount.put(genres.get(i), value);
+                if(genres.get(i)!=null) {
+                    if (!mapGenreCount.containsKey(genres.get(i))) {
+                        mapGenreCount.put(genres.get(i), 1);
+                    } else {
+                        int value = mapGenreCount.get(genres.get(i)) + 1;
+                        mapGenreCount.put(genres.get(i), value);
+                    }
                 }
             }
             int maxValue = Integer.MIN_VALUE;
@@ -327,8 +303,10 @@ public class HomeFragment extends Fragment implements ResponseCallback {
                     break;
                 }
             }
+            mapGenreCount.clear();
+
             queryForYou = "fields id,name,cover.url;where genres.name= \"" + preferredGenre + "\";limit 30;";
-            if(isLogged() && queryForYou!=null) {
+            if(isLogged()) {
                 gamesForYou = new ArrayList<>();
                 iGamesRepository.fetchGames(queryForYou, 10000, 4);
             }
@@ -502,7 +480,7 @@ public class HomeFragment extends Fragment implements ResponseCallback {
         //tutti i giochi
         outState.putParcelableArrayList("popular", (ArrayList<? extends Parcelable>) gamesPopular);
         outState.putParcelableArrayList("best", (ArrayList<? extends Parcelable>) gamesBest);
-        outState.putParcelableArrayList("foryou", (ArrayList<? extends Parcelable>) gamesForYou);
+        //outState.putParcelableArrayList("foryou", (ArrayList<? extends Parcelable>) gamesForYou);
         outState.putParcelableArrayList("latest", (ArrayList<? extends Parcelable>) gamesLatestReleases);
         outState.putParcelableArrayList("incoming", (ArrayList<? extends Parcelable>) gamesIncoming);
 
@@ -543,5 +521,49 @@ public class HomeFragment extends Fragment implements ResponseCallback {
             }
         }
         return true;
+    }
+
+    @Override
+    public void onResume() { //QUANDO SI PASSA DALLA GAMEACTIVITY (DOVE SI AGGIUNGE UN GIOCO IN GIOCATO CHE CAMBIA IL GENERE) AL FRAGMENT HOME QUESTO MOSTRERà SUBITO I GIOCHI PER TE
+        super.onResume();
+        if(isLogged()) {
+            DocumentReference docRef = firebaseFirestore.collection("User").document(loggedUserID);
+            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document != null) {
+                            ArrayList<Integer> playedGames = (ArrayList<Integer>) document.get("playedGames");
+                            Integer gameId = 0;
+                            if (!playedGames.isEmpty()) {
+
+                                loginTextView.setVisibility(View.GONE);
+                                loginButton.setVisibility(View.GONE);
+                                forYouScrollView.setVisibility(View.VISIBLE);
+
+                                String games = "";
+                                for (int i = 0; i < playedGames.size(); i++) {
+                                    if (i < playedGames.size() - 1) {
+                                        gameId = Integer.parseInt(String.valueOf(playedGames.get(i)));
+                                        games = games + gameId + ",";
+                                    } else {
+                                        gameId = Integer.parseInt(String.valueOf(playedGames.get(i)));
+                                        games = games + gameId;
+                                    }
+                                }
+                                String queryGenres = "fields genres.name;where id=(" + games + ");";
+                                iGamesRepository.fetchGames(queryGenres, 10000, 5); //query per recuperare generi dei giochi giocati dall'utente
+                            } else {
+                                forYouScrollView.setVisibility(View.GONE);
+                                loginButton.setVisibility(View.GONE);
+                                loginTextView.setText(R.string.loginPlayedGame); //setta textView con scritto che deve aggiungere almeno un gioco nella sezione "Giocato" per poter visualizzare i giochi consigliati
+                                loginTextView.setVisibility(View.VISIBLE);
+                            }
+                        }
+                    }
+                }
+            });
+        }
     }
 }
