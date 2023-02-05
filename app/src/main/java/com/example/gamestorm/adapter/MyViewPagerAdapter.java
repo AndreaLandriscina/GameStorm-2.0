@@ -1,9 +1,13 @@
-package com.example.gamestorm.ui;
+package com.example.gamestorm.adapter;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
+
+import com.example.gamestorm.ui.DesiredFragment;
+import com.example.gamestorm.ui.PlayedFragment;
+import com.example.gamestorm.ui.PlayingFragment;
 
 public class MyViewPagerAdapter extends FragmentStateAdapter {
     public MyViewPagerAdapter(@NonNull FragmentActivity fragmentActivity) {

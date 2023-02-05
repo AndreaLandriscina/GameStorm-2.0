@@ -22,6 +22,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
 
+import com.example.gamestorm.adapter.RecyclerData;
+import com.example.gamestorm.adapter.RecyclerProfileViewAdapter;
+import com.example.gamestorm.adapter.RecyclerViewAdapter;
 import com.example.gamestorm.model.GameApiResponse;
 import com.example.gamestorm.model.UserModel;
 import com.example.gamestorm.R;
@@ -152,7 +155,7 @@ public class DesiredFragment extends Fragment {
                                                     if (gameApiResponse.getCover() != null)
                                                         recyclerDataArrayList.add(new RecyclerData(gameApiResponse.getId(), gameApiResponse.getCover().getUrl()));
                                                 }
-                                                RecyclerViewAdapter adapter=new RecyclerViewAdapter(recyclerDataArrayList,getContext());
+                                                RecyclerProfileViewAdapter adapter=new RecyclerProfileViewAdapter(recyclerDataArrayList,getContext());
                                                 GridLayoutManager layoutManager=new GridLayoutManager(getContext(),3);
                                                 recyclerView.setLayoutManager(layoutManager);
                                                 recyclerView.setAdapter(adapter);
@@ -176,7 +179,7 @@ public class DesiredFragment extends Fragment {
                         } else {
                             recyclerView = requireView().findViewById(R.id.desiredRecyclerView);
                             recyclerDataArrayList = new ArrayList<>();
-                            RecyclerViewAdapter adapter=new RecyclerViewAdapter(recyclerDataArrayList,getContext());
+                            RecyclerProfileViewAdapter adapter=new RecyclerProfileViewAdapter(recyclerDataArrayList,getContext());
                             GridLayoutManager layoutManager=new GridLayoutManager(getContext(),3);
                             recyclerView.setLayoutManager(layoutManager);
                             recyclerView.setAdapter(adapter);

@@ -1,4 +1,4 @@
-package com.example.gamestorm.ui;
+package com.example.gamestorm.adapter;
 
 import android.content.Context;
 import android.content.Intent;
@@ -11,16 +11,17 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.gamestorm.R;
+import com.example.gamestorm.ui.GameActivity;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
-public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.RecyclerViewHolder> {
+public class RecyclerProfileViewAdapter extends RecyclerView.Adapter<RecyclerProfileViewAdapter.RecyclerViewHolder> {
 
     private ArrayList<RecyclerData> dataArrayList;
     private Context mcontext;
 
-    public RecyclerViewAdapter(ArrayList<RecyclerData> recyclerDataArrayList, Context mcontext) {
+    public RecyclerProfileViewAdapter(ArrayList<RecyclerData> recyclerDataArrayList, Context mcontext) {
         this.dataArrayList = recyclerDataArrayList;
         this.mcontext = mcontext;
     }
@@ -61,7 +62,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         public RecyclerViewHolder(@NonNull View itemView) {
             super(itemView);
             cover = itemView.findViewById(R.id.cover);
-            //textView = itemView.findViewById(R.id.idTVCourse);
         }
 
     }
