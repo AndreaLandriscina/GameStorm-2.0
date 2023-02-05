@@ -34,6 +34,7 @@
     <string name="loginHome">You must be logged to view suggested games</string>
     <string name="loginPlayedGame">You must add at least one game in the "Played" section</string>
     <string name="title_activity_category" translatable="false">CategoryActivity</string>
+    <string name="gameNoGenre">You have entered a game with no genre</string>
     <string name="videogame_saga" translatable="false">Videogame saga</string>
     <string name="title_activity_game_saga" translatable="false">GameSagaActivity</string>
     <string name="title_activity_game_version" translatable="false">GameVersionActivity</string>

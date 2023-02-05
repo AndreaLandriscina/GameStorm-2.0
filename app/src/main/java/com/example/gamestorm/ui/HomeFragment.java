@@ -271,7 +271,7 @@ public class HomeFragment extends Fragment implements ResponseCallback {
                     if(gamesUser.size()==1) {
                         forYouScrollView.setVisibility(View.GONE);
                         loginButton.setVisibility(View.GONE);
-                        loginTextView.setText("Uno dei giochi inseriti non ha il genere"); //setta textView con scritto che deve aggiungere almeno un gioco nella sezione "Giocato" per poter visualizzare i giochi consigliati
+                        loginTextView.setText(R.string.gameNoGenre); //setta textView con scritto che deve aggiungere almeno un gioco nella sezione "Giocato" per poter visualizzare i giochi consigliati
                         loginTextView.setVisibility(View.VISIBLE);
                         return;
                     }
