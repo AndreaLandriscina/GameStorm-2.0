@@ -1,9 +1,8 @@
-package com.example.gamestorm.ui;
+package com.example.gamestorm.adapter;
 
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,11 +11,11 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.cardview.widget.CardView;
-import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.gamestorm.model.GameApiResponse;
 import com.example.gamestorm.R;
+import com.example.gamestorm.ui.GameActivity;
 import com.squareup.picasso.Picasso;
 import java.util.List;
 
