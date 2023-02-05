@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
 import com.example.gamestorm.R;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -29,7 +30,7 @@ public class PlayedButtonDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         bundle = getArguments();
         String[] options = {getString(R.string.played), getString(R.string.playing)};
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(requireContext(), R.style.CustomAlertDialog);
+        MaterialAlertDialogBuilder alertDialog = new MaterialAlertDialogBuilder(requireContext());
         alertDialog.setTitle(bundle.getString("gameName"));
         alertDialog.setPositiveButton(getString(R.string.confirm_text), (dialog, which) -> {
             GameActivity gameActivity = activity;

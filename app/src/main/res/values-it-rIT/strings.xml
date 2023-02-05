@@ -66,6 +66,7 @@
     </string-array>
 
     <string name="search_games_hint">Cerca giochi</string>
+    <string name="no_platforms">Nessuna piattaforma disponibile</string>
     <string name="number_of_results"> %1$d risultati trovati per &quot;%2$s&quot;</string>
     <string name="any_genre">Qualsiasi</string>
     <string name="any_platform">Qualsiasi</string>

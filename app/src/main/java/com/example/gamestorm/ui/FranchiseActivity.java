@@ -12,6 +12,7 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -36,6 +37,7 @@ public class FranchiseActivity extends AppCompatActivity implements ResponseCall
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        this.supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_franchise);
         Intent intent = getIntent();
         String franchise = intent.getStringExtra("nameFranchise");
@@ -60,7 +62,7 @@ public class FranchiseActivity extends AppCompatActivity implements ResponseCall
         ConnectivityManager connectivityManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
         if(connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() != NetworkInfo.State.CONNECTED &&
                 connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() != NetworkInfo.State.CONNECTED) {
-            Toast.makeText(this, R.string.no_connection, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.no_connection_message, Toast.LENGTH_SHORT).show();
         }
     }
 

@@ -3,7 +3,8 @@
     <style name="roundedCorner">
         <item name="cornerSize">5dp</item>
     </style>
-    <style name="CustomAlertDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
-        <item name="android:windowBackground">@drawable/popup_background</item>
+
+    <style name="colorAccentStyle">
+        <item name="android:background">?colorAccent</item>
     </style>
 </resources>

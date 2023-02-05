@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
 import com.example.gamestorm.R;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
@@ -33,7 +34,7 @@ public class RemoveGameDialogFragment extends DialogFragment {
         FirebaseFirestore firebaseFirestore= FirebaseFirestore.getInstance();
         DocumentReference docRef = firebaseFirestore.collection("User").document(bundle.getString("idUser"));
         GameActivity gameActivity = activity;
-        return new AlertDialog.Builder(requireContext(), R.style.CustomAlertDialog)
+        return new MaterialAlertDialogBuilder(requireContext())
                 .setMessage(R.string.RemoveGame)
                 .setNegativeButton(R.string.cancel_text, (dialog, which) -> dialog.dismiss())
                 .setPositiveButton(R.string.confirm_text, (dialog, which) -> {
@@ -57,6 +58,7 @@ public class RemoveGameDialogFragment extends DialogFragment {
                             }
                         }
                     });
+                    gameActivity.getPlayedButton().setText(R.string.played);
                     gameActivity.getWantedButton().setVisibility(View.VISIBLE);
                     dialog.dismiss();
                 }).create();

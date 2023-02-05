@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    >
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/scrollView"
@@ -14,12 +15,11 @@
         <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/app_bar"
             android:layout_width="match_parent"
-            android:layout_height="450dp"
-            android:theme="@style/Theme.GameStorm.AppBarOverlay">
+            android:layout_height="450dp">
 
             <com.google.android.material.appbar.CollapsingToolbarLayout
                 android:id="@+id/toolbar_layout"
-                style="@style/Widget.MaterialComponents.Toolbar.Primary"
+                android:background="@drawable/border"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 app:layout_scrollFlags="scroll|enterAlwaysCollapsed|snap"
@@ -38,13 +38,6 @@
                     android:visibility="invisible"
                     app:layout_collapseMode="parallax" />
 
-                <com.google.android.material.appbar.MaterialToolbar
-                    android:id="@+id/toolbar"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    app:layout_collapseMode="pin"
-                    app:popupTheme="@style/Theme.GameStorm.PopupOverlay" />
-
                 <FrameLayout
                     android:id="@+id/container"
                     android:layout_width="match_parent"
@@ -59,6 +52,7 @@
             android:layout_height="820dp"
             app:layout_anchor="@+id/nestedScrollView"
             app:layout_anchorGravity="center"
+
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
             <androidx.appcompat.widget.LinearLayoutCompat
@@ -120,33 +114,34 @@
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/wantedButton"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
                         android:layout_marginEnd="10dp"
-                        android:layout_weight="0.3"
-                        android:textSize="18sp"
+                        android:layout_weight="0.5"
                         android:paddingVertical="15dp"
-                        android:textStyle="bold"
-                        app:cornerRadius="30dp"
-                        android:theme="@style/Theme.Design.Light"
                         android:text="@string/wanted"
-                        android:visibility="gone" />
+                        android:textAllCaps="true"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:visibility="gone"
+                        app:cornerRadius="30dp" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/playedButton"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
                         android:layout_marginEnd="10dp"
-                        android:layout_weight="0.7"
-                        android:textSize="18sp"
-                        android:textStyle="bold"
+                        android:layout_weight="0.5"
                         android:paddingVertical="15dp"
+                        android:text="@string/played"
+                        android:textAllCaps="true"
+                        android:textSize="18sp"
+
+                        android:textStyle="bold"
                         android:visibility="gone"
-                        app:cornerRadius="30dp"
-                        android:theme="@style/Theme.Design.Light"
-                        android:text="@string/played" />
+                        app:cornerRadius="30dp" />
                 </LinearLayout>
 
                 <TextView
@@ -170,7 +165,7 @@
                         android:id="@+id/genresLayout"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        android:orientation="horizontal"/>
+                        android:orientation="horizontal" />
                 </HorizontalScrollView>
 
                 <TextView
@@ -198,28 +193,27 @@
                     android:id="@+id/showFranchiseButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center"
                     android:layout_marginStart="14dp"
                     android:layout_marginEnd="14dp"
-                    android:layout_gravity="center"
                     android:layout_marginBottom="5dp"
-                    app:cornerRadius="30dp"
                     android:text="@string/franchise"
-                    android:theme="@style/Theme.Design.Light"
-                    android:visibility="invisible" />
+                    android:textAllCaps="true"
+                    android:visibility="invisible"
+                    app:cornerRadius="30dp" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/showCompanyButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center"
                     android:layout_marginStart="14dp"
                     android:layout_marginEnd="14dp"
-                    android:layout_gravity="center"
                     android:layout_marginBottom="5dp"
-                    app:cornerRadius="30dp"
                     android:text="@string/company"
-                    android:theme="@style/Theme.Design.Light"
-                    android:visibility="invisible" />
-
+                    android:textAllCaps="true"
+                    android:visibility="invisible"
+                    app:cornerRadius="30dp" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/screenshotsRecyclerView"

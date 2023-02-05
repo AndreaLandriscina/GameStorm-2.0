@@ -11,6 +11,7 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,6 +35,7 @@ public class CompanyActivity extends AppCompatActivity implements ResponseCallba
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        this.supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_company);
 
         Intent intent = getIntent();
@@ -59,7 +61,7 @@ public class CompanyActivity extends AppCompatActivity implements ResponseCallba
         ConnectivityManager connectivityManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
         if(connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() != NetworkInfo.State.CONNECTED &&
                 connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() != NetworkInfo.State.CONNECTED) {
-            Toast.makeText(this, R.string.no_connection, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.no_connection_message, Toast.LENGTH_SHORT).show();
         }
     }
 

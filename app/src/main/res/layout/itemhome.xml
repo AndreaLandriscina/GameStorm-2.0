@@ -10,7 +10,7 @@
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/imageView"
         android:layout_width="160dp"
-        android:layout_height="200dp"
+        android:layout_height="230dp"
         android:scaleType="fitXY"
         android:layout_marginLeft="2dp"
         android:layout_marginRight="2dp"

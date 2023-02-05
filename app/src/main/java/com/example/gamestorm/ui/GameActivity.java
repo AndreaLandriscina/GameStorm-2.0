@@ -3,6 +3,8 @@ package com.example.gamestorm.ui;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -38,6 +40,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -79,10 +82,13 @@ public class GameActivity extends AppCompatActivity implements ResponseCallback 
         int idGame = intent.getIntExtra("idGame", 1020);
         progressBar = findViewById(R.id.progressBar);
         iGamesRepository = new GamesRepository(getApplication(), this);
-        progressBar.setVisibility(View.VISIBLE);
+
         String query = "fields name, franchises.name, first_release_date, genres.name, total_rating, total_rating_count, cover.url, involved_companies.company.name, platforms.name, summary, screenshots.url; where id = " + idGame + ";";
 
-        checkNetwork();
+        if (checkNetwork()){
+            progressBar.setVisibility(View.VISIBLE);
+        }
+
         iGamesRepository.fetchGames(query, 10000, 0);
         genres = new ArrayList<>();
     }
@@ -277,12 +283,15 @@ public class GameActivity extends AppCompatActivity implements ResponseCallback 
         }
     }
 
-    private void checkNetwork() {
+    private boolean checkNetwork() {
+        boolean isConnected = true;
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         if (connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() != NetworkInfo.State.CONNECTED &&
                 connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() != NetworkInfo.State.CONNECTED) {
-            Toast.makeText(this, R.string.no_connection, Toast.LENGTH_SHORT).show();
+            isConnected = false;
+            Toast.makeText(this, R.string.no_connection_message, Toast.LENGTH_SHORT).show();
         }
+        return isConnected;
     }
 
     private void showScreenshots() {
@@ -345,7 +354,7 @@ public class GameActivity extends AppCompatActivity implements ResponseCallback 
                 }
             }
         } else {
-            text.append("No platforms available");
+            text.append(R.string.no_platforms);
         }
         platformText.setText(text);
     }
@@ -364,8 +373,7 @@ public class GameActivity extends AppCompatActivity implements ResponseCallback 
             MaterialButton button = new MaterialButton(this);
             button.setLayoutParams(params);
             button.setTextSize(16);
-
-            button.setPadding(20, 20, 20, 20);
+            button.setPadding(15, 15, 15, 15);
             button.setCornerRadius(30);
             button.setText(genre);
             button.setOnClickListener(v -> {
@@ -431,11 +439,8 @@ public class GameActivity extends AppCompatActivity implements ResponseCallback 
     }
 
     private void setToolbar() {
-        com.example.gamestorm.databinding.ActivityGameBinding binding = ActivityGameBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
-        Toolbar toolbar = binding.toolbar;
-        setSupportActionBar(toolbar);
-        Objects.requireNonNull(getSupportActionBar()).setDisplayShowTitleEnabled(false);
+        this.supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
+        setContentView(R.layout.activity_game);
     }
 
     @Override

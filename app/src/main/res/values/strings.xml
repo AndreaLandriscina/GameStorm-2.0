@@ -68,7 +68,7 @@
     <string name="sort_by_dialog_title">Sort by</string>
     <string name="search_filters_dialog_title">Search Filters</string>
     <string name="alreadyPlaying">PLAYING</string>
-
+    <string name="no_platforms">No platforms available</string>
 
     <string-array name="sorting_parameters">
         <item>Most popular</item>
