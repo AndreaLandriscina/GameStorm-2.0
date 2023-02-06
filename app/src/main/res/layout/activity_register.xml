@@ -14,7 +14,7 @@
         android:id="@+id/usernameLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="100dp"
         app:boxBackgroundColor="@android:color/transparent"
         app:startIconDrawable="@drawable/ic_baseline_account_circle_24">
 
@@ -23,11 +23,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
-            android:hint="@string/username"
             android:fontFamily="@font/poppins_regular"
-            android:textCursorDrawable="@drawable/cursor_color"
+            android:hint="@string/username"
             android:inputType="textEmailAddress"
-            android:padding="17dp" />
+            android:padding="17dp"
+            android:textCursorDrawable="@drawable/cursor_color" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
