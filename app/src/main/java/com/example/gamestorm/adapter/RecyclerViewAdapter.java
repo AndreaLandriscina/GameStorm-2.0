@@ -55,9 +55,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         Picasso.get().load(newUrl).into(x);
 
         x.setOnClickListener(v -> {
-            Bundle bundle = new Bundle();
-            bundle.putInt("idGame", recyclerData.getId());
-            Navigation.findNavController(v).navigate(R.id.action_homeFragment_to_gameActivity, bundle);
+            Intent myIntent = new Intent(mcontext, GameActivity.class);
+            myIntent.putExtra("idGame", recyclerData.getId());
+            mcontext.startActivity(myIntent);
         });
     }
 

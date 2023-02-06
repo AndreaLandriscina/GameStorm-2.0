@@ -45,7 +45,7 @@ public class RecyclerProfileViewAdapter extends RecyclerView.Adapter<RecyclerPro
         holder.cover.setOnClickListener(v -> {
             Bundle bundle = new Bundle();
             bundle.putInt("idGame", recyclerData.getId());
-            Navigation.findNavController(v).navigate(R.id.action_homeFragment_to_gameActivity, bundle);
+            Navigation.findNavController(v).navigate(R.id.action_profileFragment_to_gameActivity, bundle);
         });
         //holder.textView.setText(recyclerData.getName());
     }

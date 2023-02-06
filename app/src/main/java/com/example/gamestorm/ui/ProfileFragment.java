@@ -167,8 +167,7 @@ public class ProfileFragment extends Fragment {
                         firebaseAuth.signOut();
                         Toast.makeText(getContext(), R.string.logout_successfully, Toast.LENGTH_SHORT).show();
                         logoutLayout.setVisibility(View.GONE);
-
-                        Navigation.findNavController(requireView()).navigate(R.id.action_searchFragment_to_homeFragment);
+                        startActivity(new Intent(getContext(), MainActivity.class));
                         requireActivity().finish();
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -179,13 +178,14 @@ public class ProfileFragment extends Fragment {
 
                 //LOGOUT CON GOOGLE
                 if (account != null){
-                    gsc.signOut().addOnCompleteListener(task -> {
-                        requireActivity().finish();
-                        progressDialog.cancel();
-                        Toast.makeText(getContext(), R.string.logout_successfully, Toast.LENGTH_SHORT).show();
-                        logoutLayout.setVisibility(View.GONE);
-                        Navigation.findNavController(requireView()).navigate(R.id.action_searchFragment_to_homeFragment);
-                    });
+                        gsc.signOut().addOnCompleteListener(task -> {
+                            requireActivity().finish();
+                            progressDialog.cancel();
+                            Toast.makeText(getContext(), R.string.logout_successfully, Toast.LENGTH_SHORT).show();
+                            logoutLayout.setVisibility(View.GONE);
+                            startActivity(new Intent(getContext(), MainActivity.class));
+                        });
+
                 }
                 return true;
 

@@ -56,7 +56,7 @@ public class GameAdapter extends RecyclerView.Adapter<GameAdapter.RecyclerViewHo
         holder.gameCV.setOnClickListener(v -> {
             Bundle bundle = new Bundle();
             bundle.putInt("idGame", game.getId());
-            Navigation.findNavController(v).navigate(R.id.action_homeFragment_to_gameActivity, bundle);
+            Navigation.findNavController(v).navigate(R.id.action_searchFragment_to_gameActivity, bundle);
         });
     }
 
