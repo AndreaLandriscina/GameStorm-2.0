@@ -201,6 +201,22 @@ public class SearchFragment extends Fragment implements ResponseCallback {
 
             @Override
             public boolean onQueryTextChange(String newText) {
+                if(newText.isEmpty()){
+                    lastSelectedSortingParameter = -1;
+                    lastSelectedGenre = 0;
+                    lastSelectedPlatform = 0;
+                    lastSelectedReleaseYear = 0;
+
+
+                    String queryToServer = "fields id, name, cover.url, follows, rating, first_release_date, genres.name, platforms.name; where cover.url != null; limit 500;";
+                    searchLoading.setVisibility(View.VISIBLE);
+                    numberOfResults.setText("");
+                    numberOfResults.setText(R.string.explore_title);
+                    numberOfResults.setTextSize(30);
+                    numberOfResults.setTypeface(null, Typeface.BOLD);
+                    firstLoad = true;
+                    iGamesRepository.fetchGames(queryToServer, 10000,0);
+                }
                 return false;
             }
         });
@@ -658,6 +674,10 @@ public class SearchFragment extends Fragment implements ResponseCallback {
             if(getContext() != null)
                  text = String.format(getContext().getResources().getString(R.string.number_of_results), games.size(), userInput);
             numberOfResults.setText(text);
+        }else{
+            numberOfResults.setText(R.string.explore_title);
+            numberOfResults.setTextSize(30);
+            numberOfResults.setTypeface(null, Typeface.BOLD);
         }
 
         showGamesOnRecyclerView(games);
