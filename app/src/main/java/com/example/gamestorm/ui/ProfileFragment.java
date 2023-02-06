@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.navigation.Navigation;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.view.LayoutInflater;
@@ -19,17 +20,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.Toolbar;
 
 import com.example.gamestorm.R;
 import com.example.gamestorm.adapter.MyViewPagerAdapter;
-import com.example.gamestorm.databinding.FragmentProfileBinding;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -38,9 +35,9 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class ProfileFragment extends Fragment {
-    FragmentProfileBinding binding;
     FirebaseAuth firebaseAuth;
     ProgressDialog progressDialog;
     LayoutInflater inflater;
@@ -72,19 +69,19 @@ public class ProfileFragment extends Fragment {
         tabLayout = requireView().findViewById(R.id.tab_layout);
         viewPager2 = requireView().findViewById(R.id.view_pager);
         usernameText = requireView().findViewById(R.id.username_text);
-        myViewPagerAdapter = new MyViewPagerAdapter((FragmentActivity) getContext());
+        myViewPagerAdapter = new MyViewPagerAdapter((FragmentActivity) requireContext());
         viewPager2.setAdapter(myViewPagerAdapter);
         firebaseAuth=FirebaseAuth.getInstance();
         logoutLayout = requireView().findViewById(R.id.logout_layout);
         gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestIdToken("1091326442567-dbkvi0h9877eego2ou819bepnb05h65g.apps.googleusercontent.com").requestEmail().build();
-        gsc = GoogleSignIn.getClient(getContext(),gso);
+        gsc = GoogleSignIn.getClient(requireContext(),gso);
         nDesiredGames = requireView().findViewById(R.id.nDesiredGames);
         nPlayedGames = requireView().findViewById(R.id.nPlayedGames);
         firebaseFirestore=FirebaseFirestore.getInstance();
 
         setHasOptionsMenu(true);
 
-        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(getContext());
+        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(requireContext());
         if (account != null){
             usernameText.setText("Bentornato, " + account.getDisplayName());
         }
@@ -105,18 +102,14 @@ public class ProfileFragment extends Fragment {
         }else{
             logoutLayout.setVisibility(View.VISIBLE);
             DocumentReference docRef = firebaseFirestore.collection("User").document(loggedUserID);
-            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                    if (task.isSuccessful()) {
-                        DocumentSnapshot document = task.getResult();
-                        if (document != null) {
-                            ArrayList<Integer> desiredGames = (ArrayList<Integer>) document.get("desiredGames");
-                            nDesiredGames.setText("Giochi desiderati: " + desiredGames.size());
-                            ArrayList<Integer> playedGames = (ArrayList<Integer>) document.get("playedGames");
-                            nPlayedGames.setText("Giochi giocati: " + playedGames.size());
-                            //DesiredFragment.desiredGames = desiredGames;
-                        }
+            docRef.get().addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document != null) {
+                        ArrayList<Integer> desiredGames = (ArrayList<Integer>) document.get("desiredGames");
+                        nDesiredGames.setText("Giochi desiderati: " + desiredGames.size());
+                        ArrayList<Integer> playedGames = (ArrayList<Integer>) document.get("playedGames");
+                        nPlayedGames.setText("Giochi giocati: " + playedGames.size());
                     }
                 }
             });
@@ -143,7 +136,7 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
-                tabLayout.getTabAt(position).select();
+                Objects.requireNonNull(tabLayout.getTabAt(position)).select();
             }
         });
 
@@ -153,15 +146,10 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.profile_menu, menu);
-        Toolbar tb = (Toolbar) requireView().findViewById(R.id.toolbar);
         logout_option = menu.findItem(R.id.logout_option);
 
-        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(getContext());
-        if (firebaseAuth.getCurrentUser()==null && account == null) {
-            logout_option.setVisible(false);
-        }else{
-            logout_option.setVisible(true);
-        }
+        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(requireContext());
+        logout_option.setVisible(firebaseAuth.getCurrentUser() != null || account != null);
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -169,7 +157,7 @@ public class ProfileFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case R.id.logout_option:
-                GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(getContext());
+                GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(requireContext());
                 progressDialog.setTitle(getString(R.string.logout_in_progress));
                 progressDialog.show();
 
@@ -179,7 +167,8 @@ public class ProfileFragment extends Fragment {
                         firebaseAuth.signOut();
                         Toast.makeText(getContext(), R.string.logout_successfully, Toast.LENGTH_SHORT).show();
                         logoutLayout.setVisibility(View.GONE);
-                        startActivity(new Intent(getContext(), MainActivity.class));
+
+                        Navigation.findNavController(requireView()).navigate(R.id.action_searchFragment_to_homeFragment);
                         requireActivity().finish();
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -190,15 +179,12 @@ public class ProfileFragment extends Fragment {
 
                 //LOGOUT CON GOOGLE
                 if (account != null){
-                    gsc.signOut().addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(Task<Void> task) {
-                            requireActivity().finish();
-                            progressDialog.cancel();
-                            Toast.makeText(getContext(), R.string.logout_successfully, Toast.LENGTH_SHORT).show();
-                            logoutLayout.setVisibility(View.GONE);
-                            startActivity(new Intent(getContext(), MainActivity.class));
-                        }
+                    gsc.signOut().addOnCompleteListener(task -> {
+                        requireActivity().finish();
+                        progressDialog.cancel();
+                        Toast.makeText(getContext(), R.string.logout_successfully, Toast.LENGTH_SHORT).show();
+                        logoutLayout.setVisibility(View.GONE);
+                        Navigation.findNavController(requireView()).navigate(R.id.action_searchFragment_to_homeFragment);
                     });
                 }
                 return true;
@@ -211,24 +197,20 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(getContext());
+        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(requireContext());
         if (firebaseAuth.getCurrentUser()==null && account == null) {
             logoutLayout.setVisibility(View.GONE);
         }else{
             logoutLayout.setVisibility(View.VISIBLE);
             DocumentReference docRef = firebaseFirestore.collection("User").document(loggedUserID);
-            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                    if (task.isSuccessful()) {
-                        DocumentSnapshot document = task.getResult();
-                        if (document != null) {
-                            ArrayList<Integer> desiredGames = (ArrayList<Integer>) document.get("desiredGames");
-                            nDesiredGames.setText("Giochi desiderati: " + desiredGames.size());
-                            ArrayList<Integer> playedGames = (ArrayList<Integer>) document.get("playedGames");
-                            nPlayedGames.setText("Giochi giocati: " + playedGames.size());
-                            //DesiredFragment.desiredGames = desiredGames;
-                        }
+            docRef.get().addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document != null) {
+                        ArrayList<Integer> desiredGames = (ArrayList<Integer>) document.get("desiredGames");
+                        nDesiredGames.setText("Giochi desiderati: " + desiredGames.size());
+                        ArrayList<Integer> playedGames = (ArrayList<Integer>) document.get("playedGames");
+                        nPlayedGames.setText("Giochi giocati: " + playedGames.size());
                     }
                 }
             });

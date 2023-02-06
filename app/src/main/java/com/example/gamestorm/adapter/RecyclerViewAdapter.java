@@ -2,12 +2,14 @@ package com.example.gamestorm.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.gamestorm.R;
@@ -45,7 +47,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         // Set the data to textview and imageview.
         RecyclerData recyclerData = dataArrayList.get(position);
         String newUrl = recyclerData.getImgUrl().replace("thumb", "cover_big");
-        ImageView x = null;
+        ImageView x;
         if (isRelatedGames())
             x = holder.smallCover;
         else
@@ -53,10 +55,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         Picasso.get().load(newUrl).into(x);
 
         x.setOnClickListener(v -> {
-            Intent myIntent = new Intent(mcontext, GameActivity.class);
-
-            myIntent.putExtra("idGame", recyclerData.getId());
-            mcontext.startActivity(myIntent);
+            Bundle bundle = new Bundle();
+            bundle.putInt("idGame", recyclerData.getId());
+            Navigation.findNavController(v).navigate(R.id.action_homeFragment_to_gameActivity, bundle);
         });
     }
 

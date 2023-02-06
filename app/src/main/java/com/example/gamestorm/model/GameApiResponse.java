@@ -1,22 +1,17 @@
 package com.example.gamestorm.model;
 
+import android.annotation.SuppressLint;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.example.gamestorm.model.Cover;
-import com.example.gamestorm.model.Genre;
-import com.example.gamestorm.model.Platform;
-import com.example.gamestorm.model.ReleaseDate;
 import com.google.gson.annotations.SerializedName;
 
 import java.text.DateFormat;
-import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -47,7 +42,7 @@ public class GameApiResponse implements Parcelable {
 
     public GameApiResponse() {}
 
-    public GameApiResponse(int id, String name, Cover cover, List<Genre> genres, List<Platform> platforms, List<ReleaseDate> releaseDates, double ratings, int firstReleaseDate, int follows, List<Franchises> franchise, List<InvolvedCompany> companies, String description, List<Screenshot> screenshots) {
+    public GameApiResponse(int id, String name, Cover cover, List<Genre> genres, List<Platform> platforms, List<ReleaseDate> releaseDates, double ratings, double totalRating, int totalRatingCount, int firstReleaseDate, int follows, List<Franchises> franchise, List<InvolvedCompany> companies, String description, List<Screenshot> screenshots) {
         this.id = id;
         this.name = name;
         this.cover = cover;
@@ -55,6 +50,8 @@ public class GameApiResponse implements Parcelable {
         this.platforms = platforms;
         this.releaseDates = releaseDates;
         this.rating = ratings;
+        this.totalRating = totalRating;
+        this.totalRatingCount = totalRatingCount;
         this.firstReleaseDate = firstReleaseDate;
         this.follows = follows;
         this.franchise = franchise;
@@ -113,14 +110,12 @@ public class GameApiResponse implements Parcelable {
 
     public List<String> getGenresString() {
         List<String> genres = new ArrayList<>();
-        for (int i = 0; i < this.genres.size(); i++){
-            genres.add(this.genres.get(i).name);
+        if (this.genres != null){
+            for (int i = 0; i < this.genres.size(); i++){
+                genres.add(this.genres.get(i).name);
+            }
         }
         return genres;
-    }
-
-    public void setGenres(List<Genre> genres) {
-        this.genres = genres;
     }
 
     public List<Platform> getPlatforms() {
@@ -128,33 +123,20 @@ public class GameApiResponse implements Parcelable {
     }
 
     public List<String> getPlatformsString() {
-        List<String> platforms = new ArrayList<>();
-        for (int i = 0; i < this.platforms.size(); i++){
-            platforms.add(this.platforms.get(i).name);
+        List<String> platforms = null;
+        if (this.platforms != null) {
+            platforms = new ArrayList<>();
+            for (int i = 0; i < this.platforms.size(); i++) {
+                platforms.add(this.platforms.get(i).name);
+            }
         }
         return platforms;
     }
-
-    public void setPlatforms(List<Platform> platforms) {
-        this.platforms = platforms;
-    }
-
-    public List<ReleaseDate> getReleaseDates() {
-        return releaseDates;
-    }
-
-    public void setReleaseDates(List<ReleaseDate> releaseDates) {
-        this.releaseDates = releaseDates;
-    }
-
     public double getRating() {
         return rating;
     }
 
-    public void setRatings(double ratings) {
-        this.rating = ratings;
-    }
-
+    @NonNull
     @Override
     public String toString() {
         return "GameApiResponse{" +
@@ -173,9 +155,8 @@ public class GameApiResponse implements Parcelable {
     public String getFirstReleaseDate() {
         Date date = new Date((long)firstReleaseDate*1000);
         // Display a date in day, month, year format
-        DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-        String stringFormattedDate = formatter.format(date);
-        return stringFormattedDate;
+        @SuppressLint("SimpleDateFormat") DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+        return formatter.format(date);
     }
 
 

@@ -1,8 +1,5 @@
 package com.example.gamestorm.util;
 
-import android.app.Application;
-
-import com.example.gamestorm.database.GamesRoomDatabase;
 import com.example.gamestorm.service.GamesApiService;
 
 import retrofit2.Retrofit;
@@ -31,9 +28,5 @@ public class ServiceLocator {
                 .addConverterFactory(GsonConverterFactory.create()).build();
 
         return retrofit.create(GamesApiService.class);
-    }
-
-    public GamesRoomDatabase getNewsDao(Application application) {
-        return GamesRoomDatabase.getDatabase(application);
     }
 }

@@ -16,6 +16,12 @@
         <action
             android:id="@+id/action_homeFragment_to_searchFragment"
             app:destination="@id/searchFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_gameActivity"
+            app:destination="@id/gameActivity" />
+        <action
+            android:id="@+id/action_homeFragment_to_loginActivity"
+            app:destination="@id/loginActivity" />
     </fragment>
     <fragment
         android:id="@+id/profileFragment"
@@ -28,6 +34,12 @@
         <action
             android:id="@+id/action_profileFragment_to_searchFragment"
             app:destination="@id/searchFragment" />
+        <action
+            android:id="@+id/action_profileFragment_to_gameActivity"
+            app:destination="@id/gameActivity" />
+        <action
+            android:id="@+id/action_profileFragment_to_loginActivity"
+            app:destination="@id/loginActivity" />
     </fragment>
     <fragment
         android:id="@+id/searchFragment"
@@ -51,18 +63,8 @@
         android:label="activity_game"
         tools:layout="@layout/activity_game" />
     <activity
-        android:id="@+id/franchiseActivity"
-        android:name="com.example.gamestorm.ui.FranchiseActivity"
-        android:label="activity_franchise"
-        tools:layout="@layout/activity_franchise" />
-    <activity
-        android:id="@+id/genreActivity"
-        android:name="com.example.gamestorm.ui.GenreActivity"
-        android:label="activity_genre"
-        tools:layout="@layout/activity_genre" />
-    <fragment
-        android:id="@+id/screenshotFragment"
-        android:name="com.example.gamestorm.ui.ScreenshotFragment"
-        android:label="fragment_screenshot"
-        tools:layout="@layout/fragment_screenshot" />
+        android:id="@+id/loginActivity"
+        android:name="com.example.gamestorm.ui.LoginActivity"
+        android:label="activity_login"
+        tools:layout="@layout/activity_login" />
 </navigation>

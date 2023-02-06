@@ -9,10 +9,12 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
 import android.os.Parcelable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +24,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.gamestorm.database.TinyDB;
 import com.example.gamestorm.model.Cover;
@@ -34,8 +37,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
@@ -48,35 +49,24 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link HomeFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class HomeFragment extends Fragment implements ResponseCallback {
     private LinearLayout galleryPopular;
     private LinearLayout galleryBestGames;
     private LinearLayout galleryForYou;
     private LinearLayout galleryLatestReleases;
     private LinearLayout galleryIncoming;
-    private ImageView imageGalleryPopular;
-    private ImageView imageGalleryBest;
-    private ImageView imageGalleryForYou;
-    private ImageView imageGalleryLatestReleases;
-    private ImageView imageGalleryIncoming;
 
     private TextView loginTextView;
     private Button loginButton;
     private HorizontalScrollView forYouScrollView;
 
-    private TextView imageTextView;
     private ProgressBar progressBar;
 
     LayoutInflater inflater;
 
-    int idGame = 0;
     private IGamesRepository iGamesRepository;
     private List<GameApiResponse> gamesPopular;
     private List<GameApiResponse> gamesBest;
@@ -84,16 +74,12 @@ public class HomeFragment extends Fragment implements ResponseCallback {
     private List<GameApiResponse> gamesLatestReleases;
     private List<GameApiResponse> gamesIncoming;
 
-    private static HashMap<String, Integer> mapGenreCount;
-
     private GameApiResponse game;
     String queryPopular;
     String queryForYou;
     String queryLatestReleases;
     String queryIncoming;
     String queryBestGames;
-
-    String multiQuery;
 
     //LOGIN
     FirebaseAuth firebaseAuth;
@@ -105,35 +91,20 @@ public class HomeFragment extends Fragment implements ResponseCallback {
     //SHAREDPREFERENCE
     TinyDB tinydb;
 
-    private List<GameApiResponse> gamesUser;
-
-
     public HomeFragment() {
 
     }
-
     private long currentDate() {
         Calendar calendar = Calendar.getInstance();
-        long timeSeconds = calendar.getTimeInMillis()/1000;
-        return timeSeconds;
-    }
-
-
-
-    public static HomeFragment newInstance(String param1, String param2) {
-        HomeFragment fragment = new HomeFragment();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
-        return fragment;
+        return calendar.getTimeInMillis()/1000;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        tinydb = new TinyDB(requireActivity().getApplication());
 
-        tinydb = new TinyDB(getActivity().getApplication());
-
-        iGamesRepository = new GamesRepository(getActivity().getApplication(), this);
+        iGamesRepository = new GamesRepository(requireActivity().getApplication(), this);
         queryPopular = "fields id, name, cover.url;where follows!=null; sort follows desc; limit 30;";
         queryLatestReleases = "fields id, name, cover.url; sort first_release_date desc; limit 30;";
         queryIncoming = "fields id, name, cover.url; where first_release_date > " +Long.toString(currentDate())+";sort first_release_date asc; limit 30;";
@@ -176,16 +147,11 @@ public class HomeFragment extends Fragment implements ResponseCallback {
             forYouScrollView.setVisibility(View.GONE);
             loginTextView.setVisibility(View.VISIBLE);
             loginButton.setVisibility(View.VISIBLE);
-            loginButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    startActivity(new Intent(getContext(), LoginActivity.class));
-                }
-            });
+            loginButton.setOnClickListener(v -> Navigation.findNavController(requireView()).navigate(R.id.action_homeFragment_to_loginActivity));
         }
 
         if (savedInstanceState != null) {
-            if (isNetworkAvailable(getContext())) {
+            if (isNetworkAvailable(requireContext())) {
 
                 gamesPopular = savedInstanceState.getParcelableArrayList("popular");
                 gamesBest = savedInstanceState.getParcelableArrayList("best");
@@ -198,7 +164,7 @@ public class HomeFragment extends Fragment implements ResponseCallback {
                 showGames(3, gamesBest);
                 //showGames(4, gamesForYou); //NON SALVO I GIOCHI FOR YOU PERCHè ALMENO VENGONO SEMPRE AGGIORNATI SE L'UTENTE CAMBIA IL GENERE PREFERITO
             }else{
-                Snackbar.make(view.findViewById(R.id.Coordinatorlyt), R.string.no_connection_message, Snackbar.LENGTH_LONG).show();
+                Toast.makeText(requireContext(), R.string.no_connection_message, Toast.LENGTH_LONG).show();
             }
         }else if(gamesPopular!=null){ //SHARED PREFERENCE SALVATA
 
@@ -214,7 +180,7 @@ public class HomeFragment extends Fragment implements ResponseCallback {
             //showGames(4, gamesForYou); //NON SALVO I GIOCHI FOR YOU PERCHè ALMENO VENGONO SEMPRE AGGIORNATI SE L'UTENTE CAMBIA IL GENERE PREFERITO
         }
         else { //SE SIA SHARED PREFERENCE E SIA ONSAVEINSTANCESTATE NON SONO STATI SALVATI ALLORA RI FA LE QUERY PER PRENDERE I DATI
-            if (isNetworkAvailable(getContext())) {
+            if (isNetworkAvailable(requireContext())) {
                 progressBar.setVisibility(View.VISIBLE);
 
                 gamesPopular = new ArrayList<>();
@@ -229,7 +195,7 @@ public class HomeFragment extends Fragment implements ResponseCallback {
                 iGamesRepository.fetchGames(queryBestGames, 10000, 3);
 
             } else {
-                Snackbar.make(view.findViewById(R.id.Coordinatorlyt), R.string.no_connection_message, Snackbar.LENGTH_LONG).show();
+                Toast.makeText(requireContext(), R.string.no_connection_message, Toast.LENGTH_LONG).show();
             }
 
         }
@@ -259,13 +225,13 @@ public class HomeFragment extends Fragment implements ResponseCallback {
             showGames(countQuery,gamesForYou);
         }else if(countQuery==5){
             List<String> genres=new ArrayList<>();
-            gamesUser=new ArrayList<>();
-            this.gamesUser.addAll(gamesList);
-            for(int i=0;i<gamesUser.size();i++){
-                game=gamesUser.get(i);
+            List<GameApiResponse> gamesUser = new ArrayList<>();
+            gamesUser.addAll(gamesList);
+            for(int i = 0; i< gamesUser.size(); i++){
+                game= gamesUser.get(i);
                 if(game.getGenres()!=null) {
                     for (int j = 0; !game.getGenres().isEmpty() && j < game.getGenres().size(); j++) {
-                        genres.add(game.getGenresString().get(j).toString());
+                        genres.add(game.getGenresString().get(j));
                     }
                 }else{
                     if(gamesUser.size()==1) {
@@ -277,7 +243,7 @@ public class HomeFragment extends Fragment implements ResponseCallback {
                     }
                 }
             }
-            mapGenreCount = new HashMap<>();
+            HashMap<String, Integer> mapGenreCount = new HashMap<>();
 
             for (int i = 0; i < genres.size(); i++) {
                 if(genres.get(i)!=null) {
@@ -315,10 +281,12 @@ public class HomeFragment extends Fragment implements ResponseCallback {
     }
     public void showGames(int countQuery, List<GameApiResponse> gameList){
         progressBar.setVisibility(View.GONE);
+        TextView imageTextView;
         if(countQuery==0) {
             for (int i = 0; i < 30; i++) {
                 game = gameList.get(i);
                 Cover cover = game.getCover();
+                ImageView imageGalleryPopular;
                 if (cover != null) {
                     String uriString = cover.getUrl();
                     String newUri = uriString.replace("thumb", "cover_big_2x");
@@ -329,26 +297,22 @@ public class HomeFragment extends Fragment implements ResponseCallback {
                 } else {
                     View viewItemHome = inflater.inflate(R.layout.itemhome, galleryPopular, false);
                     imageGalleryPopular = viewItemHome.findViewById(R.id.imageView);
-                    imageTextView=viewItemHome.findViewById(R.id.imageTextView);
+                    imageTextView =viewItemHome.findViewById(R.id.imageTextView);
                     imageTextView.setVisibility(View.VISIBLE);
                     imageTextView.setText(game.getName());
                     imageGalleryPopular.setImageResource(R.drawable.background_grey);
                     galleryPopular.addView(viewItemHome);
                 }
                 int idGame=game.getId();
-                imageGalleryPopular.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent i = new Intent(getContext(), GameActivity.class);
-                        i.putExtra("idGame", idGame);
-                        startActivity(i);
-                    }
+                imageGalleryPopular.setOnClickListener(v -> {
+                    goToGameActivity(idGame, v);
                 });
             }
         }else if(countQuery==1){
             for(int i=0;i<30;i++){
                 game = gameList.get(i);
                 Cover cover = game.getCover();
+                ImageView imageGalleryLatestReleases;
                 if(cover!=null) {
                     String uriString=cover.getUrl();
                     String newUri = uriString.replace("thumb", "cover_big_2x");
@@ -360,26 +324,22 @@ public class HomeFragment extends Fragment implements ResponseCallback {
                 else{
                     View viewItemHome = inflater.inflate(R.layout.itemhome, galleryLatestReleases, false);
                     imageGalleryLatestReleases = viewItemHome.findViewById(R.id.imageView);
-                    imageTextView=viewItemHome.findViewById(R.id.imageTextView);
+                    imageTextView =viewItemHome.findViewById(R.id.imageTextView);
                     imageTextView.setVisibility(View.VISIBLE);
                     imageTextView.setText(game.getName());
                     imageGalleryLatestReleases.setImageResource(R.drawable.background_grey);
                     galleryLatestReleases.addView(viewItemHome);
                 }
                 int idGame=game.getId();
-                imageGalleryLatestReleases.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent i = new Intent(getContext(), GameActivity.class);
-                        i.putExtra("idGame", idGame);
-                        startActivity(i);
-                    }
+                imageGalleryLatestReleases.setOnClickListener(v -> {
+                    goToGameActivity(idGame, v);
                 });
             }
         }else if(countQuery==2){
             for(int i=0;i<30;i++){
                 game = gameList.get(i);
                 Cover cover = game.getCover();
+                ImageView imageGalleryIncoming;
                 if(cover!=null) {
                     String uriString=cover.getUrl();
                     String newUri = uriString.replace("thumb", "cover_big_2x");
@@ -391,20 +351,15 @@ public class HomeFragment extends Fragment implements ResponseCallback {
                 else{
                     View viewItemHome = inflater.inflate(R.layout.itemhome, galleryIncoming, false);
                     imageGalleryIncoming = viewItemHome.findViewById(R.id.imageView);
-                    imageTextView=viewItemHome.findViewById(R.id.imageTextView);
+                    imageTextView =viewItemHome.findViewById(R.id.imageTextView);
                     imageTextView.setVisibility(View.VISIBLE);
                     imageTextView.setText(game.getName());
                     imageGalleryIncoming.setImageResource(R.drawable.background_grey);
                     galleryIncoming.addView(viewItemHome);
                 }
                 int idGame=game.getId();
-                imageGalleryIncoming.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent i = new Intent(getContext(), GameActivity.class);
-                        i.putExtra("idGame", idGame);
-                        startActivity(i);
-                    }
+                imageGalleryIncoming.setOnClickListener(v -> {
+                    goToGameActivity(idGame, v);
                 });
             }
         }
@@ -412,6 +367,7 @@ public class HomeFragment extends Fragment implements ResponseCallback {
             for(int i=0;i<30;i++){
                 game = gameList.get(i);
                 Cover cover = game.getCover();
+                ImageView imageGalleryBest;
                 if(cover!=null) {
                     String uriString=cover.getUrl();
                     String newUri = uriString.replace("thumb", "cover_big_2x");
@@ -423,26 +379,22 @@ public class HomeFragment extends Fragment implements ResponseCallback {
                 else{
                     View viewItemHome = inflater.inflate(R.layout.itemhome, galleryBestGames, false);
                     imageGalleryBest = viewItemHome.findViewById(R.id.imageView);
-                    imageTextView=viewItemHome.findViewById(R.id.imageTextView);
+                    imageTextView =viewItemHome.findViewById(R.id.imageTextView);
                     imageTextView.setVisibility(View.VISIBLE);
                     imageTextView.setText(game.getName());
                     imageGalleryBest.setImageResource(R.drawable.background_grey);
                     galleryBestGames.addView(viewItemHome);
                 }
                 int idGame=game.getId();
-                imageGalleryBest.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent i = new Intent(getContext(), GameActivity.class);
-                        i.putExtra("idGame", idGame);
-                        startActivity(i);
-                    }
+                imageGalleryBest.setOnClickListener(v -> {
+                    goToGameActivity(idGame, v);
                 });
             }
         }else if(countQuery==4) { //FOR YOU
                 for (int i = 0; i < 30; i++) {
                     game = gameList.get(i);
                     Cover cover = game.getCover();
+                    ImageView imageGalleryForYou;
                     if (cover != null) {
                         String uriString = cover.getUrl();
                         String newUri = uriString.replace("thumb", "cover_big_2x");
@@ -453,24 +405,25 @@ public class HomeFragment extends Fragment implements ResponseCallback {
                     } else {
                         View viewItemHome = inflater.inflate(R.layout.itemhome, galleryForYou, false);
                         imageGalleryForYou = viewItemHome.findViewById(R.id.imageView);
-                        imageTextView=viewItemHome.findViewById(R.id.imageTextView);
+                        imageTextView =viewItemHome.findViewById(R.id.imageTextView);
                         imageTextView.setVisibility(View.VISIBLE);
                         imageTextView.setText(game.getName());
                         imageGalleryForYou.setImageResource(R.drawable.background_grey);
                         galleryForYou.addView(viewItemHome);
                     }
                     int idGame=game.getId();
-                    imageGalleryForYou.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Intent i = new Intent(getContext(), GameActivity.class);
-                            i.putExtra("idGame",idGame);
-                            startActivity(i);
-                        }
+                    imageGalleryForYou.setOnClickListener(v -> {
+                        goToGameActivity(idGame, v);
                     });
                 }
             }
         }
+
+    private void goToGameActivity(int idGame, View v) {
+        Bundle bundle = new Bundle();
+        bundle.putInt("idGame", idGame);
+        Navigation.findNavController(v).navigate(R.id.action_homeFragment_to_gameActivity, bundle);
+    }
 
 
     @Override
@@ -491,11 +444,6 @@ public class HomeFragment extends Fragment implements ResponseCallback {
 
     }
 
-    @Override
-    public void onGameFavoriteStatusChanged(GameApiResponse game) {
-
-    }
-
     private boolean isNetworkAvailable(Context context) {
         ConnectivityManager connectivityManager
                 = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -506,10 +454,10 @@ public class HomeFragment extends Fragment implements ResponseCallback {
     private boolean isLogged() {
         firebaseAuth=FirebaseAuth.getInstance();
         gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestIdToken("1091326442567-dbkvi0h9877eego2ou819bepnb05h65g.apps.googleusercontent.com").requestEmail().build();
-        gsc = GoogleSignIn.getClient(getContext(), gso);
+        gsc = GoogleSignIn.getClient(requireContext(), gso);
         firebaseFirestore = FirebaseFirestore.getInstance();
 
-        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(getContext());
+        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(requireContext());
 
         if (firebaseAuth.getCurrentUser() == null && account == null) {
             return false;
@@ -528,38 +476,35 @@ public class HomeFragment extends Fragment implements ResponseCallback {
         super.onResume();
         if(isLogged()) {
             DocumentReference docRef = firebaseFirestore.collection("User").document(loggedUserID);
-            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                    if (task.isSuccessful()) {
-                        DocumentSnapshot document = task.getResult();
-                        if (document != null) {
-                            ArrayList<Integer> playedGames = (ArrayList<Integer>) document.get("playedGames");
-                            Integer gameId = 0;
-                            if (!playedGames.isEmpty()) {
+            docRef.get().addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document != null) {
+                        ArrayList<Integer> playedGames = (ArrayList<Integer>) document.get("playedGames");
+                        Integer gameId;
+                        if (!playedGames.isEmpty()) {
 
-                                loginTextView.setVisibility(View.GONE);
-                                loginButton.setVisibility(View.GONE);
-                                forYouScrollView.setVisibility(View.VISIBLE);
+                            loginTextView.setVisibility(View.GONE);
+                            loginButton.setVisibility(View.GONE);
+                            forYouScrollView.setVisibility(View.VISIBLE);
 
-                                String games = "";
-                                for (int i = 0; i < playedGames.size(); i++) {
-                                    if (i < playedGames.size() - 1) {
-                                        gameId = Integer.parseInt(String.valueOf(playedGames.get(i)));
-                                        games = games + gameId + ",";
-                                    } else {
-                                        gameId = Integer.parseInt(String.valueOf(playedGames.get(i)));
-                                        games = games + gameId;
-                                    }
+                            String games = "";
+                            for (int i = 0; i < playedGames.size(); i++) {
+                                if (i < playedGames.size() - 1) {
+                                    gameId = Integer.parseInt(String.valueOf(playedGames.get(i)));
+                                    games = games + gameId + ",";
+                                } else {
+                                    gameId = Integer.parseInt(String.valueOf(playedGames.get(i)));
+                                    games = games + gameId;
                                 }
-                                String queryGenres = "fields genres.name;where id=(" + games + ");";
-                                iGamesRepository.fetchGames(queryGenres, 10000, 5); //query per recuperare generi dei giochi giocati dall'utente
-                            } else {
-                                forYouScrollView.setVisibility(View.GONE);
-                                loginButton.setVisibility(View.GONE);
-                                loginTextView.setText(R.string.loginPlayedGame); //setta textView con scritto che deve aggiungere almeno un gioco nella sezione "Giocato" per poter visualizzare i giochi consigliati
-                                loginTextView.setVisibility(View.VISIBLE);
                             }
+                            String queryGenres = "fields genres.name;where id=(" + games + ");";
+                            iGamesRepository.fetchGames(queryGenres, 10000, 5); //query per recuperare generi dei giochi giocati dall'utente
+                        } else {
+                            forYouScrollView.setVisibility(View.GONE);
+                            loginButton.setVisibility(View.GONE);
+                            loginTextView.setText(R.string.loginPlayedGame); //setta textView con scritto che deve aggiungere almeno un gioco nella sezione "Giocato" per poter visualizzare i giochi consigliati
+                            loginTextView.setVisibility(View.VISIBLE);
                         }
                     }
                 }

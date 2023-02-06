@@ -84,8 +84,4 @@ public class CompanyActivity extends AppCompatActivity implements ResponseCallba
         Log.i("onFailure", errorMessage);
     }
 
-    @Override
-    public void onGameFavoriteStatusChanged(GameApiResponse game) {
-
-    }
 }

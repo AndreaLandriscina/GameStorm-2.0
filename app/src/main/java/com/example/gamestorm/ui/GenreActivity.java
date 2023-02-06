@@ -80,9 +80,4 @@ public class GenreActivity extends AppCompatActivity implements ResponseCallback
     public void onFailure(String errorMessage) {
 
     }
-
-    @Override
-    public void onGameFavoriteStatusChanged(GameApiResponse game) {
-
-    }
 }

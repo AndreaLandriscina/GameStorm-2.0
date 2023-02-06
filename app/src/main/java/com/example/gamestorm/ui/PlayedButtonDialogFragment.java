@@ -1,6 +1,5 @@
 package com.example.gamestorm.ui;
 
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.view.View;
@@ -62,6 +61,4 @@ public class PlayedButtonDialogFragment extends DialogFragment {
         });
         return alertDialog.create();
     }
-
-
 }

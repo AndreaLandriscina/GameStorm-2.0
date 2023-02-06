@@ -3,8 +3,6 @@ package com.example.gamestorm.ui;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -12,7 +10,6 @@ import android.os.Bundle;
 import com.example.gamestorm.adapter.RecyclerData;
 import com.example.gamestorm.adapter.RecyclerScreenshotsViewAdapter;
 import com.example.gamestorm.adapter.RecyclerViewAdapter;
-import com.example.gamestorm.databinding.ActivityGameBinding;
 import com.example.gamestorm.model.GameApiResponse;
 import com.example.gamestorm.R;
 import com.example.gamestorm.repository.GamesRepository;
@@ -28,8 +25,8 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.squareup.picasso.Picasso;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.DialogFragment;
@@ -52,7 +49,6 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class GameActivity extends AppCompatActivity implements ResponseCallback {
     private GameApiResponse game;
@@ -105,7 +101,8 @@ public class GameActivity extends AppCompatActivity implements ResponseCallback 
                 showRating();
                 showReviewsNumber();
                 genres = game.getGenresString();
-                showGenres(genres);
+                if (!genres.isEmpty())
+                    showGenres(genres);
                 showPlatforms();
                 setFranchiseButton();
                 setCompanyButton();
@@ -168,6 +165,7 @@ public class GameActivity extends AppCompatActivity implements ResponseCallback 
                 }
             } else {
                 if (docRef != null) {
+                    //rimuove il gioco dai desiderati
                     RemoveGameDialogFragment fragment = new RemoveGameDialogFragment(GameActivity.this);
                     goToDialog(fragment);
                 } else {
@@ -178,6 +176,7 @@ public class GameActivity extends AppCompatActivity implements ResponseCallback 
         playedButton.setOnClickListener(v -> {
             if (docRef != null) {
                 if (wantedButton.getVisibility() != View.GONE) {
+                    //aggiunge ai giochi giocati o in gioco
                     PlayedButtonDialogFragment fragment = new PlayedButtonDialogFragment(GameActivity.this);
                     goToDialog(fragment);
                 } else {
@@ -336,7 +335,7 @@ public class GameActivity extends AppCompatActivity implements ResponseCallback 
             df.setRoundingMode(RoundingMode.DOWN);
             rating.setText(df.format(value) + ratingString);
         } else {
-            rating.setText(R.string.NoRating);
+            rating.setText(getString(R.string.NoRating));
         }
     }
 
@@ -354,7 +353,7 @@ public class GameActivity extends AppCompatActivity implements ResponseCallback 
                 }
             }
         } else {
-            text.append(R.string.no_platforms);
+            text.append(getString(R.string.no_platforms));
         }
         platformText.setText(text);
     }
@@ -447,11 +446,6 @@ public class GameActivity extends AppCompatActivity implements ResponseCallback 
     public void onFailure(String errorMessage) {
         Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show();
         Log.i("onFailure", errorMessage);
-    }
-
-    @Override
-    public void onGameFavoriteStatusChanged(GameApiResponse game) {
-
     }
 
     @Override

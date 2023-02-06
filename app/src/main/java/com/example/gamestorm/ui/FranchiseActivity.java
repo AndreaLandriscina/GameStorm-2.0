@@ -84,9 +84,4 @@ public class FranchiseActivity extends AppCompatActivity implements ResponseCall
         Toast.makeText(this,errorMessage,Toast.LENGTH_LONG).show();
         Log.i("onFailure", errorMessage);
     }
-
-    @Override
-    public void onGameFavoriteStatusChanged(GameApiResponse game) {
-
-    }
 }

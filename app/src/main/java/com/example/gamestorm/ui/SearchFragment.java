@@ -22,6 +22,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.gamestorm.adapter.GameAdapter;
 import com.example.gamestorm.model.GameApiResponse;
@@ -50,7 +51,6 @@ public class SearchFragment extends Fragment implements ResponseCallback {
     private boolean firstLoad;
     private List<GameApiResponse> games;
     private List<GameApiResponse> gamesCopy;
-    private SearchView gameName;
     private String userInput;
     private MaterialButton sorting;
     private MaterialButton filters;
@@ -98,7 +98,7 @@ public class SearchFragment extends Fragment implements ResponseCallback {
             iGamesRepository = new GamesRepository(getActivity().getApplication(), this);
         firstLoad = true;
         games = new ArrayList<>();
-        gameName = view.findViewById(R.id.game_name_SV);
+        SearchView gameName = view.findViewById(R.id.game_name_SV);
         userInput = "";
         sorting = view.findViewById(R.id.sorting_B);
         filters = view.findViewById(R.id.filters_B);
@@ -139,8 +139,6 @@ public class SearchFragment extends Fragment implements ResponseCallback {
                 numberOfResults.setText(savedInstanceState.getString(resultNumberKey));
             }
 
-
-
             if(!games.isEmpty()){
                 showGamesOnRecyclerView(games);
                 adapter.notifyDataSetChanged();
@@ -163,10 +161,7 @@ public class SearchFragment extends Fragment implements ResponseCallback {
 
                 Snackbar.make(view.findViewById(R.id.Coordinatorlyt), R.string.no_connection_message, Snackbar.LENGTH_LONG).show();
             }
-
         }
-
-
 
         gameName.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -194,7 +189,7 @@ public class SearchFragment extends Fragment implements ResponseCallback {
                     numberOfResults.setText("");
                     iGamesRepository.fetchGames(queryToServer, 10000,0);
                 }else{
-                    Snackbar.make(view.findViewById(R.id.Coordinatorlyt), R.string.no_connection_message, Snackbar.LENGTH_LONG).show();
+                    Toast.makeText(requireContext(), R.string.no_connection_message, Toast.LENGTH_LONG).show();
                 }
                 return false;
             }
@@ -221,19 +216,17 @@ public class SearchFragment extends Fragment implements ResponseCallback {
             }
         });
 
-
-
         sorting.setOnClickListener(v -> {
 
-            final String[] listItems = getContext().getResources().getStringArray(R.array.sorting_parameters);
+            final String[] listItems = requireContext().getResources().getStringArray(R.array.sorting_parameters);
 
-            new MaterialAlertDialogBuilder(getContext())
+            new MaterialAlertDialogBuilder(requireContext())
                     .setTitle(R.string.sort_by_dialog_title)
                     .setSingleChoiceItems(listItems, lastSelectedSortingParameter, (dialog, i) -> {
                         sortingParameter = listItems[i];
                         lastSelectedSortingParameter = i;
 
-                        if(isNetworkAvailable(getContext()) || !games.isEmpty()){
+                        if(isNetworkAvailable(requireContext()) || !games.isEmpty()){
                             //sorting decrescente
                             Collections.sort(games, (o1, o2) -> {
                                 //non bello
@@ -249,6 +242,7 @@ public class SearchFragment extends Fragment implements ResponseCallback {
                                             SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
                                             Date date1 = formatter.parse(o1.getFirstReleaseDate());
                                             Date date2 = formatter.parse(o2.getFirstReleaseDate());
+                                            assert date1 != null;
                                             result = -date1.compareTo(date2);
                                         } catch (ParseException e1) {
                                             e1.printStackTrace();
@@ -271,8 +265,7 @@ public class SearchFragment extends Fragment implements ResponseCallback {
                             showGamesOnRecyclerView(games);
 
                         }else{
-
-                            Snackbar.make(view.findViewById(R.id.Coordinatorlyt), R.string.no_connection_message, Snackbar.LENGTH_LONG).show();
+                            Toast.makeText(requireContext(), R.string.no_connection_message, Toast.LENGTH_LONG).show();
                         }
 
                         dialog.dismiss();
@@ -280,10 +273,7 @@ public class SearchFragment extends Fragment implements ResponseCallback {
                     })
                     .setNegativeButton(R.string.cancel_text, (dialogInterface, i) -> {
 
-                    })
-                    .show();
-
-
+                    }).show();
         });
 
 
@@ -563,6 +553,7 @@ public class SearchFragment extends Fragment implements ResponseCallback {
                                                     SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
                                                     Date date1 = formatter.parse(o1.getFirstReleaseDate());
                                                     Date date2 = formatter.parse(o2.getFirstReleaseDate());
+                                                    assert date1 != null;
                                                     result = -date1.compareTo(date2);
                                                 } catch (ParseException e1) {
                                                     e1.printStackTrace();
@@ -649,8 +640,7 @@ public class SearchFragment extends Fragment implements ResponseCallback {
                             showGamesOnRecyclerView(games);
                             adapter.notifyDataSetChanged();
                         }else{
-
-                            Snackbar.make(view.findViewById(R.id.Coordinatorlyt), R.string.no_connection_message, Snackbar.LENGTH_LONG).show();
+                            Toast.makeText(requireContext(), R.string.no_connection_message, Toast.LENGTH_LONG).show();
                         }
 
                     })
@@ -694,11 +684,6 @@ public class SearchFragment extends Fragment implements ResponseCallback {
     @Override
     public void onFailure(String errorMessage) {
         Log.e("TAG", "query errata");
-    }
-
-    @Override
-    public void onGameFavoriteStatusChanged(GameApiResponse game) {
-
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.example.gamestorm.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.cardview.widget.CardView;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.gamestorm.model.GameApiResponse;
@@ -51,14 +53,10 @@ public class GameAdapter extends RecyclerView.Adapter<GameAdapter.RecyclerViewHo
 
         holder.gameCV.setTooltipText(game.getName());
 
-        holder.gameCV.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //link
-                Intent i = new Intent(context, GameActivity.class);
-                i.putExtra("idGame", game.getId());
-                context.startActivity(i);
-            }
+        holder.gameCV.setOnClickListener(v -> {
+            Bundle bundle = new Bundle();
+            bundle.putInt("idGame", game.getId());
+            Navigation.findNavController(v).navigate(R.id.action_homeFragment_to_gameActivity, bundle);
         });
     }
 
