@@ -31,6 +31,7 @@
                     android:layout_width="275dp"
                     android:layout_height="360dp"
                     android:layout_gravity="center"
+                    android:elevation="30dp"
                     android:contentDescription="@string/gameCover"
                     android:fitsSystemWindows="true"
                     android:scaleType="centerCrop"
@@ -159,8 +160,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
                     android:layout_marginEnd="10dp"
-                    android:layout_marginBottom="5dp">
-
+                    android:layout_marginBottom="5dp"
+                    android:scrollbars="horizontal">
                     <LinearLayout
                         android:id="@+id/genresLayout"
                         android:layout_width="wrap_content"
@@ -219,7 +220,7 @@
                     android:id="@+id/screenshotsRecyclerView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:scrollbars="none" />
+                    android:scrollbars="horizontal" />
 
                 <TextView
                     android:id="@+id/descriptionView"
@@ -259,7 +260,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="40dp"
-                    android:scrollbars="none" />
+                    android:scrollbars="horizontal" />
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 

@@ -85,13 +85,13 @@ public class GameActivity extends AppCompatActivity implements ResponseCallback 
             progressBar.setVisibility(View.VISIBLE);
         }
 
-        iGamesRepository.fetchGames(query, 10000, 0);
+        iGamesRepository.fetchGames(query, 0);
         genres = new ArrayList<>();
     }
 
     @SuppressLint("SetTextI18n")
     @Override
-    public void onSuccess(List<GameApiResponse> gamesList, long lastUpdate, int queryNumber) {
+    public void onSuccess(List<GameApiResponse> gamesList, int queryNumber) {
         switch (queryNumber) {
             case 0:
                 game = gamesList.get(0);
@@ -262,7 +262,7 @@ public class GameActivity extends AppCompatActivity implements ResponseCallback 
             }
         }
         String query = "fields name, total_rating, cover.url, genres.name, first_release_date; where genres.name = " + subquery + " & total_rating > 80 & first_release_date > 1262304000; limit 30;";
-        iGamesRepository.fetchGames(query, 10000, 1);
+        iGamesRepository.fetchGames(query, 1);
     }
 
     private void showRelatedGames(ArrayList<GameApiResponse> relatedGamesList) {
@@ -445,6 +445,7 @@ public class GameActivity extends AppCompatActivity implements ResponseCallback 
     @Override
     public void onFailure(String errorMessage) {
         Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show();
+        progressBar.setVisibility(View.GONE);
         Log.i("onFailure", errorMessage);
     }
 

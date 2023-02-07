@@ -24,7 +24,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.gamestorm.adapter.GameAdapter;
+import com.example.gamestorm.adapter.RecyclerSearchAdapter;
 import com.example.gamestorm.model.GameApiResponse;
 import com.example.gamestorm.model.Genre;
 import com.example.gamestorm.model.Platform;
@@ -57,7 +57,7 @@ public class SearchFragment extends Fragment implements ResponseCallback {
     private TextView numberOfResults;
     private RecyclerView gamesRV;
     private ProgressBar searchLoading;
-    GameAdapter adapter;
+    RecyclerSearchAdapter adapter;
     private String sortingParameter;
     private int lastSelectedSortingParameter;
     private int lastSelectedGenre;
@@ -129,7 +129,7 @@ public class SearchFragment extends Fragment implements ResponseCallback {
                     numberOfResults.setText(R.string.explore_title);
                     searchLoading.setVisibility(View.VISIBLE);
                     String queryToServer = "fields id, name, cover.url, follows, rating, first_release_date, genres.name, platforms.name; where cover.url != null; limit 500;";
-                    iGamesRepository.fetchGames(queryToServer, 10000,0);
+                    iGamesRepository.fetchGames(queryToServer,0);
                 }else{
                     Snackbar.make(view.findViewById(R.id.Coordinatorlyt), R.string.no_connection_message, Snackbar.LENGTH_LONG).show();
                 }
@@ -156,7 +156,7 @@ public class SearchFragment extends Fragment implements ResponseCallback {
                 }
                 searchLoading.setVisibility(View.VISIBLE);
                 String queryToServer = "fields id, name, cover.url, follows, rating, first_release_date, genres.name, platforms.name; where cover.url != null; limit 500;";
-                iGamesRepository.fetchGames(queryToServer, 10000,0);
+                iGamesRepository.fetchGames(queryToServer,0);
             }else{
 
                 Snackbar.make(view.findViewById(R.id.Coordinatorlyt), R.string.no_connection_message, Snackbar.LENGTH_LONG).show();
@@ -187,7 +187,7 @@ public class SearchFragment extends Fragment implements ResponseCallback {
                     String queryToServer = "fields id, name, cover.url, follows, rating, first_release_date, genres.name, platforms.name; where first_release_date < " + System.currentTimeMillis() / 1000 + " & version_parent = null;search \"" + userInput + "\"; limit 500;";
                     searchLoading.setVisibility(View.VISIBLE);
                     numberOfResults.setText("");
-                    iGamesRepository.fetchGames(queryToServer, 10000,0);
+                    iGamesRepository.fetchGames(queryToServer,0);
                 }else{
                     Toast.makeText(requireContext(), R.string.no_connection_message, Toast.LENGTH_LONG).show();
                 }
@@ -210,7 +210,7 @@ public class SearchFragment extends Fragment implements ResponseCallback {
                     numberOfResults.setTextSize(30);
                     numberOfResults.setTypeface(null, Typeface.BOLD);
                     firstLoad = true;
-                    iGamesRepository.fetchGames(queryToServer, 10000,0);
+                    iGamesRepository.fetchGames(queryToServer,0);
                 }
                 return false;
             }
@@ -652,7 +652,7 @@ public class SearchFragment extends Fragment implements ResponseCallback {
     }
 
     @Override
-    public void onSuccess(List<GameApiResponse> gamesList, long lastUpdate,int count) {
+    public void onSuccess(List<GameApiResponse> gamesList, int count) {
         searchLoading.setVisibility(View.GONE);
         games = gamesList;
         gamesCopy = new ArrayList<>(games);
@@ -710,7 +710,7 @@ public class SearchFragment extends Fragment implements ResponseCallback {
 
     public void showGamesOnRecyclerView(List<GameApiResponse> gamesList) {
         // added data from arraylist to adapter class.
-        adapter = new GameAdapter(gamesList, getContext());
+        adapter = new RecyclerSearchAdapter(gamesList, getContext());
 
         // setting grid layout manager to implement grid view.
         // in this method '2' represents number of columns to be displayed in grid view.

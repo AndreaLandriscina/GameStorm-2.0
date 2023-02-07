@@ -189,10 +189,10 @@ public class HomeFragment extends Fragment implements ResponseCallback {
                 gamesIncoming = new ArrayList<>();
 
 
-                iGamesRepository.fetchGames(queryPopular, 10000, 0);
-                iGamesRepository.fetchGames(queryLatestReleases, 10000, 1);
-                iGamesRepository.fetchGames(queryIncoming, 10000, 2);
-                iGamesRepository.fetchGames(queryBestGames, 10000, 3);
+                iGamesRepository.fetchGames(queryPopular, 0);
+                iGamesRepository.fetchGames(queryLatestReleases , 1);
+                iGamesRepository.fetchGames(queryIncoming, 2);
+                iGamesRepository.fetchGames(queryBestGames, 3);
 
             } else {
                 Toast.makeText(requireContext(), R.string.no_connection_message, Toast.LENGTH_LONG).show();
@@ -203,7 +203,7 @@ public class HomeFragment extends Fragment implements ResponseCallback {
 
 
     @Override
-    public void onSuccess(List<GameApiResponse> gamesList, long lastUpdate,int countQuery) {
+    public void onSuccess(List<GameApiResponse> gamesList,int countQuery) {
         if (countQuery == 0) {
             this.gamesPopular.addAll(gamesList);
             tinydb.putListObject("popular",gamesPopular);
@@ -274,7 +274,7 @@ public class HomeFragment extends Fragment implements ResponseCallback {
             queryForYou = "fields id,name,cover.url;where genres.name= \"" + preferredGenre + "\";limit 30;";
             if(isLogged()) {
                 gamesForYou = new ArrayList<>();
-                iGamesRepository.fetchGames(queryForYou, 10000, 4);
+                iGamesRepository.fetchGames(queryForYou, 4);
             }
         }
 
@@ -499,7 +499,7 @@ public class HomeFragment extends Fragment implements ResponseCallback {
                                 }
                             }
                             String queryGenres = "fields genres.name;where id=(" + games + ");";
-                            iGamesRepository.fetchGames(queryGenres, 10000, 5); //query per recuperare generi dei giochi giocati dall'utente
+                            iGamesRepository.fetchGames(queryGenres, 5); //query per recuperare generi dei giochi giocati dall'utente
                         } else {
                             forYouScrollView.setVisibility(View.GONE);
                             loginButton.setVisibility(View.GONE);

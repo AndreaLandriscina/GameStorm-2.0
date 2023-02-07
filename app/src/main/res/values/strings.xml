@@ -12,8 +12,8 @@
     <string name="title_activity_game" translatable="false">GameActivity</string>
     <string name="action_settings">Settings</string>
     <string name="large_text" translatable="false">ops</string>
-    <string name="rating">Punteggio</string>
-    <string name="reviews">Recensioni</string>
+    <string name="rating">Rating</string>
+    <string name="reviews">Reviews</string>
     <string name="wanted">Wanted</string>
     <string name="played">Played</string>
     <string name="genres">Genres</string>
