@@ -25,11 +25,9 @@ import java.util.ArrayList;
 public class RecyclerScreenshotsViewAdapter extends RecyclerView.Adapter<RecyclerScreenshotsViewAdapter.RecyclerViewHolder> {
 
     private ArrayList<RecyclerData> dataArrayList;
-    private Context mcontext;
 
     public RecyclerScreenshotsViewAdapter(ArrayList<RecyclerData> recyclerDataArrayList, Context mcontext) {
         this.dataArrayList = recyclerDataArrayList;
-        this.mcontext = mcontext;
     }
 
     @NonNull

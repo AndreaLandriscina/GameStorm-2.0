@@ -11,7 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.gamestorm.R;
-import com.example.gamestorm.adapter.SliderAdapter;
+import com.example.gamestorm.adapter.ScreenshotSliderAdapter;
 import com.smarteist.autoimageslider.SliderView;
 
 import java.util.ArrayList;
@@ -43,7 +43,7 @@ public class ScreenshotFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         SliderView sliderView = requireView().findViewById(R.id.image_slider);
-        SliderAdapter sliderAdapter = new SliderAdapter(list);
+        ScreenshotSliderAdapter sliderAdapter = new ScreenshotSliderAdapter(list);
         sliderView.setSliderAdapter(sliderAdapter);
         sliderView.setCurrentPagePosition(position);
     }

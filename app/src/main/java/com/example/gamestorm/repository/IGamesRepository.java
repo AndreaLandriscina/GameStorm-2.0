@@ -1,5 +1,5 @@
 package com.example.gamestorm.repository;
 
 public interface IGamesRepository {
-    void fetchGames(String query, long lastUpdate,int count);
+    void fetchGames(String query, int count);
 }

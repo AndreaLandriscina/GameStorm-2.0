@@ -65,89 +65,71 @@ public class LoginActivity extends AppCompatActivity {
         progressDialog = new ProgressDialog(this);
 
         //LOGIN CON CREDENZIALI
-        binding.login.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String email = binding.emailAddress.getText().toString().trim();
-                String password = binding.password.getText().toString().trim();
-                progressDialog.setTitle(getString(R.string.login_in_progress));
-                progressDialog.show();
-                if (isEmailOk(email) && isPasswordOk(password)) {
-                    firebaseAuth.signInWithEmailAndPassword(email, password)
-                            .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
-                                @Override
-                                public void onSuccess(AuthResult authResult) {
-                                    progressDialog.cancel();
-                                    Toast.makeText(LoginActivity.this, R.string.login_successfully, Toast.LENGTH_SHORT).show();
-                                    Intent i = new Intent(LoginActivity.this, MainActivity.class);
-                                    startActivity(i);
-                                    finish();
-                                }
-                            })
-                            .addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    progressDialog.cancel();
-                                    Toast.makeText(LoginActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-                                }
-                            });
-                }else{
-                    Snackbar.make(LoginActivity.this.findViewById(android.R.id.content),
-                            check_data, Snackbar.LENGTH_SHORT).show();
-                    progressDialog.cancel();
-                }
+        binding.login.setOnClickListener(view -> {
+            String email = binding.emailAddress.getText().toString().trim();
+            String password = binding.password.getText().toString().trim();
+            progressDialog.setTitle(getString(R.string.login_in_progress));
+            progressDialog.show();
+            if (isEmailOk(email) && isPasswordOk(password)) {
+                firebaseAuth.signInWithEmailAndPassword(email, password)
+                        .addOnSuccessListener(authResult -> {
+                            progressDialog.cancel();
+                            Toast.makeText(LoginActivity.this, R.string.login_successfully, Toast.LENGTH_SHORT).show();
+                            Intent i = new Intent(LoginActivity.this, MainActivity.class);
+                            startActivity(i);
+                            finish();
+                        })
+                        .addOnFailureListener(e -> {
+                            progressDialog.cancel();
+                            Toast.makeText(LoginActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                        });
+            }else{
+                Snackbar.make(LoginActivity.this.findViewById(android.R.id.content),
+                        check_data, Snackbar.LENGTH_SHORT).show();
+                progressDialog.cancel();
             }
         });
 
         //CLICK SU RESET PASSWORD
-        binding.resetPassword.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String email=binding.emailAddress.getText().toString();
-                if(isEmailOk(email)) {
-                    progressDialog.setTitle(getString(R.string.sending_mail));
-                    progressDialog.show();
-                    firebaseAuth.sendPasswordResetEmail(email)
-                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void unused) {
-                                    progressDialog.cancel();
-                                    Toast.makeText(LoginActivity.this, emailsent, Toast.LENGTH_SHORT).show();
-                                }
-                            })
-                            .addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    progressDialog.cancel();
-                                    Toast.makeText(LoginActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-                                }
-                            });
-                }else{
-                    Snackbar.make(LoginActivity.this.findViewById(android.R.id.content),
-                            R.string.insert_mail_to_reset_password, Snackbar.LENGTH_SHORT).show();
-                    progressDialog.cancel();
-                }
+        binding.resetPassword.setOnClickListener(view -> {
+            String email=binding.emailAddress.getText().toString();
+            if(isEmailOk(email)) {
+                progressDialog.setTitle(getString(R.string.sending_mail));
+                progressDialog.show();
+                firebaseAuth.sendPasswordResetEmail(email)
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void unused) {
+                                progressDialog.cancel();
+                                Toast.makeText(LoginActivity.this, emailsent, Toast.LENGTH_SHORT).show();
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                progressDialog.cancel();
+                                Toast.makeText(LoginActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        });
+            }else{
+                Snackbar.make(LoginActivity.this.findViewById(android.R.id.content),
+                        R.string.insert_mail_to_reset_password, Snackbar.LENGTH_SHORT).show();
+                progressDialog.cancel();
             }
         });
 
         //CLICK SU REGISTRATI
-        binding.goToSignUpActivity.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
-                finish();
-            }
+        binding.goToSignUpActivity.setOnClickListener(view -> {
+            startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
+            finish();
         });
 
         //CLICK SU LOGIN CON GOOGLE
-        binding.googleButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                progressDialog.setTitle(getString(R.string.login_in_progress));
-                progressDialog.show();
-                Intent i = gsc.getSignInIntent();
-                startActivityForResult(i, 1234);
-            }
+        binding.googleButton.setOnClickListener(v -> {
+            progressDialog.setTitle(getString(R.string.login_in_progress));
+            progressDialog.show();
+            Intent i = gsc.getSignInIntent();
+            startActivityForResult(i, 1234);
         });
     }
 

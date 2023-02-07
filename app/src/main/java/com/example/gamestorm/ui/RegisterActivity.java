@@ -1,22 +1,16 @@
 package com.example.gamestorm.ui;
 
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.view.View;
-import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.example.gamestorm.model.UserModel;
 import com.example.gamestorm.R;
 import com.example.gamestorm.databinding.ActivityRegisterBinding;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.AuthResult;
@@ -24,8 +18,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.FirebaseFirestore;
-
-import java.util.Objects;
 
 public class RegisterActivity extends AppCompatActivity {
     ActivityRegisterBinding binding;
@@ -36,8 +28,6 @@ public class RegisterActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION, WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-        Objects.requireNonNull(getSupportActionBar()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         binding=ActivityRegisterBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
@@ -46,54 +36,45 @@ public class RegisterActivity extends AppCompatActivity {
 
         progressDialog=new ProgressDialog(this);
 
-        binding.signup.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String name = binding.username.getText().toString();
-                String email = binding.emailAddress.getText().toString().trim();
-                String password = binding.password.getText().toString();
+        binding.signup.setOnClickListener(view -> {
+            String name = binding.username.getText().toString();
+            String email = binding.emailAddress.getText().toString().trim();
+            String password = binding.password.getText().toString();
 
-                progressDialog.show();
-                if (isUsernameOk(name) && isEmailOk(email) && isPasswordOk(password)) {
-                    firebaseAuth.createUserWithEmailAndPassword(email, password)
-                            .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
-                                @Override
-                                public void onSuccess(AuthResult authResult) {
-                                    startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
-                                    progressDialog.cancel();
+            progressDialog.show();
+            if (isUsernameOk(name) && isEmailOk(email) && isPasswordOk(password)) {
+                firebaseAuth.createUserWithEmailAndPassword(email, password)
+                        .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
+                            @Override
+                            public void onSuccess(AuthResult authResult) {
+                                startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
+                                progressDialog.cancel();
 
-                                    firebaseFirestore.collection("User")
-                                            .document(FirebaseAuth.getInstance().getUid())
-                                            .set(new UserModel(name, email, FirebaseAuth.getInstance().getUid()));
-                                    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                                firebaseFirestore.collection("User")
+                                        .document(FirebaseAuth.getInstance().getUid())
+                                        .set(new UserModel(name, email, FirebaseAuth.getInstance().getUid()));
+                                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
-                                    UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-                                            .setDisplayName(name).build();
+                                UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                                        .setDisplayName(name).build();
 
-                                    user.updateProfile(profileUpdates);
-                                }
-                            })
-                            .addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    Toast.makeText(RegisterActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-                                    progressDialog.cancel();
-                                }
-                            });
-                }else{
-                    Snackbar.make(RegisterActivity.this.findViewById(android.R.id.content),
-                            R.string.check_data, Snackbar.LENGTH_SHORT).show();
-                    progressDialog.cancel();
-                }
+                                user.updateProfile(profileUpdates);
+                            }
+                        })
+                        .addOnFailureListener(e -> {
+                            Toast.makeText(RegisterActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                            progressDialog.cancel();
+                        });
+            }else{
+                Snackbar.make(RegisterActivity.this.findViewById(android.R.id.content),
+                        R.string.check_data, Snackbar.LENGTH_SHORT).show();
+                progressDialog.cancel();
             }
         });
 
-        binding.goToLoginActivity.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
-                finish();
-            }
+        binding.goToLoginActivity.setOnClickListener(view -> {
+            startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
+            finish();
         });
     }
 

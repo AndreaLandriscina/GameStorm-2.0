@@ -1,7 +1,6 @@
 package com.example.gamestorm.adapter;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -17,17 +16,16 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.gamestorm.model.GameApiResponse;
 import com.example.gamestorm.R;
-import com.example.gamestorm.ui.GameActivity;
 import com.squareup.picasso.Picasso;
 import java.util.List;
 
 
-public class GameAdapter extends RecyclerView.Adapter<GameAdapter.RecyclerViewHolder> {
+public class RecyclerSearchAdapter extends RecyclerView.Adapter<RecyclerSearchAdapter.RecyclerViewHolder> {
 
     private List<GameApiResponse> games;
     private Context context;
 
-    public GameAdapter(List<GameApiResponse> games, Context context) {
+    public RecyclerSearchAdapter(List<GameApiResponse> games, Context context) {
         this.games = games;
         this.context = context;
     }
@@ -42,7 +40,7 @@ public class GameAdapter extends RecyclerView.Adapter<GameAdapter.RecyclerViewHo
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
-    public void onBindViewHolder(@NonNull GameAdapter.RecyclerViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull RecyclerSearchAdapter.RecyclerViewHolder holder, int position) {
         // Set the data to textview and imageview.
         GameApiResponse game = games.get(position);
         if(game.getCover() != null){
@@ -59,7 +57,6 @@ public class GameAdapter extends RecyclerView.Adapter<GameAdapter.RecyclerViewHo
             Navigation.findNavController(v).navigate(R.id.action_searchFragment_to_gameActivity, bundle);
         });
     }
-
 
     @Override
     public int getItemCount() {
