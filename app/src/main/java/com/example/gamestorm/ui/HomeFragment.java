@@ -64,6 +64,7 @@ public class HomeFragment extends Fragment implements ResponseCallback {
     private HorizontalScrollView forYouScrollView;
 
     private ProgressBar progressBar;
+    private ProgressBar progressBarForYou;
 
     LayoutInflater inflater;
 
@@ -122,6 +123,7 @@ public class HomeFragment extends Fragment implements ResponseCallback {
         inflater = LayoutInflater.from(getContext());
 
         progressBar = view.findViewById(R.id.progressBar);
+        progressBarForYou=view.findViewById(R.id.progressBarForYou);
 
         loginTextView = view.findViewById(R.id.textViewLoginHomePage);
         loginButton = view.findViewById(R.id.buttonLoginHomePage);
@@ -274,6 +276,7 @@ public class HomeFragment extends Fragment implements ResponseCallback {
             queryForYou = "fields id,name,cover.url;where genres.name= \"" + preferredGenre + "\";limit 30;";
             if(isLogged()) {
                 gamesForYou = new ArrayList<>();
+                progressBarForYou.setVisibility(View.VISIBLE);
                 iGamesRepository.fetchGames(queryForYou, 4);
             }
         }
@@ -391,7 +394,8 @@ public class HomeFragment extends Fragment implements ResponseCallback {
                 });
             }
         }else if(countQuery==4) { //FOR YOU
-                for (int i = 0; i < 30; i++) {
+            progressBarForYou.setVisibility(View.GONE);
+            for (int i = 0; i < 30; i++) {
                     game = gameList.get(i);
                     Cover cover = game.getCover();
                     ImageView imageGalleryForYou;
