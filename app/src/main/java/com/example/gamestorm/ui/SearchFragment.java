@@ -545,10 +545,11 @@ public class SearchFragment extends Fragment implements ResponseCallback {
                                         int result = 0;
                                         switch (sortingParameter) {
                                             case "Most popular":
+                                            case "Più popolare":
                                                 result = -Integer.compare(o1.getFollows(), o2.getFollows());
                                                 break;
-
                                             case "Most recent":
+                                            case "Più recente":
                                                 try {
                                                     SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
                                                     Date date1 = formatter.parse(o1.getFirstReleaseDate());
@@ -559,12 +560,13 @@ public class SearchFragment extends Fragment implements ResponseCallback {
                                                     e1.printStackTrace();
                                                 }
                                                 break;
-
                                             case "Best rating":
+                                            case "Voto migliore":
                                                 result = -Double.compare(o1.getRating(), o2.getRating());
                                                 break;
 
                                             case "Alphabet":
+                                            case "Alfabeto":
                                                 result = o1.getName().compareTo(o2.getName());
                                                 break;
 
