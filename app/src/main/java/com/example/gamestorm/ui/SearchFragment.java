@@ -49,7 +49,7 @@ import java.util.List;
 public class SearchFragment extends Fragment implements ResponseCallback {
 
     private IGamesRepository iGamesRepository;
-    private boolean firstLoad;
+    private boolean exploreShowed;
     private List<GameApiResponse> games;
     private List<GameApiResponse> gamesCopy;
     private String userInput;
@@ -81,11 +81,10 @@ public class SearchFragment extends Fragment implements ResponseCallback {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        if(getActivity() != null)
-            iGamesRepository = new GamesRepository(getActivity().getApplication(), this);
-        firstLoad = true;
+        iGamesRepository = new GamesRepository(getActivity().getApplication(), this);
+        exploreShowed = true;
         games = new ArrayList<>();
+        gamesCopy = new ArrayList<>();
         SearchView gameName = view.findViewById(R.id.game_name_SV);
         userInput = "";
         sorting = view.findViewById(R.id.sorting_B);
@@ -99,11 +98,7 @@ public class SearchFragment extends Fragment implements ResponseCallback {
         gamesRV.setAdapter(adapter);
 
         searchLoading = view.findViewById(R.id.search_loading_PB);
-        sortingParameter = "";
-        lastSelectedSortingParameter = -1;
-        lastSelectedGenre = 0;
-        lastSelectedPlatform = 0;
-        lastSelectedReleaseYear = 0;
+        resetStatus();
 
         if(savedInstanceState != null){
             userInput = savedInstanceState.getString(Constants.gameNameKey);
@@ -114,44 +109,28 @@ public class SearchFragment extends Fragment implements ResponseCallback {
             lastSelectedReleaseYear = savedInstanceState.getInt(Constants.lastSelectedReleaseYearKey);
             games = savedInstanceState.getParcelableArrayList(Constants.gamesKey);
             gamesCopy = savedInstanceState.getParcelableArrayList(Constants.gamesCopyKey);
-            firstLoad = savedInstanceState.getBoolean(Constants.exploreShowed);
+            exploreShowed = savedInstanceState.getBoolean(Constants.exploreShowedKey);
+            numberOfResults.setText(savedInstanceState.getString(Constants.resultNumberKey));
+            filters.setVisibility(savedInstanceState.getInt(Constants.filterVisibilityKey));
+            sorting.setVisibility(savedInstanceState.getInt(Constants.sortingVisibilityKey));
 
-            if(firstLoad){
-                if(getContext()!= null && isNetworkAvailable(getContext())){
-                    numberOfResults.setTextSize(30);
-                    numberOfResults.setTypeface(null, Typeface.BOLD);
-                    numberOfResults.setText(R.string.explore_title);
-                    searchLoading.setVisibility(View.VISIBLE);
-                    String queryToServer = "fields id, name, cover.url, follows, rating, first_release_date, genres.name, platforms.name; where cover.url != null; limit 500;";
-                    iGamesRepository.fetchGames(queryToServer,0);
-                }else{
-                    Snackbar.make(view.findViewById(R.id.Coordinatorlyt), R.string.no_connection_message, Snackbar.LENGTH_LONG).show();
-                }
-            }else {
+            if(exploreShowed){
+                numberOfResults.setTextSize(30);
+                numberOfResults.setTypeface(null, Typeface.BOLD);
+            }else{
                 numberOfResults.setTextSize(15);
                 numberOfResults.setTypeface(null, Typeface.NORMAL);
-                numberOfResults.setText(savedInstanceState.getString(Constants.resultNumberKey));
             }
+            numberOfResults.setText(savedInstanceState.getString(Constants.resultNumberKey));
 
-            if(!games.isEmpty()){
-                showGamesOnRecyclerView(games);
-                sorting.setVisibility(View.VISIBLE);
-                filters.setVisibility(View.VISIBLE);
-            }
-
+            showGamesOnRecyclerView(games);
+            Log.e("TAG", "dentro il recupero");
         }else{
             if(getContext()!= null && isNetworkAvailable(getContext())){
-                //mostro i piu popolari la prima volta che si accede al fragment
-                if(firstLoad){
-                    numberOfResults.setText(R.string.explore_title);
-                    numberOfResults.setTextSize(30);
-                    numberOfResults.setTypeface(null, Typeface.BOLD);
-                }
                 searchLoading.setVisibility(View.VISIBLE);
                 String queryToServer = "fields id, name, cover.url, follows, rating, first_release_date, genres.name, platforms.name; where cover.url != null; limit 500;";
                 iGamesRepository.fetchGames(queryToServer,0);
             }else{
-
                 Snackbar.make(view.findViewById(R.id.Coordinatorlyt), R.string.no_connection_message, Snackbar.LENGTH_LONG).show();
             }
         }
@@ -159,7 +138,7 @@ public class SearchFragment extends Fragment implements ResponseCallback {
         gameName.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                firstLoad = false;
+                exploreShowed = false;
 
                 if(!games.isEmpty()){
                     games.clear();
@@ -167,11 +146,7 @@ public class SearchFragment extends Fragment implements ResponseCallback {
                     adapter.notifyDataSetChanged();
                 }
 
-                lastSelectedSortingParameter = -1;
-                lastSelectedGenre = 0;
-                lastSelectedPlatform = 0;
-                lastSelectedReleaseYear = 0;
-                numberOfResults.setText("");
+                resetStatus();
 
                 if(getContext()!= null && isNetworkAvailable(getContext())){
 
@@ -180,7 +155,7 @@ public class SearchFragment extends Fragment implements ResponseCallback {
                     String queryToServer = "fields id, name, cover.url, follows, rating, first_release_date, genres.name, platforms.name; where first_release_date < " + System.currentTimeMillis() / 1000 + " & version_parent = null;search \"" + userInput + "\"; limit 500;";
                     searchLoading.setVisibility(View.VISIBLE);
                     numberOfResults.setText("");
-                    iGamesRepository.fetchGames(queryToServer,0);
+                    iGamesRepository.fetchGames(queryToServer,1);
                 }else{
                     Toast.makeText(requireContext(), R.string.no_connection_message, Toast.LENGTH_LONG).show();
                 }
@@ -189,20 +164,14 @@ public class SearchFragment extends Fragment implements ResponseCallback {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                if(newText.isEmpty()){
-                    lastSelectedSortingParameter = -1;
-                    lastSelectedGenre = 0;
-                    lastSelectedPlatform = 0;
-                    lastSelectedReleaseYear = 0;
+                Log.e("TAG", ""+exploreShowed );
 
+                if(newText.isEmpty() && !exploreShowed){
+                    resetStatus();
+                    exploreShowed = true;
 
                     String queryToServer = "fields id, name, cover.url, follows, rating, first_release_date, genres.name, platforms.name; where cover.url != null; limit 500;";
                     searchLoading.setVisibility(View.VISIBLE);
-                    numberOfResults.setText("");
-                    numberOfResults.setText(R.string.explore_title);
-                    numberOfResults.setTextSize(30);
-                    numberOfResults.setTypeface(null, Typeface.BOLD);
-                    firstLoad = true;
                     iGamesRepository.fetchGames(queryToServer,0);
                 }
                 return false;
@@ -250,7 +219,6 @@ public class SearchFragment extends Fragment implements ResponseCallback {
             genres[0] = getContext().getResources().getString(R.string.any_genre);
 
             String[] platforms = getContext().getResources().getStringArray(R.array.platforms);
-
             platforms[0] = getContext().getResources().getString(R.string.any_platform);
 
 
@@ -260,20 +228,9 @@ public class SearchFragment extends Fragment implements ResponseCallback {
                 years.add("" + i);
             }
 
-            ArrayAdapter<String> genreAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_dropdown_item, genres);
-            genreAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            genreSPN.setAdapter(genreAdapter);
-            genreSPN.setSelection(lastSelectedGenre);
-
-            ArrayAdapter<String> platformAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_dropdown_item, platforms);
-            platformAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            platformSPN.setAdapter(platformAdapter);
-            platformSPN.setSelection(lastSelectedPlatform);
-
-            ArrayAdapter<String> releaseYearAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_dropdown_item, years);
-            releaseYearAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            releaseYearSPN.setAdapter(releaseYearAdapter);
-            releaseYearSPN.setSelection(lastSelectedReleaseYear);
+            ArrayAdapter<String> genreAdapter = initializeSpinner(genreSPN, genres, lastSelectedGenre);
+            ArrayAdapter<String> platformAdapter =initializeSpinner(platformSPN, platforms, lastSelectedPlatform);
+            ArrayAdapter<String> releaseYearAdapter =initializeSpinner(releaseYearSPN, years.toArray(new String[0]), lastSelectedReleaseYear);
 
             new MaterialAlertDialogBuilder(getContext())
                     .setView(customLayout)
@@ -355,13 +312,19 @@ public class SearchFragment extends Fragment implements ResponseCallback {
                                 }
                             }
 
-                            if(!firstLoad){
-                                String text = String.format(getContext().getResources().getString(R.string.number_of_results), games.size(), userInput);
-                                numberOfResults.setText(text);
-                            }else{
+                            if(exploreShowed){
+                                numberOfResults.setTextSize(30);
+                                numberOfResults.setTypeface(null, Typeface.BOLD);
                                 numberOfResults.setText(R.string.explore_title);
-
+                            }else{
+                                numberOfResults.setTextSize(15);
+                                numberOfResults.setTypeface(null, Typeface.NORMAL);
+                                String text = String.format(getContext().getResources().getString(R.string.number_of_results), games.size(), "Esplora");
+                                numberOfResults.setText(text);
                             }
+
+
+
 
                             showGamesOnRecyclerView(games);
                         }else{
@@ -382,20 +345,18 @@ public class SearchFragment extends Fragment implements ResponseCallback {
         games = gamesList;
         gamesCopy = new ArrayList<>(games);
 
-        if(!firstLoad){
+        //Textview: count == 1: carica numero risultati     count == 0: carica explore
+        if(count == 1){
             numberOfResults.setTextSize(15);
             numberOfResults.setTypeface(null, Typeface.NORMAL);
             String text = "";
-            if(getContext() != null)
-                 text = String.format(getContext().getResources().getString(R.string.number_of_results), games.size(), userInput);
+            text = String.format(getContext().getResources().getString(R.string.number_of_results), games.size(), userInput);
             numberOfResults.setText(text);
         }else{
             numberOfResults.setText(R.string.explore_title);
             numberOfResults.setTextSize(30);
             numberOfResults.setTypeface(null, Typeface.BOLD);
         }
-
-        showGamesOnRecyclerView(games);
 
         if(games.size() > 0){
             sorting.setVisibility(View.VISIBLE);
@@ -404,6 +365,7 @@ public class SearchFragment extends Fragment implements ResponseCallback {
             sorting.setVisibility(View.GONE);
             filters.setVisibility(View.GONE);
         }
+        showGamesOnRecyclerView(games);
     }
 
     @Override
@@ -421,13 +383,16 @@ public class SearchFragment extends Fragment implements ResponseCallback {
         outState.putInt(Constants.lastSelectedPlatformKey, lastSelectedPlatform);
         outState.putInt(Constants.lastSelectedReleaseYearKey, lastSelectedReleaseYear);
         outState.putString(Constants.resultNumberKey, numberOfResults.getText().toString());
-        outState.putBoolean(Constants.exploreShowed, firstLoad);
+        outState.putBoolean(Constants.exploreShowedKey, exploreShowed);
+        outState.putInt(Constants.filterVisibilityKey, filters.getVisibility());
+        outState.putInt(Constants.sortingVisibilityKey, sorting.getVisibility());
 
 
         //tutti i giochi
         outState.putParcelableArrayList(Constants.gamesKey, (ArrayList<? extends Parcelable>) games);
         outState.putParcelableArrayList(Constants.gamesCopyKey, (ArrayList<? extends Parcelable>) gamesCopy);
 
+        Log.e("TAG", "onSaveInstanceState search");
     }
 
 
@@ -500,4 +465,23 @@ public class SearchFragment extends Fragment implements ResponseCallback {
         }
     }
 
+    public void resetStatus(){
+        sortingParameter = "";
+        lastSelectedSortingParameter = -1;
+        lastSelectedGenre = 0;
+        lastSelectedPlatform = 0;
+        lastSelectedReleaseYear = 0;
+        numberOfResults.setText("");
+        games.clear();
+        gamesCopy.clear();
+        adapter.notifyDataSetChanged();
+    }
+
+    public ArrayAdapter<String> initializeSpinner(Spinner spinner, String[] data, int lastSelectedItem){
+        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_dropdown_item, data);
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(spinnerAdapter);
+        spinner.setSelection(lastSelectedItem);
+        return spinnerAdapter;
+    }
 }

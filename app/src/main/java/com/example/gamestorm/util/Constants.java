@@ -19,7 +19,10 @@ public class Constants {
     public static final String lastSelectedReleaseYearKey = "RELEASE_YEAR";
     public static final String gamesKey = "GAMES";
     public static final String gamesCopyKey = "GAMES_COPY";
-    public static final String exploreShowed = "EXPLORE_SHOWED";
+    public static final String exploreShowedKey = "EXPLORE_SHOWED";
     public static final String resultNumberKey = "RESULTS_NUMBER";
+    public static final String filterVisibilityKey = "FILTER_VISIBILITY";
+    public static final String sortingVisibilityKey = "SORTING_VISIBILITY";
+
 
 }
