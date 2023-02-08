@@ -31,6 +31,7 @@ import com.example.gamestorm.model.Platform;
 import com.example.gamestorm.R;
 import com.example.gamestorm.repository.GamesRepository;
 import com.example.gamestorm.repository.IGamesRepository;
+import com.example.gamestorm.util.Constants;
 import com.example.gamestorm.util.ResponseCallback;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -63,19 +64,6 @@ public class SearchFragment extends Fragment implements ResponseCallback {
     private int lastSelectedGenre;
     private int lastSelectedPlatform;
     private int lastSelectedReleaseYear;
-
-    //savedInstanceState keys
-    private final String gameNameKey = "GAME_NAME";
-    private final String sortingParameterKey = "SORTING_PARAMETER";
-    private final String lastSelectedSortingParameterKey = "LAST_SORTING_PARAMETER";
-    private final String lastSelectedGenreKey = "GENRE";
-    private final String lastSelectedPlatformKey = "PLATFORM";
-    private final String lastSelectedReleaseYearKey = "RELEASE_YEAR";
-    private final String gamesKey = "GAMES";
-    private final String gamesCopyKey = "GAMES_COPY";
-    private final String firstLoadKey = "FIRST_LOAD";
-    private final String resultNumberKey = "RESULTS_NUMBER";
-
 
 
     public SearchFragment() {
@@ -118,15 +106,15 @@ public class SearchFragment extends Fragment implements ResponseCallback {
         lastSelectedReleaseYear = 0;
 
         if(savedInstanceState != null){
-            userInput = savedInstanceState.getString(gameNameKey);
-            sortingParameter = savedInstanceState.getString(sortingParameterKey);
-            lastSelectedSortingParameter = savedInstanceState.getInt(lastSelectedSortingParameterKey);
-            lastSelectedGenre = savedInstanceState.getInt(lastSelectedGenreKey);
-            lastSelectedPlatform = savedInstanceState.getInt(lastSelectedPlatformKey);
-            lastSelectedReleaseYear = savedInstanceState.getInt(lastSelectedReleaseYearKey);
-            games = savedInstanceState.getParcelableArrayList(gamesKey);
-            gamesCopy = savedInstanceState.getParcelableArrayList(gamesCopyKey);
-            firstLoad = savedInstanceState.getBoolean(firstLoadKey);
+            userInput = savedInstanceState.getString(Constants.gameNameKey);
+            sortingParameter = savedInstanceState.getString(Constants.sortingParameterKey);
+            lastSelectedSortingParameter = savedInstanceState.getInt(Constants.lastSelectedSortingParameterKey);
+            lastSelectedGenre = savedInstanceState.getInt(Constants.lastSelectedGenreKey);
+            lastSelectedPlatform = savedInstanceState.getInt(Constants.lastSelectedPlatformKey);
+            lastSelectedReleaseYear = savedInstanceState.getInt(Constants.lastSelectedReleaseYearKey);
+            games = savedInstanceState.getParcelableArrayList(Constants.gamesKey);
+            gamesCopy = savedInstanceState.getParcelableArrayList(Constants.gamesCopyKey);
+            firstLoad = savedInstanceState.getBoolean(Constants.exploreShowed);
 
             if(firstLoad){
                 if(getContext()!= null && isNetworkAvailable(getContext())){
@@ -142,7 +130,7 @@ public class SearchFragment extends Fragment implements ResponseCallback {
             }else {
                 numberOfResults.setTextSize(15);
                 numberOfResults.setTypeface(null, Typeface.NORMAL);
-                numberOfResults.setText(savedInstanceState.getString(resultNumberKey));
+                numberOfResults.setText(savedInstanceState.getString(Constants.resultNumberKey));
             }
 
             if(!games.isEmpty()){
@@ -426,21 +414,19 @@ public class SearchFragment extends Fragment implements ResponseCallback {
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(gameNameKey, userInput);
-        outState.putString(sortingParameterKey, sortingParameter);
-        outState.putInt(lastSelectedSortingParameterKey, lastSelectedSortingParameter);
-        outState.putInt(lastSelectedGenreKey, lastSelectedGenre);
-        outState.putInt(lastSelectedPlatformKey, lastSelectedPlatform);
-        outState.putInt(lastSelectedReleaseYearKey, lastSelectedReleaseYear);
-        outState.putString(resultNumberKey, numberOfResults.getText().toString());
-        outState.putBoolean(firstLoadKey, firstLoad);
+        outState.putString(Constants.gameNameKey, userInput);
+        outState.putString(Constants.sortingParameterKey, sortingParameter);
+        outState.putInt(Constants.lastSelectedSortingParameterKey, lastSelectedSortingParameter);
+        outState.putInt(Constants.lastSelectedGenreKey, lastSelectedGenre);
+        outState.putInt(Constants.lastSelectedPlatformKey, lastSelectedPlatform);
+        outState.putInt(Constants.lastSelectedReleaseYearKey, lastSelectedReleaseYear);
+        outState.putString(Constants.resultNumberKey, numberOfResults.getText().toString());
+        outState.putBoolean(Constants.exploreShowed, firstLoad);
 
 
         //tutti i giochi
-        outState.putParcelableArrayList(gamesKey, (ArrayList<? extends Parcelable>) games);
-        outState.putParcelableArrayList(gamesCopyKey, (ArrayList<? extends Parcelable>) gamesCopy);
-
-        Log.e("SEARCH FRAGMENT","ONSAVEINSTANCESTATE");
+        outState.putParcelableArrayList(Constants.gamesKey, (ArrayList<? extends Parcelable>) games);
+        outState.putParcelableArrayList(Constants.gamesCopyKey, (ArrayList<? extends Parcelable>) gamesCopy);
 
     }
 

@@ -10,4 +10,16 @@ public class Constants {
     public static final String CONTENT_TYPE = "Content-Type";
     public static final String CONTENT_TYPE_VALUE = "application/json;charset=utf-8";
 
+    //savedInstanceState keys
+    public static final String gameNameKey = "GAME_NAME";
+    public static final String sortingParameterKey = "SORTING_PARAMETER";
+    public static final String lastSelectedSortingParameterKey = "LAST_SORTING_PARAMETER";
+    public static final String lastSelectedGenreKey = "GENRE";
+    public static final String lastSelectedPlatformKey = "PLATFORM";
+    public static final String lastSelectedReleaseYearKey = "RELEASE_YEAR";
+    public static final String gamesKey = "GAMES";
+    public static final String gamesCopyKey = "GAMES_COPY";
+    public static final String exploreShowed = "EXPLORE_SHOWED";
+    public static final String resultNumberKey = "RESULTS_NUMBER";
+
 }
