@@ -227,40 +227,7 @@ public class SearchFragment extends Fragment implements ResponseCallback {
                         lastSelectedSortingParameter = i;
 
                         if(isNetworkAvailable(requireContext()) || !games.isEmpty()){
-                            //sorting decrescente
-                            Collections.sort(games, (o1, o2) -> {
-                                //non bello
-                                int result = 0;
-                                switch (sortingParameter) {
-                                    case "Most popular":
-                                    case "Più popolare":
-                                        result = -Integer.compare(o1.getFollows(), o2.getFollows());
-                                        break;
-                                    case "Most recent":
-                                    case "Più recente":
-                                        try {
-                                            SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-                                            Date date1 = formatter.parse(o1.getFirstReleaseDate());
-                                            Date date2 = formatter.parse(o2.getFirstReleaseDate());
-                                            assert date1 != null;
-                                            result = -date1.compareTo(date2);
-                                        } catch (ParseException e1) {
-                                            e1.printStackTrace();
-                                        }
-                                        break;
-                                    case "Best rating":
-                                    case "Voto migliore":
-                                        result = -Double.compare(o1.getRating(), o2.getRating());
-                                        break;
-
-                                    case "Alphabet":
-                                    case "Alfabeto":
-                                        result = o1.getName().compareTo(o2.getName());
-                                        break;
-
-                                }
-                                return result;
-                            });
+                            sortGames(sortingParameter);
                             adapter.notifyDataSetChanged();
                             showGamesOnRecyclerView(games);
 
@@ -337,41 +304,7 @@ public class SearchFragment extends Fragment implements ResponseCallback {
                                 games = new ArrayList<>(gamesCopy);
 
                                 if(!sortingParameter.isEmpty()){
-
-                                    //sorting decrescente
-                                    Collections.sort(games, (o1, o2) -> {
-                                        //non bello
-                                        int result = 0;
-                                        switch (sortingParameter) {
-                                            case "Most popular":
-                                            case "Più popolare":
-                                                result = -Integer.compare(o1.getFollows(), o2.getFollows());
-                                                break;
-                                            case "Most recent":
-                                            case "Più recente":
-                                                try {
-                                                    SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-                                                    Date date1 = formatter.parse(o1.getFirstReleaseDate());
-                                                    Date date2 = formatter.parse(o2.getFirstReleaseDate());
-                                                    assert date1 != null;
-                                                    result = -date1.compareTo(date2);
-                                                } catch (ParseException e1) {
-                                                    e1.printStackTrace();
-                                                }
-                                                break;
-                                            case "Best rating":
-                                            case "Voto migliore":
-                                                result = -Double.compare(o1.getRating(), o2.getRating());
-                                                break;
-
-                                            case "Alphabet":
-                                            case "Alfabeto":
-                                                result = o1.getName().compareTo(o2.getName());
-                                                break;
-
-                                        }
-                                        return result;
-                                    });
+                                    sortGames(sortingParameter);
                                 }
 
                             }
@@ -530,5 +463,60 @@ public class SearchFragment extends Fragment implements ResponseCallback {
         return activeNetworkInfo != null;
     }
 
+    public class SortByMostPopular implements java.util.Comparator<GameApiResponse> {
+        public int compare(GameApiResponse a, GameApiResponse b) {
+            return -Integer.compare(a.getFollows(), b.getFollows());
+        }
+    }
+
+    public class SortByMostRecent implements java.util.Comparator<GameApiResponse> {
+        public int compare(GameApiResponse a, GameApiResponse b) {
+            try {
+                SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+                Date date1 = formatter.parse(a.getFirstReleaseDate());
+                Date date2 = formatter.parse(b.getFirstReleaseDate());
+                return -date1.compareTo(date2);
+            } catch (ParseException e1) {
+                e1.printStackTrace();
+            }
+
+            return -100;
+        }
+    }
+
+    public class SortByBestRating implements java.util.Comparator<GameApiResponse> {
+        public int compare(GameApiResponse a, GameApiResponse b) {
+            return -Double.compare(a.getRating(), b.getRating());
+        }
+    }
+
+    public class SortByAlphabet implements java.util.Comparator<GameApiResponse> {
+        public int compare(GameApiResponse a, GameApiResponse b) {
+            return a.getName().compareTo(b.getName());
+        }
+    }
+
+    public void sortGames(String sortingParameter){
+        switch (sortingParameter) {
+            case "Most popular":
+            case "Più popolare":
+                Collections.sort(games, new SortByMostPopular());
+                break;
+            case "Most recent":
+            case "Più recente":
+                Collections.sort(games, new SortByMostRecent());
+                break;
+            case "Best rating":
+            case "Voto migliore":
+                Collections.sort(games, new SortByBestRating());
+                break;
+
+            case "Alphabet":
+            case "Alfabeto":
+                Collections.sort(games, new SortByAlphabet());
+                break;
+
+        }
+    }
 
 }
