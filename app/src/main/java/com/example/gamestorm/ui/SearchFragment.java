@@ -103,7 +103,13 @@ public class SearchFragment extends Fragment implements ResponseCallback {
         sorting = view.findViewById(R.id.sorting_B);
         filters = view.findViewById(R.id.filters_B);
         numberOfResults = view.findViewById(R.id.number_of_results_TV);
+
         gamesRV = view.findViewById(R.id.games_RV);
+        adapter = new RecyclerSearchAdapter(games, getContext());
+        GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 3);
+        gamesRV.setLayoutManager(layoutManager);
+        gamesRV.setAdapter(adapter);
+
         searchLoading = view.findViewById(R.id.search_loading_PB);
         sortingParameter = "";
         lastSelectedSortingParameter = -1;
@@ -141,7 +147,6 @@ public class SearchFragment extends Fragment implements ResponseCallback {
 
             if(!games.isEmpty()){
                 showGamesOnRecyclerView(games);
-                adapter.notifyDataSetChanged();
                 sorting.setVisibility(View.VISIBLE);
                 filters.setVisibility(View.VISIBLE);
             }
@@ -228,7 +233,6 @@ public class SearchFragment extends Fragment implements ResponseCallback {
 
                         if(isNetworkAvailable(requireContext()) || !games.isEmpty()){
                             sortGames(sortingParameter);
-                            adapter.notifyDataSetChanged();
                             showGamesOnRecyclerView(games);
 
                         }else{
@@ -372,7 +376,6 @@ public class SearchFragment extends Fragment implements ResponseCallback {
                             }
 
                             showGamesOnRecyclerView(games);
-                            adapter.notifyDataSetChanged();
                         }else{
                             Toast.makeText(requireContext(), R.string.no_connection_message, Toast.LENGTH_LONG).show();
                         }
@@ -443,16 +446,8 @@ public class SearchFragment extends Fragment implements ResponseCallback {
 
 
     public void showGamesOnRecyclerView(List<GameApiResponse> gamesList) {
-        // added data from arraylist to adapter class.
-        adapter = new RecyclerSearchAdapter(gamesList, getContext());
-
-        // setting grid layout manager to implement grid view.
-        // in this method '2' represents number of columns to be displayed in grid view.
-        GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 3);
-
-        // at last set adapter to recycler view.
-        gamesRV.setLayoutManager(layoutManager);
-        gamesRV.setAdapter(adapter);
+        adapter.setGames(gamesList);
+        adapter.notifyDataSetChanged();
     }
 
 
