@@ -94,5 +94,233 @@
     <string name="release_year_text">Release Year</string>
     <string name="no_connection_message">No internet connection, please connect and retry.</string>
 
+    <string-array name="platforms">
+        <item>Any platform</item>
+        <item>Commodore CDTV</item>
+        <item>Sega Pico</item>
+        <item>PlayStation 2</item>
+        <item>iOS</item>
+        <item>Commodore Plus/4</item>
+        <item>AY-3-8710</item>
+        <item>Odyssey</item>
+        <item>Commodore PET</item>
+        <item>Sol-20</item>
+        <item>PC (Microsoft Windows)</item>
+        <item>Tapwave Zodiac</item>
+        <item>ColecoVision</item>
+        <item>PlayStation VR</item>
+        <item>Texas Instruments TI-99</item>
+        <item>Acorn Electron</item>
+        <item>Gamate</item>
+        <item>Hyper Neo Geo 64</item>
+        <item>Thomson MO5</item>
+        <item>Odyssey 2 / Videopac G7000</item>
+        <item>SteamVR</item>
+        <item>PC-50X Family</item>
+        <item>AY-3-8607</item>
+        <item>AY-3-8605</item>
+        <item>AY-3-8606</item>
+        <item>PC-98</item>
+        <item>Amstrad CPC</item>
+        <item>Playdate</item>
+        <item>Family Computer Disk System</item>
+        <item>WonderSwan Color</item>
+        <item>Neo Geo CD</item>
+        <item>Sega Game Gear</item>
+        <item>Atari Jaguar</item>
+        <item>3DO Interactive Multiplayer</item>
+        <item>Microvision</item>
+        <item>PC Engine SuperGrafx</item>
+        <item>Turbografx-16/PC Engine CD</item>
+        <item>Dreamcast</item>
+        <item>Atari 8-bit</item>
+        <item>Vectrex</item>
+        <item>Donner Model 30</item>
+        <item>PDP-8</item>
+        <item>DEC GT40</item>
+        <item>Microcomputer</item>
+        <item>Ferranti Nimrod Computer</item>
+        <item>Apple IIGS</item>
+        <item>DOS</item>
+        <item>SwanCrystal</item>
+        <item>Fairchild Channel F</item>
+        <item>PC-8801</item>
+        <item>Virtual Boy</item>
+        <item>TRS-80</item>
+        <item>Nintendo Switch</item>
+        <item>Amazon Fire TV</item>
+        <item>VC 4000</item>
+        <item>1292 Advanced Programmable Video System</item>
+        <item>Tatung Einstein</item>
+        <item>Nintendo DSi</item>
+        <item>Neo Geo Pocket</item>
+        <item>Dragon 32/64</item>
+        <item>Amstrad PCW</item>
+        <item>Xbox</item>
+        <item>PDP-11</item>
+        <item>Virtual Console (Nintendo)</item>
+        <item>MSX2</item>
+        <item>Atari 7800</item>
+        <item>Sega CD</item>
+        <item>Game Boy Advance</item>
+        <item>Sega 32X</item>
+        <item>AY-3-8500</item>
+        <item>AY-3-8760</item>
+        <item>AY-3-8603</item>
+        <item>Nintendo 64</item>
+        <item>Neo Geo Pocket Color</item>
+        <item>Wii U</item>
+        <item>Sharp X1</item>
+        <item>Web browser</item>
+        <item>CDC Cyber 70</item>
+        <item>OnLive Game System</item>
+        <item>Acorn Archimedes</item>
+        <item>Amiga CD32</item>
+        <item>Philips CD-i</item>
+        <item>Sharp X68000</item>
+        <item>Nuon</item>
+        <item>Nintendo Entertainment System</item>
+        <item>AY-3-8610</item>
+        <item>Nintendo 3DS</item>
+        <item>Game Boy Color</item>
+        <item>Sega Master System/Mark III</item>
+        <item>Amiga</item>
+        <item>PlayStation Portable</item>
+        <item>TurboGrafx-16/PC Engine</item>
+        <item>Oculus VR</item>
+        <item>Playdia</item>
+        <item>PlayStation 3</item>
+        <item>Mac</item>
+        <item>Satellaview</item>
+        <item>Sega Saturn</item>
+        <item>Android</item>
+        <item>Commodore C64/128/MAX</item>
+        <item>Atari 5200</item>
+        <item>Intellivision</item>
+        <item>BlackBerry OS</item>
+        <item>Game &amp; Watch</item>
+        <item>Imlac PDS-1</item>
+        <item>FM Towns</item>
+        <item>Nintendo PlayStation</item>
+        <item>NEC PC-6000 Series</item>
+        <item>FM-7</item>
+        <item>Nintendo DS</item>
+        <item>Atari ST/STE</item>
+        <item>PlayStation Vita</item>
+        <item>PlayStation 4</item>
+        <item>Atari Lynx</item>
+        <item>Commodore 16</item>
+        <item>Nintendo GameCube</item>
+        <item>N-Gage</item>
+        <item>Super Nintendo Entertainment System</item>
+        <item>Sharp MZ-2200</item>
+        <item>Super Famicom</item>
+        <item>Epoch Cassette Vision</item>
+        <item>Gear VR</item>
+        <item>PDP-10</item>
+        <item>Arcade</item>
+        <item>New Nintendo 3DS</item>
+        <item>Plug &amp; Play</item>
+        <item>WonderSwan</item>
+        <item>Commodore VIC-20</item>
+        <item>Apple II</item>
+        <item>Windows Phone</item>
+        <item>Neo Geo AES</item>
+        <item>SG-1000</item>
+        <item>Windows Mixed Reality</item>
+        <item>Neo Geo MVS</item>
+        <item>Game Boy</item>
+        <item>Epoch Super Cassette Vision</item>
+        <item>Wii</item>
+        <item>Intellivision Amico</item>
+        <item>Google Stadia</item>
+        <item>PlayStation 5</item>
+        <item>Oculus Go</item>
+        <item>Oculus Rift</item>
+        <item>Bally Astrocade</item>
+        <item>Oculus Quest</item>
+        <item>BBC Microcomputer System</item>
+        <item>Legacy Mobile Device</item>
+        <item>Game.com</item>
+        <item>Linux</item>
+        <item>Ouya</item>
+        <item>PDP-1</item>
+        <item>TRS-80 Color Computer</item>
+        <item>Analogue electronics</item>
+        <item>Pokémon mini</item>
+        <item>EDSAC</item>
+        <item>HP 2100</item>
+        <item>Exidy Sorcerer</item>
+        <item>PDP-7</item>
+        <item>DVD Player</item>
+        <item>HP 3000</item>
+        <item>SDS Sigma 7</item>
+        <item>Daydream</item>
+        <item>Call-A-Computer time-shared mainframe computer system</item>
+        <item>Zeebo</item>
+        <item>PLATO</item>
+        <item>Blu-ray Player</item>
+        <item>ZX Spectrum</item>
+        <item>PC-FX</item>
+        <item>MSX</item>
+        <item>Evercade</item>
+        <item>OOParts</item>
+        <item>Sinclair ZX81</item>
+        <item>DUPLICATE Stadia</item>
+        <item>Casio Loopy</item>
+        <item>Xbox Series X|S</item>
+        <item>Atari 2600</item>
+        <item>Xbox 360</item>
+        <item>Xbox One</item>
+        <item>PlayStation</item>
+        <item>Family Computer</item>
+        <item>AirConsole</item>
+        <item>PlayStation VR2</item>
+        <item>Windows Mobile</item>
+        <item>Legacy Computer</item>
+        <item>Sinclair QL</item>
+        <item>Handheld Electronic LCD</item>
+        <item>Leapster Explorer/LeadPad Explorer</item>
+        <item>Nintendo 64DD</item>
+        <item>HyperScan</item>
+        <item>Palm OS</item>
+        <item>Mega Duck/Cougar Boy</item>
+        <item>Atari Jaguar CD</item>
+        <item>Watara/QuickShot Supervision</item>
+        <item>LeapTV</item>
+        <item>Leapster</item>
+        <item>Arduboy</item>
+        <item>V.Smile</item>
+        <item>Visual Memory Unit / Visual Memory System</item>
+        <item>PocketStation</item>
+        <item>Sega Mega Drive/Genesis</item>
+        <item>Meta Quest 2</item>
+    </string-array>
 
+    <string-array name="genres">
+        <item>Any genre</item>
+        <item>Fighting</item>
+        <item>Shooter</item>
+        <item>Music</item>
+        <item>Platform</item>
+        <item>Puzzle</item>
+        <item>Racing</item>
+        <item>Real Time Strategy (RTS)</item>
+        <item>Role-playing (RPG)</item>
+        <item>Simulator</item>
+        <item>Sport</item>
+        <item>Strategy</item>
+        <item>Turn-based strategy (TBS)</item>
+        <item>Tactical</item>
+        <item>Quiz/Trivia</item>
+        <item>Hack and slash/Beat \'em up</item>
+        <item>Pinball</item>
+        <item>Adventure</item>
+        <item>Arcade</item>
+        <item>Visual Novel</item>
+        <item>Indie</item>
+        <item>Card &amp; Board Game</item>
+        <item>MOBA</item>
+        <item>Point-and-click</item>
+    </string-array>
 </resources>
