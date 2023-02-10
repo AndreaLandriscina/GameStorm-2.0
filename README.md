@@ -1,6 +1,5 @@
-# gamestorm
-Gruppo Krunker
-
+# Krunker
+ 
 869077 Amine Yassine (referente)
 
 865945 Borello Riccardo 
