@@ -153,14 +153,16 @@ public class LoginActivity extends AppCompatActivity {
                             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                             startActivity(intent);
                             firebaseFirestore=FirebaseFirestore.getInstance();
-                            firebaseFirestore.collection("User")
-                                    .document(FirebaseAuth.getInstance().getUid())
-                                    .set(new UserModel(account.getDisplayName(), account.getEmail(), account.getId()));
-                            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                            UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-                                    .setDisplayName(account.getDisplayName()).build();
+                            if (firebaseFirestore.collection("User").document(FirebaseAuth.getInstance().getUid())==null) {
+                                firebaseFirestore.collection("User")
+                                        .document(FirebaseAuth.getInstance().getUid())
+                                        .set(new UserModel(account.getDisplayName(), account.getEmail(), account.getId()));
+                            }
+                                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                                UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                                        .setDisplayName(account.getDisplayName()).build();
 
-                            user.updateProfile(profileUpdates);
+                                user.updateProfile(profileUpdates);
                         } else {
                             Toast.makeText(LoginActivity.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                         }
