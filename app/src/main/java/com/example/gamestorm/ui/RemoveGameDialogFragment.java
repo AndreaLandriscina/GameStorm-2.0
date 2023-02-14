@@ -16,6 +16,8 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 public class RemoveGameDialogFragment extends DialogFragment {
     GameActivity activity;
@@ -51,14 +53,25 @@ public class RemoveGameDialogFragment extends DialogFragment {
                                 ArrayList<Integer> desiredGames = (ArrayList<Integer>) document.get("desiredGames");
                                 if (desiredGames != null && desiredGames.contains(new Long(bundle.getInt("idGame")))) {
                                     docRef.update("desiredGames", FieldValue.arrayRemove(bundle.get("idGame")));
-                                    gameActivity.getPlayedButton().setVisibility(View.VISIBLE);
                                 }
                             }
                         }
                     });
                     gameActivity.getPlayedButton().setText(R.string.played);
+                    gameActivity.getWantedButton().setText(R.string.wanted);
                     gameActivity.getWantedButton().setVisibility(View.VISIBLE);
+                    setPlayedButton(gameActivity);
                     dialog.dismiss();
                 }).create();
+    }
+
+    private void setPlayedButton(GameActivity gameActivity) {
+        //se il gioco non è ancora uscito non devo mostrare il tasto "giocato"
+        int dateInt = bundle.getInt("releaseDate");
+        Date date = new Date((long)dateInt*1000);
+        Calendar today = Calendar.getInstance();
+        if (date.compareTo(today.getTime()) <= 0) {
+            gameActivity.getPlayedButton().setVisibility(View.VISIBLE);
+        }
     }
 }

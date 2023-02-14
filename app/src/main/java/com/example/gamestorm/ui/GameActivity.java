@@ -3,6 +3,7 @@ package com.example.gamestorm.ui;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -48,6 +49,7 @@ import android.widget.Toast;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class GameActivity extends AppCompatActivity implements ResponseCallback {
@@ -119,6 +121,7 @@ public class GameActivity extends AppCompatActivity implements ResponseCallback 
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private void setButtons() {
         wantedButton = findViewById(R.id.wantedButton);
         playedButton = findViewById(R.id.playedButton);
@@ -130,20 +133,23 @@ public class GameActivity extends AppCompatActivity implements ResponseCallback 
                     DocumentSnapshot document = task.getResult();
                     if (document != null) {
                         wantedButton.setVisibility(View.VISIBLE);
-                        playedButton.setVisibility(View.VISIBLE);
+                        Calendar today = Calendar.getInstance();
+                        if (game.getDate().compareTo(today.getTime()) <= 0){
+                            playedButton.setVisibility(View.VISIBLE);
+                        }
                         ArrayList<Integer> desiredGames = (ArrayList<Integer>) document.get("desiredGames");
                         if (desiredGames != null && desiredGames.contains((long) game.getId())) {
-                            wantedButton.setText(R.string.alreadyWanted);
+                            wantedButton.setText("✓ " + getString(R.string.wanted));
                             playedButton.setVisibility(View.GONE);
                         }
                         ArrayList<Integer> playingGames = (ArrayList<Integer>) document.get("playingGames");
                         if (playingGames != null && playingGames.contains((long) game.getId())) {
-                            playedButton.setText((R.string.alreadyPlaying));
+                            playedButton.setText("✓ " + getString(R.string.playing));
                             wantedButton.setVisibility(View.GONE);
                         }
                         ArrayList<Integer> playedGames = (ArrayList<Integer>) document.get("playedGames");
                         if (playedGames != null && playedGames.contains((long) game.getId())) {
-                            playedButton.setText(R.string.alreadyPlayed);
+                            playedButton.setText("✓ " + getString(R.string.played));
                             wantedButton.setVisibility(View.GONE);
                         }
                     }
@@ -155,10 +161,11 @@ public class GameActivity extends AppCompatActivity implements ResponseCallback 
             playedButton.setVisibility(View.VISIBLE);
         }
         wantedButton.setOnClickListener(v -> {
-            if (playedButton.getVisibility() != View.GONE) {
+            if (!wantedButton.getText().toString().contains("✓") || playedButton.getVisibility() != View.GONE) {
                 if (docRef != null) {
                     //aggiunge ai giochi desiderati
                     playedButton.setVisibility(View.GONE);
+                    wantedButton.setText("✓ " + getString(R.string.wanted));
                     docRef.update("desiredGames", FieldValue.arrayUnion(game.getId()));
                 } else {
                     goToLoginActivity();
@@ -193,6 +200,7 @@ public class GameActivity extends AppCompatActivity implements ResponseCallback 
     private void goToDialog(DialogFragment fragment) {
         Bundle bundle = new Bundle();
         bundle.putInt("idGame", game.getId());
+        bundle.putInt("releaseDate", game.getIntReleaseDate());
         bundle.putString("idUser", loggedUserID);
         bundle.putString("gameName", game.getName());
         fragment.setArguments(bundle);

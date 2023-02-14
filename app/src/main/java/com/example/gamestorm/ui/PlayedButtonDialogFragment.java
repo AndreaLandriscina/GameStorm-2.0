@@ -1,5 +1,6 @@
 package com.example.gamestorm.ui;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.view.View;
@@ -24,6 +25,7 @@ public class PlayedButtonDialogFragment extends DialogFragment {
         this.activity = activity;
     }
 
+    @SuppressLint("SetTextI18n")
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
@@ -37,11 +39,11 @@ public class PlayedButtonDialogFragment extends DialogFragment {
             FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
             DocumentReference docRef = firebaseFirestore.collection("User").document(bundle.getString("idUser"));
             if (isPlaying) {
-                gameActivity.getPlayedButton().setText(R.string.alreadyPlaying);
+                gameActivity.getPlayedButton().setText("✓ " + getString(R.string.playing));
                 docRef.update("playingGames", FieldValue.arrayUnion(bundle.get("idGame")));
             }
             if (isPlayed) {
-                gameActivity.getPlayedButton().setText(R.string.alreadyPlayed);
+                gameActivity.getPlayedButton().setText("✓ " + getString(R.string.played));
                 docRef.update("playedGames", FieldValue.arrayUnion(bundle.get("idGame")));
             }
             dismiss();

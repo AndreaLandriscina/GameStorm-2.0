@@ -182,9 +182,13 @@ public class PlayedFragment extends Fragment implements ResponseCallback{
     public void onSuccess(List<GameApiResponse> gamesList, int count) {
         progressBar.setVisibility(View.GONE);
         recyclerDataArrayList = new ArrayList<>();
-        for (GameApiResponse gameApiResponse : gamesList) {
-            if (gameApiResponse.getCover() != null)
-                recyclerDataArrayList.add(new RecyclerData(gameApiResponse.getId(), gameApiResponse.getCover().getUrl()));
+        for (int i = 0; i < gamesList.size(); i++) {
+            for (GameApiResponse gameApiResponse : gamesList){
+                if (gameApiResponse.getId() == Integer.parseInt(String.valueOf(playedGames.get(i)))){
+                    if (gameApiResponse.getCover() != null)
+                        recyclerDataArrayList.add(new RecyclerData(gameApiResponse.getId(), gameApiResponse.getCover().getUrl()));
+                }
+            }
         }
         RecyclerProfileViewAdapter adapter = new RecyclerProfileViewAdapter(recyclerDataArrayList, getContext());
         GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 3);

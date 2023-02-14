@@ -53,9 +53,6 @@
     <string name="search_filters_dialog_title">"Filtri "</string>
     <string name="cancel_text">Cancella</string>
     <string name="confirm_text">Conferma</string>
-    <string name="alreadyWanted">DESIDERATO</string>
-    <string name="alreadyPlaying">IN GIOCO</string>
-    <string name="alreadyPlayed">GIOCATO</string>
     <string name="RemoveGame">Sicuro di voler rimuovere il gioco?</string>
     <string name="NoRating">Punteggio non disponibile</string>
 

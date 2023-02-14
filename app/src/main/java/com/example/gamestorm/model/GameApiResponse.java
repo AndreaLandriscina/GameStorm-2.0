@@ -158,6 +158,13 @@ public class GameApiResponse implements Parcelable {
         @SuppressLint("SimpleDateFormat") DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
         return formatter.format(date);
     }
+    public Date getDate(){
+        return new Date((long)firstReleaseDate*1000);
+    }
+
+    public int getIntReleaseDate(){
+        return firstReleaseDate;
+    }
 
     public int getFollows() {
         return follows;

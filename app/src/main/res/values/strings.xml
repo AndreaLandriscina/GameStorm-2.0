@@ -68,7 +68,6 @@
     <string name="explore_title">Explore</string>
     <string name="sort_by_dialog_title">Sort by</string>
     <string name="search_filters_dialog_title">Search Filters</string>
-    <string name="alreadyPlaying">PLAYING</string>
     <string name="no_platforms">No platforms available</string>
 
     <string-array name="sorting_parameters">
@@ -81,8 +80,6 @@
     <string name="number_of_results"> %1$d results found for &quot;%2$s&quot;</string>
     <string name="cancel_text">Cancel</string>
     <string name="confirm_text">Confirm</string>
-    <string name="alreadyWanted">WANTED</string>
-    <string name="alreadyPlayed">PLAYED</string>
     <string name="RemoveGame">Are you sure to remove this game?</string>
     <string name="NoRating">No rating available</string>
     <string name="search_games_hint">Search games</string>
