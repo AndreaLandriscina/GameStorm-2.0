@@ -145,8 +145,11 @@ public class GameApiResponse implements Parcelable {
                 ", cover=" + cover +
                 ", genres=" + genres +
                 ", platforms=" + platforms +
+                ", franchise=" + franchise +
+                ", companies=" + getCompany() +
                 ", releaseDates=" + releaseDates +
-                ", rating=" + rating +
+                ", rating=" + totalRating +
+                ", reviews=" + totalRatingCount +
                 ", firstReleaseDate=" + firstReleaseDate +
                 ", follows=" + follows +
                 '}' + "\n";

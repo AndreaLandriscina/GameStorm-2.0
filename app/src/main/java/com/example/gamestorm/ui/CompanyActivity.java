@@ -81,6 +81,7 @@ public class CompanyActivity extends AppCompatActivity implements ResponseCallba
     @Override
     public void onFailure(String errorMessage) {
         Toast.makeText(this,errorMessage,Toast.LENGTH_LONG).show();
+        progressBar.setVisibility(View.GONE);
         Log.i("onFailure", errorMessage);
     }
 
