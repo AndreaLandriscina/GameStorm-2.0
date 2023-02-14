@@ -46,7 +46,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class DesiredFragment extends Fragment {
+public class DesiredFragment extends Fragment implements ResponseCallback{
 
     FragmentDesiredBinding binding;
     FirebaseAuth firebaseAuth;
@@ -77,7 +77,8 @@ public class DesiredFragment extends Fragment {
         function_not_available_layout = requireView().findViewById(R.id.function_not_available_layout);
         desired_games_layout = requireView().findViewById(R.id.desired_games_layout);
         loginButton = requireView().findViewById(R.id.loginButton);
-
+        recyclerView = requireView().findViewById(R.id.desiredRecyclerView);
+        progressBar = requireView().findViewById(R.id.progressBar);
 
         if (!isLogged()) {
             function_not_available_layout.setVisibility(View.VISIBLE);
@@ -87,9 +88,7 @@ public class DesiredFragment extends Fragment {
             desired_games_layout.setVisibility(View.VISIBLE);
         }
 
-        loginButton.setOnClickListener(view1 -> {
-            Navigation.findNavController(requireView()).navigate(R.id.action_profileFragment_to_loginActivity);
-        });
+        loginButton.setOnClickListener(view1 -> Navigation.findNavController(requireView()).navigate(R.id.action_profileFragment_to_loginActivity));
     }
 
     @Override
@@ -122,49 +121,30 @@ public class DesiredFragment extends Fragment {
                 DocumentSnapshot document = task.getResult();
                 if (document != null) {
                     desiredGames = (ArrayList<Integer>) document.get("desiredGames");
-                    //Log.i("LOGGER","desired games: "+desiredGames.toString());
                     //RICERCA GIOCHI IN LISTA
                     assert desiredGames != null;
                     if (!desiredGames.isEmpty()) {
                         Log.i("LOGGER", "desired games: " + desiredGames);
-                        Integer gameID;
+                        ArrayList<Integer> idGames = new ArrayList<>();
                         for (int j = 0; j < desiredGames.size(); j++) {
-                            gameID = Integer.parseInt(String.valueOf(desiredGames.get(j)));
-                            Log.i("LOGGER", "gameid " + gameID);
-
-                            progressBar = requireView().findViewById(R.id.progressBar);
-                            recyclerView = requireView().findViewById(R.id.desiredRecyclerView);
-                            recyclerDataArrayList = new ArrayList<>();
-
-                            IGamesRepository iGamesRepository = new GamesRepository(requireActivity().getApplication(),
-                                    new ResponseCallback() {
-                                        @Override
-                                        public void onSuccess(List<GameApiResponse> gamesList, int count) {
-                                            progressBar.setVisibility(View.GONE);
-                                            for (GameApiResponse gameApiResponse : gamesList) {
-                                                if (gameApiResponse.getCover() != null)
-                                                    recyclerDataArrayList.add(new RecyclerData(gameApiResponse.getId(), gameApiResponse.getCover().getUrl()));
-                                            }
-                                            RecyclerProfileViewAdapter adapter = new RecyclerProfileViewAdapter(recyclerDataArrayList, getContext());
-                                            GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 3);
-                                            recyclerView.setLayoutManager(layoutManager);
-                                            recyclerView.setAdapter(adapter);
-                                            adapter.notifyDataSetChanged();
-                                        }
-
-                                        @Override
-                                        public void onFailure(String errorMessage) {
-
-                                        }
-
-
-                                    });
+                            idGames.add(Integer.parseInt(String.valueOf(desiredGames.get(j))));
                             progressBar.setVisibility(View.VISIBLE);
-                            String query = "fields name, cover.url; where id = " + gameID + "; limit 30;";
-                            iGamesRepository.fetchGames(query, 0);
                         }
+                        StringBuilder subquery = new StringBuilder();
+                        subquery.append("(");
+
+                        for (int i = 0; i < idGames.size(); i++) {
+                            subquery.append(idGames.get(i));
+                            if (i < idGames.size() - 1) {
+                                subquery.append(", ");
+                            } else {
+                                subquery.append(")");
+                            }
+                        }
+                        String query = "fields name, cover.url; where id = " + subquery + "; limit 30;";
+                        IGamesRepository iGamesRepository = new GamesRepository(requireActivity().getApplication(), this);
+                        iGamesRepository.fetchGames(query, 0);
                     } else {
-                        recyclerView = requireView().findViewById(R.id.desiredRecyclerView);
                         recyclerDataArrayList = new ArrayList<>();
                         RecyclerProfileViewAdapter adapter = new RecyclerProfileViewAdapter(recyclerDataArrayList, getContext());
                         GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 3);
@@ -206,4 +186,23 @@ public class DesiredFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onSuccess(List<GameApiResponse> gamesList, int count) {
+        progressBar.setVisibility(View.GONE);
+        recyclerDataArrayList = new ArrayList<>();
+        for (GameApiResponse gameApiResponse : gamesList) {
+            if (gameApiResponse.getCover() != null)
+                recyclerDataArrayList.add(new RecyclerData(gameApiResponse.getId(), gameApiResponse.getCover().getUrl()));
+        }
+        RecyclerProfileViewAdapter adapter = new RecyclerProfileViewAdapter(recyclerDataArrayList, getContext());
+        GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 3);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onFailure(String errorMessage) {
+        Log.i("E", errorMessage);
+    }
 }

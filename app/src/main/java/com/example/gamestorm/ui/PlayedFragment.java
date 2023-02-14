@@ -1,7 +1,6 @@
 package com.example.gamestorm.ui;
 
 import android.content.Context;
-import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -34,7 +33,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -44,7 +42,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class PlayedFragment extends Fragment {
+public class PlayedFragment extends Fragment implements ResponseCallback{
 
     FragmentPlayedBinding binding;
     FirebaseAuth firebaseAuth;
@@ -80,6 +78,8 @@ public class PlayedFragment extends Fragment {
         gsc = GoogleSignIn.getClient(requireContext(), gso);
         firebaseFirestore = FirebaseFirestore.getInstance();
         played_games_layout = requireView().findViewById(R.id.played_games_layout);
+        progressBar = requireView().findViewById(R.id.progressBar);
+        recyclerView = requireView().findViewById(R.id.playedRecyclerView);
 
         if (!isLogged()) {
             function_not_available_layout.setVisibility(View.VISIBLE);
@@ -114,46 +114,32 @@ public class PlayedFragment extends Fragment {
             if (task.isSuccessful()) {
                 DocumentSnapshot document = task.getResult();
                 if (document != null) {
-                    Log.i("LOGGER", "First " + document.getString("email"));
-                    Log.i("LOGGER", "Last " + document.getString("name"));
                     Log.i("LOGGER", "arr " + Objects.requireNonNull(document.get("playedGames")));
                     playedGames = (ArrayList<Integer>) document.get("playedGames");
 
                     //RICERCA GIOCHI IN LISTA
+                    assert playedGames != null;
                     if (!playedGames.isEmpty()) {
-                        Integer gameID;
+                        ArrayList<Integer> idGames = new ArrayList<>();
                         for (int j = 0; j < playedGames.size(); j++) {
-                            gameID = Integer.parseInt(String.valueOf(playedGames.get(j)));
-                            Log.i("LOGGER", "gameid " + gameID);
-
-                            progressBar = requireView().findViewById(R.id.progressBar);
-                            recyclerView = requireView().findViewById(R.id.playedRecyclerView);
-                            recyclerDataArrayList = new ArrayList<>();
-
-                            IGamesRepository iGamesRepository = new GamesRepository(requireActivity().getApplication(),
-                                    new ResponseCallback() {
-                                        @Override
-                                        public void onSuccess(List<GameApiResponse> gamesList, int count) {
-                                            progressBar.setVisibility(View.GONE);
-                                            for (GameApiResponse gameApiResponse : gamesList) {
-                                                if (gameApiResponse.getCover() != null)
-                                                    recyclerDataArrayList.add(new RecyclerData(gameApiResponse.getId(), gameApiResponse.getCover().getUrl()));
-                                            }
-                                            RecyclerProfileViewAdapter adapter = new RecyclerProfileViewAdapter(recyclerDataArrayList, getContext());
-                                            GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 3);
-                                            recyclerView.setLayoutManager(layoutManager);
-                                            recyclerView.setAdapter(adapter);
-                                        }
-
-                                        @Override
-                                        public void onFailure(String errorMessage) {
-
-                                        }
-                                    });
+                            idGames.add(Integer.parseInt(String.valueOf(playedGames.get(j))));
                             progressBar.setVisibility(View.VISIBLE);
-                            String query = "fields name, cover.url; where id = " + gameID + "; limit 30;";
-                            iGamesRepository.fetchGames(query, 0);
                         }
+                        StringBuilder subquery = new StringBuilder();
+                        subquery.append("(");
+
+                        for (int i = 0; i < idGames.size(); i++) {
+                            subquery.append(idGames.get(i));
+                            if (i < idGames.size() - 1) {
+                                subquery.append(", ");
+                            } else {
+                                subquery.append(")");
+                            }
+                        }
+                        String query = "fields name, cover.url; where id = " + subquery + "; limit 30;";
+                        Log.i("query", query);
+                        IGamesRepository iGamesRepository = new GamesRepository(requireActivity().getApplication(), this);
+                        iGamesRepository.fetchGames(query, 0);
                     } else {
                         recyclerView = requireView().findViewById(R.id.playedRecyclerView);
                         recyclerDataArrayList = new ArrayList<>();
@@ -179,7 +165,7 @@ public class PlayedFragment extends Fragment {
     }
 
     private boolean isLogged() {
-        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(getContext());
+        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(requireContext());
         if (firebaseAuth.getCurrentUser() == null && account == null) {
             return false;
         } else {
@@ -190,5 +176,25 @@ public class PlayedFragment extends Fragment {
             }
             return true;
         }
+    }
+
+    @Override
+    public void onSuccess(List<GameApiResponse> gamesList, int count) {
+        progressBar.setVisibility(View.GONE);
+        recyclerDataArrayList = new ArrayList<>();
+        for (GameApiResponse gameApiResponse : gamesList) {
+            if (gameApiResponse.getCover() != null)
+                recyclerDataArrayList.add(new RecyclerData(gameApiResponse.getId(), gameApiResponse.getCover().getUrl()));
+        }
+        RecyclerProfileViewAdapter adapter = new RecyclerProfileViewAdapter(recyclerDataArrayList, getContext());
+        GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 3);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onFailure(String errorMessage) {
+        Log.i("E", errorMessage);
     }
 }

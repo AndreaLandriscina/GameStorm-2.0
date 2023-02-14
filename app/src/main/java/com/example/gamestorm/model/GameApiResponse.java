@@ -159,7 +159,6 @@ public class GameApiResponse implements Parcelable {
         return formatter.format(date);
     }
 
-
     public int getFollows() {
         return follows;
     }
