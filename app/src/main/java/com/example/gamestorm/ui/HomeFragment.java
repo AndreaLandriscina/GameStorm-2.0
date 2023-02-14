@@ -107,7 +107,7 @@ public class HomeFragment extends Fragment implements ResponseCallback {
 
         iGamesRepository = new GamesRepository(requireActivity().getApplication(), this);
         queryPopular = "fields id, name, cover.url;where follows!=null; sort follows desc; limit 30;";
-        queryLatestReleases = "fields id, name, cover.url; sort first_release_date desc; limit 30;";
+        queryLatestReleases="fields id, name, cover.url; where first_release_date <= "+Long.toString(currentDate())+";sort first_release_date desc; limit 30;";
         queryIncoming = "fields id, name, cover.url; where first_release_date > " +Long.toString(currentDate())+";sort first_release_date asc; limit 30;";
         queryBestGames="fields id, name, cover.url;where total_rating_count>1000;sort total_rating desc;limit 30;";
     }
