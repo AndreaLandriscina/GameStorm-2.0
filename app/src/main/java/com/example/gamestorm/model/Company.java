@@ -5,6 +5,9 @@ public class Company {
     public Company(String name){
         this.name = name;
     }
+    Company(){
+
+    }
     public String getName() {
         return name;
     }

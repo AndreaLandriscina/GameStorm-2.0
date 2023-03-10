@@ -2,7 +2,6 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/nav_graph"
     app:startDestination="@id/homeFragment">
 
     <fragment
@@ -25,7 +24,7 @@
     </fragment>
     <fragment
         android:id="@+id/profileFragment"
-        android:name="com.example.gamestorm.ui.ProfileFragment"
+        android:name="com.example.gamestorm.ui.profile.ProfileFragment"
         android:label="fragment_profile"
         tools:layout="@layout/fragment_profile" >
         <action
@@ -59,12 +58,12 @@
     </fragment>
     <activity
         android:id="@+id/gameActivity"
-        android:name="com.example.gamestorm.ui.GameActivity"
+        android:name="com.example.gamestorm.ui.gameDetails.GameActivity"
         android:label="activity_game"
         tools:layout="@layout/activity_game" />
     <activity
         android:id="@+id/loginActivity"
-        android:name="com.example.gamestorm.ui.LoginActivity"
+        android:name="com.example.gamestorm.ui.profile.LoginActivity"
         android:label="activity_login"
         tools:layout="@layout/activity_login" />
 </navigation>

@@ -1,5 +1,7 @@
 package com.example.gamestorm.model;
 
+import androidx.annotation.NonNull;
+
 public class Cover {
     int id;
     String url;
@@ -7,6 +9,9 @@ public class Cover {
     public Cover(int id, String url) {
         this.id = id;
         this.url = url;
+    }
+    Cover(){
+
     }
 
     public String getUrl() {
@@ -18,6 +23,7 @@ public class Cover {
         }
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "Cover{" +

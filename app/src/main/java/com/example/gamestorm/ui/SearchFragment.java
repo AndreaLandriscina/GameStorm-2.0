@@ -1,5 +1,9 @@
 package com.example.gamestorm.ui;
 
+import static com.example.gamestorm.util.Constants.LAST_UPDATE_EXPLORE;
+import static com.example.gamestorm.util.Constants.SHARED_PREFERENCES_FILE_NAME;
+
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.net.ConnectivityManager;
@@ -10,14 +14,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.os.Parcelable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
@@ -29,14 +33,14 @@ import com.example.gamestorm.model.GameApiResponse;
 import com.example.gamestorm.model.Genre;
 import com.example.gamestorm.model.Platform;
 import com.example.gamestorm.R;
-import com.example.gamestorm.repository.GamesRepository;
-import com.example.gamestorm.repository.IGamesRepository;
-import com.example.gamestorm.util.Constants;
-import com.example.gamestorm.util.ResponseCallback;
+import com.example.gamestorm.repository.games.IGamesRepository;
+import com.example.gamestorm.util.ServiceLocator;
+import com.example.gamestorm.util.SharedPreferencesUtil;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.snackbar.Snackbar;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -44,19 +48,18 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
+public class SearchFragment extends Fragment {
 
-public class SearchFragment extends Fragment implements ResponseCallback {
-
-    private IGamesRepository iGamesRepository;
     private boolean exploreShowed;
     private List<GameApiResponse> games;
+    private List<GameApiResponse> exploreCopy;
     private List<GameApiResponse> gamesCopy;
     private String userInput;
     private MaterialButton sorting;
     private MaterialButton filters;
     private TextView numberOfResults;
-    private RecyclerView gamesRV;
     private ProgressBar searchLoading;
     RecyclerSearchAdapter adapter;
     private String sortingParameter;
@@ -64,12 +67,13 @@ public class SearchFragment extends Fragment implements ResponseCallback {
     private int lastSelectedGenre;
     private int lastSelectedPlatform;
     private int lastSelectedReleaseYear;
+    private GamesViewModel gamesViewModel;
+    private ProgressBar progressBar;
 
 
     public SearchFragment() {
         // Required empty public constructor
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -81,98 +85,88 @@ public class SearchFragment extends Fragment implements ResponseCallback {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        iGamesRepository = new GamesRepository(getActivity().getApplication(), this);
         exploreShowed = true;
         games = new ArrayList<>();
         gamesCopy = new ArrayList<>();
+        exploreCopy = new ArrayList<>();
         SearchView gameName = view.findViewById(R.id.game_name_SV);
         userInput = "";
         sorting = view.findViewById(R.id.sorting_B);
         filters = view.findViewById(R.id.filters_B);
         numberOfResults = view.findViewById(R.id.number_of_results_TV);
+        sortingParameter = "";
+        IGamesRepository iGamesRepository;
+        try {
+            iGamesRepository = ServiceLocator.getInstance().getGamesRepository(requireActivity().getApplication());
+        } catch (GeneralSecurityException | IOException e) {
+            throw new RuntimeException(e);
+        }
+        progressBar = requireView().findViewById(R.id.search_loading_PB);
+        if (iGamesRepository != null) {
+            progressBar.setVisibility(View.VISIBLE);
+            gamesViewModel = new ViewModelProvider(this, new GamesViewModelFactory(iGamesRepository)).get(GamesViewModel.class);
+        }
 
-        gamesRV = view.findViewById(R.id.games_RV);
+        RecyclerView gamesRV = view.findViewById(R.id.games_RV);
         adapter = new RecyclerSearchAdapter(games, getContext());
         GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 3);
         gamesRV.setLayoutManager(layoutManager);
         gamesRV.setAdapter(adapter);
 
         searchLoading = view.findViewById(R.id.search_loading_PB);
-        resetStatus();
-
-        if(savedInstanceState != null){
-            userInput = savedInstanceState.getString(Constants.gameNameKey);
-            sortingParameter = savedInstanceState.getString(Constants.sortingParameterKey);
-            lastSelectedSortingParameter = savedInstanceState.getInt(Constants.lastSelectedSortingParameterKey);
-            lastSelectedGenre = savedInstanceState.getInt(Constants.lastSelectedGenreKey);
-            lastSelectedPlatform = savedInstanceState.getInt(Constants.lastSelectedPlatformKey);
-            lastSelectedReleaseYear = savedInstanceState.getInt(Constants.lastSelectedReleaseYearKey);
-            games = savedInstanceState.getParcelableArrayList(Constants.gamesKey);
-            gamesCopy = savedInstanceState.getParcelableArrayList(Constants.gamesCopyKey);
-            exploreShowed = savedInstanceState.getBoolean(Constants.exploreShowedKey);
-            numberOfResults.setText(savedInstanceState.getString(Constants.resultNumberKey));
-            filters.setVisibility(savedInstanceState.getInt(Constants.filterVisibilityKey));
-            sorting.setVisibility(savedInstanceState.getInt(Constants.sortingVisibilityKey));
-
-            if(exploreShowed){
-                numberOfResults.setTextSize(30);
-                numberOfResults.setTypeface(null, Typeface.BOLD);
-            }else{
-                numberOfResults.setTextSize(15);
-                numberOfResults.setTypeface(null, Typeface.NORMAL);
-            }
-            numberOfResults.setText(savedInstanceState.getString(Constants.resultNumberKey));
-
-            showGamesOnRecyclerView(games);
-            Log.e("TAG", "dentro il recupero");
-        }else{
-            if(getContext()!= null && isNetworkAvailable(getContext())){
-                searchLoading.setVisibility(View.VISIBLE);
-                String queryToServer = "fields id, name, cover.url, follows, rating, first_release_date, genres.name, platforms.name; where cover.url != null; limit 500;";
-                iGamesRepository.fetchGames(queryToServer,0);
-            }else{
-                Snackbar.make(view.findViewById(R.id.Coordinatorlyt), R.string.no_connection_message, Snackbar.LENGTH_LONG).show();
-            }
+        String lastUpdate = "0";
+        SharedPreferencesUtil sharedPreferencesUtil = new SharedPreferencesUtil(requireActivity().getApplication());
+        if (sharedPreferencesUtil.readStringData(
+                SHARED_PREFERENCES_FILE_NAME, LAST_UPDATE_EXPLORE) != null) {
+            lastUpdate = sharedPreferencesUtil.readStringData(
+                    SHARED_PREFERENCES_FILE_NAME, LAST_UPDATE_EXPLORE);
         }
+        showExploreGames(lastUpdate);
 
         gameName.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+                InputMethodManager imm = (InputMethodManager) requireActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
+                //Find the currently focused view, so we can grab the correct window token from it.
+                View view = requireActivity().getCurrentFocus();
+                //If no view currently has focus, create a new one, just so we can grab a window token from it
+                if (view == null) {
+                    view = new View(requireActivity());
+                }
+                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
                 exploreShowed = false;
-
                 if(!games.isEmpty()){
                     games.clear();
                     gamesCopy.clear();
                     adapter.notifyDataSetChanged();
                 }
-
                 resetStatus();
 
                 if(getContext()!= null && isNetworkAvailable(getContext())){
-
-                    userInput = query;
+                    if (query.isEmpty()){
+                        return false;
+                    } else {
+                        userInput = query;
+                    }
                     //timestamp per ottenere solo giochi già usciti(su igdb si sono giochi che devono ancora uscire e che non hanno informazioni utili per l'utente)
-                    String queryToServer = "fields id, name, cover.url, follows, rating, first_release_date, genres.name, platforms.name; where first_release_date < " + System.currentTimeMillis() / 1000 + " & version_parent = null;search \"" + userInput + "\"; limit 500;";
                     searchLoading.setVisibility(View.VISIBLE);
                     numberOfResults.setText("");
-                    iGamesRepository.fetchGames(queryToServer,1);
+                    gamesViewModel.getSearchedGames(query).observe(getViewLifecycleOwner(), gameApiResponses -> {
+                        onSuccess(gameApiResponses, false);
+                        games = gameApiResponses;
+                        searchLoading.setVisibility(View.GONE);
+                    });
+                    return true;
                 }else{
                     Toast.makeText(requireContext(), R.string.no_connection_message, Toast.LENGTH_LONG).show();
+                    return false;
                 }
-                return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                Log.e("TAG", ""+exploreShowed );
-
                 if(newText.isEmpty() && !exploreShowed){
                     resetStatus();
-                    exploreShowed = true;
-
-                    String queryToServer = "fields id, name, cover.url, follows, rating, first_release_date, genres.name, platforms.name; where cover.url != null; limit 500;";
-                    searchLoading.setVisibility(View.VISIBLE);
-                    iGamesRepository.fetchGames(queryToServer,0);
                 }
                 return false;
             }
@@ -190,7 +184,7 @@ public class SearchFragment extends Fragment implements ResponseCallback {
 
                         if(isNetworkAvailable(requireContext()) || !games.isEmpty()){
                             sortGames(sortingParameter);
-                            showGamesOnRecyclerView(games);
+
 
                         }else{
                             Toast.makeText(requireContext(), R.string.no_connection_message, Toast.LENGTH_LONG).show();
@@ -213,17 +207,15 @@ public class SearchFragment extends Fragment implements ResponseCallback {
             Spinner platformSPN = customLayout.findViewById(R.id.platform_SPN);
             Spinner releaseYearSPN = customLayout.findViewById(R.id.releaseyear_SPN);
 
+            String[] genres = requireContext().getResources().getStringArray(R.array.genres);
+            genres[0] = requireContext().getResources().getString(R.string.any_genre);
 
-
-            String[] genres = getContext().getResources().getStringArray(R.array.genres);
-            genres[0] = getContext().getResources().getString(R.string.any_genre);
-
-            String[] platforms = getContext().getResources().getStringArray(R.array.platforms);
-            platforms[0] = getContext().getResources().getString(R.string.any_platform);
+            String[] platforms = requireContext().getResources().getStringArray(R.array.platforms);
+            platforms[0] = requireContext().getResources().getString(R.string.any_platform);
 
 
             List<String> years = new ArrayList<>();
-            years.add(getContext().getResources().getString(R.string.any_year));
+            years.add(requireContext().getResources().getString(R.string.any_year));
             for (int i = Calendar.getInstance().get(Calendar.YEAR); i >= 1958; i--) {
                 years.add("" + i);
             }
@@ -232,7 +224,7 @@ public class SearchFragment extends Fragment implements ResponseCallback {
             ArrayAdapter<String> platformAdapter =initializeSpinner(platformSPN, platforms, lastSelectedPlatform);
             ArrayAdapter<String> releaseYearAdapter =initializeSpinner(releaseYearSPN, years.toArray(new String[0]), lastSelectedReleaseYear);
 
-            new MaterialAlertDialogBuilder(getContext())
+            new MaterialAlertDialogBuilder(requireContext())
                     .setView(customLayout)
                     .setTitle(R.string.search_filters_dialog_title)
                     .setPositiveButton(R.string.confirm_text, (dialogInterface, which) -> {
@@ -247,7 +239,7 @@ public class SearchFragment extends Fragment implements ResponseCallback {
                         lastSelectedPlatform = platformAdapter.getPosition(platformInput);
                         lastSelectedReleaseYear = releaseYearAdapter.getPosition(releaseyearInput);
 
-                        if(isNetworkAvailable(getContext()) || !games.isEmpty()){
+                        if(isNetworkAvailable(requireContext()) || !games.isEmpty()){
 
                             if (genreInput.equals(genres[0]) || platformInput.equals(platforms[0]) || releaseyearInput.equals(years.get(0))) {
                                 games = new ArrayList<>(gamesCopy);
@@ -305,7 +297,7 @@ public class SearchFragment extends Fragment implements ResponseCallback {
 
                             if (!releaseyearInput.equals(years.get(0))) {
                                 for (int i = games.size() - 1; i >= 0; i--) {
-                                    String[] dateParts = games.get(i).getFirstReleaseDate().split("/");
+                                    String[] dateParts = games.get(i).getFirstReleaseDateString().split("/");
                                     String yearOfRelease = dateParts[2];
                                     if (!yearOfRelease.equals(releaseyearInput))
                                         games.remove(games.get(i));
@@ -322,10 +314,6 @@ public class SearchFragment extends Fragment implements ResponseCallback {
                                 String text = String.format(getContext().getResources().getString(R.string.number_of_results), games.size(), "Esplora");
                                 numberOfResults.setText(text);
                             }
-
-
-
-
                             showGamesOnRecyclerView(games);
                         }else{
                             Toast.makeText(requireContext(), R.string.no_connection_message, Toast.LENGTH_LONG).show();
@@ -339,60 +327,46 @@ public class SearchFragment extends Fragment implements ResponseCallback {
         });
     }
 
-    @Override
-    public void onSuccess(List<GameApiResponse> gamesList, int count) {
-        searchLoading.setVisibility(View.GONE);
-        games = gamesList;
-        gamesCopy = new ArrayList<>(games);
+    private void showExploreGames(String lastUpdate) {
+        gamesViewModel.getExploreGames(Long.parseLong(lastUpdate)).observe(getViewLifecycleOwner(), result -> {
 
-        //Textview: count == 1: carica numero risultati     count == 0: carica explore
-        if(count == 1){
-            numberOfResults.setTextSize(15);
-            numberOfResults.setTypeface(null, Typeface.NORMAL);
-            String text = "";
-            text = String.format(getContext().getResources().getString(R.string.number_of_results), games.size(), userInput);
-            numberOfResults.setText(text);
-        }else{
+            progressBar.setVisibility(View.GONE);
+            games = result;
+            exploreCopy.addAll(result);
+            onSuccess(result, true);
+        });
+    }
+
+
+    public void onSuccess(List<GameApiResponse> gameApiResponses, boolean isExplore) {
+        numberOfResults.setTextSize(30);
+        numberOfResults.setTypeface(null, Typeface.BOLD);
+        gamesCopy = new ArrayList<>(games);
+        numberOfResults.setText(R.string.explore_title);
+
+        if(isExplore){
             numberOfResults.setText(R.string.explore_title);
             numberOfResults.setTextSize(30);
             numberOfResults.setTypeface(null, Typeface.BOLD);
+        }else{
+            numberOfResults.setTextSize(15);
+            numberOfResults.setTypeface(null, Typeface.NORMAL);
+            String text;
+            text = String.format(getContext().getResources().getString(R.string.number_of_results), gameApiResponses.size(), userInput);
+            numberOfResults.setText(text);
+
         }
 
-        if(games.size() > 0){
+
+
+        if (gameApiResponses.size() > 0) {
             sorting.setVisibility(View.VISIBLE);
             filters.setVisibility(View.VISIBLE);
-        }else{
+        } else {
             sorting.setVisibility(View.GONE);
             filters.setVisibility(View.GONE);
         }
-        showGamesOnRecyclerView(games);
-    }
-
-    @Override
-    public void onFailure(String errorMessage) {
-        Log.e("TAG", "query errata");
-    }
-
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putString(Constants.gameNameKey, userInput);
-        outState.putString(Constants.sortingParameterKey, sortingParameter);
-        outState.putInt(Constants.lastSelectedSortingParameterKey, lastSelectedSortingParameter);
-        outState.putInt(Constants.lastSelectedGenreKey, lastSelectedGenre);
-        outState.putInt(Constants.lastSelectedPlatformKey, lastSelectedPlatform);
-        outState.putInt(Constants.lastSelectedReleaseYearKey, lastSelectedReleaseYear);
-        outState.putString(Constants.resultNumberKey, numberOfResults.getText().toString());
-        outState.putBoolean(Constants.exploreShowedKey, exploreShowed);
-        outState.putInt(Constants.filterVisibilityKey, filters.getVisibility());
-        outState.putInt(Constants.sortingVisibilityKey, sorting.getVisibility());
-
-
-        //tutti i giochi
-        outState.putParcelableArrayList(Constants.gamesKey, (ArrayList<? extends Parcelable>) games);
-        outState.putParcelableArrayList(Constants.gamesCopyKey, (ArrayList<? extends Parcelable>) gamesCopy);
-
-        Log.e("TAG", "onSaveInstanceState search");
+        showGamesOnRecyclerView(gameApiResponses);
     }
 
 
@@ -400,8 +374,6 @@ public class SearchFragment extends Fragment implements ResponseCallback {
         adapter.setGames(gamesList);
         adapter.notifyDataSetChanged();
     }
-
-
     private boolean isNetworkAvailable(Context context) {
         ConnectivityManager connectivityManager
                 = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -409,18 +381,19 @@ public class SearchFragment extends Fragment implements ResponseCallback {
         return activeNetworkInfo != null;
     }
 
-    public class SortByMostPopular implements java.util.Comparator<GameApiResponse> {
+    public static class SortByMostPopular implements java.util.Comparator<GameApiResponse> {
         public int compare(GameApiResponse a, GameApiResponse b) {
             return -Integer.compare(a.getFollows(), b.getFollows());
         }
     }
 
-    public class SortByMostRecent implements java.util.Comparator<GameApiResponse> {
+    public static class SortByMostRecent implements java.util.Comparator<GameApiResponse> {
         public int compare(GameApiResponse a, GameApiResponse b) {
             try {
                 SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-                Date date1 = formatter.parse(a.getFirstReleaseDate());
-                Date date2 = formatter.parse(b.getFirstReleaseDate());
+                Date date1 = formatter.parse(a.getFirstReleaseDateString());
+                Date date2 = formatter.parse(b.getFirstReleaseDateString());
+                assert date1 != null;
                 return -date1.compareTo(date2);
             } catch (ParseException e1) {
                 e1.printStackTrace();
@@ -430,13 +403,13 @@ public class SearchFragment extends Fragment implements ResponseCallback {
         }
     }
 
-    public class SortByBestRating implements java.util.Comparator<GameApiResponse> {
+    public static class SortByBestRating implements java.util.Comparator<GameApiResponse> {
         public int compare(GameApiResponse a, GameApiResponse b) {
-            return -Double.compare(a.getRating(), b.getRating());
+            return -Double.compare(a.getTotalRating(), b.getTotalRating());
         }
     }
 
-    public class SortByAlphabet implements java.util.Comparator<GameApiResponse> {
+    public static class SortByAlphabet implements java.util.Comparator<GameApiResponse> {
         public int compare(GameApiResponse a, GameApiResponse b) {
             return a.getName().compareTo(b.getName());
         }
@@ -456,13 +429,12 @@ public class SearchFragment extends Fragment implements ResponseCallback {
             case "Voto migliore":
                 Collections.sort(games, new SortByBestRating());
                 break;
-
             case "Alphabet":
             case "Alfabeto":
                 Collections.sort(games, new SortByAlphabet());
                 break;
-
         }
+        showGamesOnRecyclerView(games);
     }
 
     public void resetStatus(){
@@ -474,6 +446,7 @@ public class SearchFragment extends Fragment implements ResponseCallback {
         numberOfResults.setText("");
         games.clear();
         gamesCopy.clear();
+        showGamesOnRecyclerView(exploreCopy);
         adapter.notifyDataSetChanged();
     }
 

@@ -1,0 +1,274 @@
+package com.example.gamestorm.source.games;
+
+import static com.example.gamestorm.util.Constants.ENCRYPTED_DATA_FILE_NAME;
+import static com.example.gamestorm.util.Constants.ENCRYPTED_SHARED_PREFERENCES_FILE_NAME;
+import static com.example.gamestorm.util.Constants.LAST_UPDATE_EXPLORE;
+import static com.example.gamestorm.util.Constants.LAST_UPDATE_HOME;
+import static com.example.gamestorm.util.Constants.SHARED_PREFERENCES_FILE_NAME;
+
+import android.util.Log;
+
+import com.example.gamestorm.database.GamesDao;
+import com.example.gamestorm.database.GamesRoomDatabase;
+import com.example.gamestorm.model.GameApiResponse;
+import com.example.gamestorm.util.DataEncryptionUtil;
+import com.example.gamestorm.util.SharedPreferencesUtil;
+import java.util.ArrayList;
+import java.util.List;
+
+public class GamesLocalDataSource extends BaseGamesLocalDataSource {
+    private final GamesDao gamesDao;
+    private final SharedPreferencesUtil sharedPreferencesUtil;
+    private final DataEncryptionUtil dataEncryptionUtil;
+
+    public GamesLocalDataSource(GamesRoomDatabase gamesRoomDatabase, SharedPreferencesUtil sharedPreferencesUtil, DataEncryptionUtil dataEncryptionUtil) {
+        this.gamesDao = gamesRoomDatabase.gamesDao();
+        this.sharedPreferencesUtil = sharedPreferencesUtil;
+        this.dataEncryptionUtil = dataEncryptionUtil;
+    }
+
+
+    public void getGame(int id) {
+        GamesRoomDatabase.databaseWriteExecutor.execute(() -> {
+            GameApiResponse gameApiResponse = gamesDao.getGame(id);
+            if (gameApiResponse != null){
+                ArrayList<GameApiResponse> gameApiResponses = new ArrayList<>();
+                gameApiResponses.add(gameApiResponse);
+                gameCallback.onSuccessFromLocal(new ArrayList<>(gameApiResponses), "SINGLE");
+            }
+        });
+    }
+
+    @Override
+    public void getPopularGames() {
+        GamesRoomDatabase.databaseWriteExecutor.execute(() -> {
+            List<GameApiResponse> gameApiResponse = new ArrayList<>(gamesDao.getPopularGame());
+            gameCallback.onSuccessFromLocal(gameApiResponse, "POPULAR");
+        });
+    }
+
+    @Override
+    public void getBestGames() {
+        GamesRoomDatabase.databaseWriteExecutor.execute(() -> {
+            List<GameApiResponse> gameApiResponse = new ArrayList<>(gamesDao.getBestGame());
+            gameCallback.onSuccessFromLocal(gameApiResponse, "BEST");
+        });
+    }
+
+    @Override
+    public void getLatestGames() {
+        GamesRoomDatabase.databaseWriteExecutor.execute(() -> {
+            List<GameApiResponse> gameApiResponse = new ArrayList<>(gamesDao.getLatestGame());
+            gameCallback.onSuccessFromLocal(gameApiResponse, "LATEST");
+        });
+    }
+
+    @Override
+    public void getIncomingGames() {
+        GamesRoomDatabase.databaseWriteExecutor.execute(() -> {
+            List<GameApiResponse> gameApiResponse = new ArrayList<>(gamesDao.getIncomingGames());
+            gameCallback.onSuccessFromLocal(gameApiResponse, "INCOMING");
+        });
+    }
+
+    @Override
+    public void getExploreGames() {
+        GamesRoomDatabase.databaseWriteExecutor.execute(() -> {
+            List<GameApiResponse> gameApiResponse = new ArrayList<>(gamesDao.getExploreGames());
+            gameCallback.onSuccessFromLocal(gameApiResponse, "EXPLORE");
+        });
+    }
+
+    @Override
+    public void insertGames(List<GameApiResponse> gameApiResponses, String nQuery) {
+        Log.i("gameslocal inser", gameApiResponses.toString() + " " + nQuery);
+        GamesRoomDatabase.databaseWriteExecutor.execute(() -> {
+            List<GameApiResponse> allGames = gamesDao.getAll();
+            switch (nQuery) {
+                case "POPULAR":
+                    for (GameApiResponse gameApiResponse : gameApiResponses)
+                        gameApiResponse.setPopular(true);
+                    sharedPreferencesUtil.writeStringData(SHARED_PREFERENCES_FILE_NAME,
+                            LAST_UPDATE_HOME, String.valueOf(System.currentTimeMillis()));
+                    break;
+                case "BEST":
+                    for (GameApiResponse gameApiResponse : gameApiResponses)
+                        gameApiResponse.setBest(true);
+                    break;
+                case "LATEST":
+                    for (GameApiResponse gameApiResponse : gameApiResponses)
+                        gameApiResponse.setLatest(true);
+                    break;
+                case "INCOMING":
+                    for (GameApiResponse gameApiResponse : gameApiResponses)
+                        gameApiResponse.setIncoming(true);
+                    break;
+                case "EXPLORE":
+                    for (GameApiResponse gameApiResponse : gameApiResponses)
+                        gameApiResponse.setExplore(true);
+                    sharedPreferencesUtil.writeStringData(SHARED_PREFERENCES_FILE_NAME,
+                            LAST_UPDATE_EXPLORE, String.valueOf(System.currentTimeMillis()));
+                    break;
+                case "WANTED":
+                    for (GameApiResponse gameApiResponse : gameApiResponses)
+                        gameApiResponse.setWanted(true);
+                    break;
+                case "PLAYING":
+                    for (GameApiResponse gameApiResponse : gameApiResponses)
+                        gameApiResponse.setPlaying(true);
+                    break;
+                case "PLAYED":
+                    for (GameApiResponse gameApiResponse : gameApiResponses)
+                        gameApiResponse.setPlayed(true);
+                    break;
+            }
+            // Checks if the news just downloaded has already been downloaded earlier
+            // in order to preserve the news status (marked as favorite or not)
+            // This check works because News and NewsSource classes have their own
+            // implementation of equals(Object) and hashCode() methods
+
+            // The primary key and the favorite status is contained only in the News objects
+            // retrieved from the database, and not in the News objects downloaded from the
+            // Web Service. If the same news was already downloaded earlier, the following
+            // line of code replaces the the News object in newsList with the corresponding
+            // News object saved in the database, so that it has the primary key and the
+            // favorite status.
+            if (!nQuery.equals("WANTED") && !nQuery.equals("PLAYING") && !nQuery.equals("PLAYED")){
+                for (GameApiResponse game : allGames) {
+                    for (GameApiResponse gameApiResponse1 : gameApiResponses){
+                        if (game.getId() == gameApiResponse1.getId()) {
+                            game.setSynchronized(true);
+                            gameApiResponses.set(gameApiResponses.indexOf(gameApiResponse1), game);
+                        }
+                    }
+                }
+            }
+
+
+            // Writes the news in the database and gets the associated primary keys
+            List<Long> insertedGameId;
+            insertedGameId = gamesDao.insertGamesList(gameApiResponses);
+            for (int i = 0; i < gameApiResponses.size(); i++) {
+                // Adds the primary key to the corresponding object News just downloaded so that
+                // if the user marks the news as favorite (and vice-versa), we can use its id
+                // to know which news in the database must be marked as favorite/not favorite
+                gameApiResponses.get(i).setId(insertedGameId.get(i).intValue());
+            }
+
+            gameCallback.onSuccessSynchronization();
+            gameCallback.onSuccessFromLocal(gameApiResponses, nQuery);
+        });
+    }
+
+    @Override
+    public void deleteAll() {
+        GamesRoomDatabase.databaseWriteExecutor.execute(() -> {
+            int gamesCounter = gamesDao.getAll().size();
+            int gamesDeleted = gamesDao.deleteAll();
+
+            // It means that everything has been deleted
+            if (gamesCounter == gamesDeleted) {
+                sharedPreferencesUtil.deleteAll(SHARED_PREFERENCES_FILE_NAME);
+                dataEncryptionUtil.deleteAll(ENCRYPTED_SHARED_PREFERENCES_FILE_NAME, ENCRYPTED_DATA_FILE_NAME);
+                gameCallback.onSuccessDeletion();
+            }
+        });
+    }
+
+    @Override
+    public void updateWantedGame(GameApiResponse game) {
+
+        GamesRoomDatabase.databaseWriteExecutor.execute(() -> {
+            if (game != null) {
+                List<GameApiResponse> list = gamesDao.getAll();
+                for (GameApiResponse gameApiResponse : list){
+                    if (game.getId() == gameApiResponse.getId()){
+                        int rowUpdatedCounter = gamesDao.updateSingleWantedGame(game);
+                        // It means that the update succeeded because only one row had to be updated
+                        if (rowUpdatedCounter == 1) {
+                            Log.i("DAO", "Modifica al DB locale");
+                            GameApiResponse updatedGame = gamesDao.getGame(game.getId());
+                            Log.i("DAO", updatedGame.toString());
+                            gameCallback.onGameWantedStatusChanged(updatedGame, gamesDao.getWantedGame());
+                        } else {
+                            Log.i(getClass().getSimpleName(), "errore modifica al DB locale");
+                        }
+                    }
+                }
+
+            }
+        });
+    }
+
+    @Override
+    public void updatePlayingGame(GameApiResponse game) {
+        GamesRoomDatabase.databaseWriteExecutor.execute(() -> {
+            if (game != null) {
+                List<GameApiResponse> list = gamesDao.getAll();
+                for (GameApiResponse gameApiResponse : list) {
+                    if (game.getId() == gameApiResponse.getId()) {
+                        int rowUpdatedCounter = gamesDao.updateSinglePlayingGame(game);
+                        // It means that the update succeeded because only one row had to be updated
+                        if (rowUpdatedCounter == 1) {
+                            Log.i("DAO", "Modifica al DB locale");
+                            GameApiResponse updatedGame = gamesDao.getGame(game.getId());
+                            Log.i("DAO", updatedGame.toString());
+                            gameCallback.onGamePlayingStatusChanged(updatedGame, gamesDao.getPlayingGame());
+                        } else {
+                            Log.e(getClass().getSimpleName(), "error");
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    @Override
+    public void updatePlayedGame(GameApiResponse game) {
+        GamesRoomDatabase.databaseWriteExecutor.execute(() -> {
+            if (game != null) {
+                List<GameApiResponse> list = gamesDao.getAll();
+                for (GameApiResponse gameApiResponse : list) {
+                    if (game.getId() == gameApiResponse.getId()) {
+                        int rowUpdatedCounter = gamesDao.updateSinglePlayedGame(game);
+                        // It means that the update succeeded because only one row had to be updated
+                        if (rowUpdatedCounter == 1) {
+                            Log.i("DAO", "Modifica al DB locale");
+                            GameApiResponse updatedGame = gamesDao.getGame(game.getId());
+                            gameCallback.onGamePlayedStatusChanged(updatedGame, gamesDao.getPlayedGame());
+                        } else {
+                            Log.e(getClass().getSimpleName(), "error");
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    @Override
+    public void getWantedGames() {
+        GamesRoomDatabase.databaseWriteExecutor.execute(() -> {
+            List<GameApiResponse> gameApiResponses = gamesDao.getWantedGame();
+            Log.i("LOCALE-WANTED", gameApiResponses.toString());
+            gameCallback.onGameWantedStatusChanged(gameApiResponses);
+        });
+    }
+
+    @Override
+    public void getPlayingGames() {
+        GamesRoomDatabase.databaseWriteExecutor.execute(() -> {
+            List<GameApiResponse> gameApiResponses = gamesDao.getPlayingGame();
+            Log.i("LOCALE-PLAYING", gameApiResponses.toString());
+            gameCallback.onGamePlayingStatusChanged(gameApiResponses);
+        });
+    }
+
+    @Override
+    public void getPlayedGames() {
+        GamesRoomDatabase.databaseWriteExecutor.execute(() -> {
+            List<GameApiResponse> gameApiResponses = gamesDao.getPlayedGame();
+            Log.i("LOCALE-PLAYED", gameApiResponses.toString());
+            gameCallback.onGamePlayedStatusChanged(gameApiResponses);
+        });
+    }
+}

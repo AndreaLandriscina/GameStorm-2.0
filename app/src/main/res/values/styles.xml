@@ -1,10 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="roundedCorner">
-        <item name="cornerSize">5dp</item>
-    </style>
 
-    <style name="colorAccentStyle">
-        <item name="android:background">?colorAccent</item>
-    </style>
 </resources>

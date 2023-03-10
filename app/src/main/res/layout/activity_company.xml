@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.CompanyActivity">
+    tools:context=".ui.gameDetails.CompanyActivity">
 
     <TextView
         android:id="@+id/companyTitle"
@@ -13,7 +13,7 @@
         android:textStyle="bold"
         android:textAlignment="center"
         android:layout_marginTop="15dp"
-        android:textSize="22dp"/>
+        android:textSize="22sp"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/companyRecyclerView"

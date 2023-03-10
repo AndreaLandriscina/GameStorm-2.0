@@ -1,7 +1,6 @@
 package com.example.gamestorm.adapter;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,19 +12,16 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.gamestorm.R;
-import com.example.gamestorm.ui.GameActivity;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
 public class RecyclerProfileViewAdapter extends RecyclerView.Adapter<RecyclerProfileViewAdapter.RecyclerViewHolder> {
 
-    private ArrayList<RecyclerData> dataArrayList;
-    private Context mcontext;
+    private final ArrayList<RecyclerData> dataArrayList;
 
     public RecyclerProfileViewAdapter(ArrayList<RecyclerData> recyclerDataArrayList, Context mcontext) {
         this.dataArrayList = recyclerDataArrayList;
-        this.mcontext = mcontext;
     }
 
     @NonNull
@@ -47,7 +43,6 @@ public class RecyclerProfileViewAdapter extends RecyclerView.Adapter<RecyclerPro
             bundle.putInt("idGame", recyclerData.getId());
             Navigation.findNavController(v).navigate(R.id.action_profileFragment_to_gameActivity, bundle);
         });
-        //holder.textView.setText(recyclerData.getName());
     }
 
     @Override
@@ -57,8 +52,8 @@ public class RecyclerProfileViewAdapter extends RecyclerView.Adapter<RecyclerPro
     }
 
     // View Holder Class to handle Recycler View.
-    public class RecyclerViewHolder extends RecyclerView.ViewHolder {
-        private ImageView cover;
+    public static class RecyclerViewHolder extends RecyclerView.ViewHolder {
+        private final ImageView cover;
         //private TextView textView;
         public RecyclerViewHolder(@NonNull View itemView) {
             super(itemView);

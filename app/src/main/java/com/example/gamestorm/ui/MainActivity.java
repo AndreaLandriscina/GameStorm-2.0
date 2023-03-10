@@ -2,6 +2,7 @@ package com.example.gamestorm.ui;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 
 import androidx.navigation.fragment.NavHostFragment;
@@ -37,8 +38,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
+    public void onBackPressed() {
+        super.onBackPressed();
+        Fragment f = getSupportFragmentManager().getPrimaryNavigationFragment();
+        if (f instanceof HomeFragment)
+            finish();
     }
 }
 

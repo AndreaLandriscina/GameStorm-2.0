@@ -5,6 +5,9 @@ public class InvolvedCompany {
     public InvolvedCompany(Company company) {
         this.company = company;
     }
+    InvolvedCompany(){
+
+    }
     public Company getCompany() {
         return company;
     }

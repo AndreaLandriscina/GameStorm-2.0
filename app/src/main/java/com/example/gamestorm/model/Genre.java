@@ -1,8 +1,14 @@
 package com.example.gamestorm.model;
 
+import androidx.annotation.NonNull;
+
 public class Genre {
     int id;
     String name;
+
+    Genre() {
+
+    }
 
     public String getName() {
         return name;
@@ -12,6 +18,7 @@ public class Genre {
         return id;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "Genre{" +

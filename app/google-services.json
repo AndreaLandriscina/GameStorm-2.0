@@ -1,41 +1,41 @@
 {
   "project_info": {
-    "project_number": "1091326442567",
-    "project_id": "gamestorm-e35b0",
-    "storage_bucket": "gamestorm-e35b0.appspot.com"
+    "project_number": "667206803957",
+    "project_id": "gamestorm-74204",
+    "storage_bucket": "gamestorm-74204.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1091326442567:android:d45910fbdf7b9a47194562",
+        "mobilesdk_app_id": "1:667206803957:android:22298ce609b6e2a57300bc",
         "android_client_info": {
           "package_name": "com.example.gamestorm"
         }
       },
       "oauth_client": [
         {
-          "client_id": "1091326442567-q64rgbrf70finr4t7l35icch8ttagn24.apps.googleusercontent.com",
+          "client_id": "667206803957-2ctlo5davfnhn1v2t005q2do3par8tcg.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.example.gamestorm",
-            "certificate_hash": "09ac55b8b20ba63e994b77dae856f1115b1e4ad2"
+            "certificate_hash": "41934500cc599a47e4ea44bb02f9657ac086c01b"
           }
         },
         {
-          "client_id": "1091326442567-dbkvi0h9877eego2ou819bepnb05h65g.apps.googleusercontent.com",
+          "client_id": "667206803957-4vkaelrskd7a6o3gn0698mop60ce9ips.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBhBoF70qxrP1Q7PxecV0g6KVa08mkBdxM"
+          "current_key": "AIzaSyCXRKKVqNcs5y2zsfVCyxPkZxxTZxTaGUI"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "1091326442567-dbkvi0h9877eego2ou819bepnb05h65g.apps.googleusercontent.com",
+              "client_id": "667206803957-4vkaelrskd7a6o3gn0698mop60ce9ips.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

@@ -6,7 +6,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
@@ -17,14 +16,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.gamestorm.R;
 
-import com.example.gamestorm.ui.ScreenshotFragment;
+import com.example.gamestorm.ui.gameDetails.ScreenshotFragment;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
 public class RecyclerScreenshotsViewAdapter extends RecyclerView.Adapter<RecyclerScreenshotsViewAdapter.RecyclerViewHolder> {
 
-    private ArrayList<RecyclerData> dataArrayList;
+    private final ArrayList<RecyclerData> dataArrayList;
 
     public RecyclerScreenshotsViewAdapter(ArrayList<RecyclerData> recyclerDataArrayList, Context mcontext) {
         this.dataArrayList = recyclerDataArrayList;
@@ -41,6 +40,7 @@ public class RecyclerScreenshotsViewAdapter extends RecyclerView.Adapter<Recycle
     public void onBindViewHolder(@NonNull RecyclerViewHolder holder, int position) {
         RecyclerData recyclerData = dataArrayList.get(position);
         String newUrl = recyclerData.getImgUrl().replace("thumb", "screenshot_huge");
+        Log.i("adapter", newUrl);
         Picasso.get().load(newUrl).into(holder.screenshot);
         holder.screenshot.setOnClickListener(v -> {
             AppCompatActivity activity = (AppCompatActivity) v.getContext();
@@ -67,15 +67,14 @@ public class RecyclerScreenshotsViewAdapter extends RecyclerView.Adapter<Recycle
     }
 
     // View Holder Class to handle Recycler View.
-    public class RecyclerViewHolder extends RecyclerView.ViewHolder {
-        private ImageView screenshot;
-        private ImageView screenshotBig;
+    public static class RecyclerViewHolder extends RecyclerView.ViewHolder {
+        private final ImageView screenshot;
 
         public RecyclerViewHolder(@NonNull View itemView) {
             super(itemView);
             screenshot = itemView.findViewById(R.id.screenshot);
             screenshot.setVisibility(View.VISIBLE);
-            screenshotBig = itemView.findViewById(R.id.screenshotBig);
+            ImageView screenshotBig = itemView.findViewById(R.id.screenshotBig);
             screenshotBig.setVisibility(View.GONE);
         }
     }

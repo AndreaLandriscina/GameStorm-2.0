@@ -3,9 +3,12 @@ package com.example.gamestorm.model;
 import android.annotation.SuppressLint;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+import androidx.room.TypeConverters;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -14,15 +17,18 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+@Entity
+public class GameApiResponse {
 
-public class GameApiResponse implements Parcelable {
+    @PrimaryKey(autoGenerate = true)
     private int id;
     private String name;
+    @TypeConverters(DataTypeConverter.class)
     private Cover cover;
+    @TypeConverters(DataTypeConverter.class)
     private List<Genre> genres;
+    @TypeConverters(DataTypeConverter.class)
     private List<Platform> platforms;
-    @SerializedName("release_dates")
-    private List<ReleaseDate> releaseDates;
     private double rating;
     @SerializedName("total_rating")
     private double totalRating;
@@ -32,23 +38,57 @@ public class GameApiResponse implements Parcelable {
     private int firstReleaseDate;
     private int follows;
     @SerializedName("franchises")
-    private List<Franchises> franchise;
+    @TypeConverters(DataTypeConverter.class)
+    private List<Franchise> franchise;
     @SerializedName("involved_companies")
+    @TypeConverters(DataTypeConverter.class)
     private List<InvolvedCompany> companies;
     @SerializedName("summary")
     private String description;
-    private List<Screenshot> screenshots;
 
+    @SerializedName("similar_games")
+    @TypeConverters(DataTypeConverter.class)
+    private List<Integer> similarGames;
+    @TypeConverters(DataTypeConverter.class)
+    private List<Screenshot> screenshots;
+    @ColumnInfo(name = "is_popular")
+    private boolean isPopular;
+    @ColumnInfo(name = "is_best")
+    private boolean isBest;
+    @ColumnInfo(name = "is_latest")
+    private boolean isLatest;
+    @ColumnInfo(name = "is_incoming")
+    private boolean isIncoming;
+    @ColumnInfo(name = "is_wanted")
+    private boolean isWanted;
+    @ColumnInfo(name = "is_playing")
+    private boolean isPlaying;
+    @ColumnInfo(name = "is_played")
+    private boolean isPlayed;
+
+    @ColumnInfo(name = "is_explore")
+    private boolean isExplore;
+    @ColumnInfo(name = "is_synchronized")
+    private boolean isSynchronized;
+
+    private Long added;
+
+    public Long getAdded() {
+        return added;
+    }
+
+    public void setAdded(Long added) {
+        this.added = added;
+    }
 
     public GameApiResponse() {}
 
-    public GameApiResponse(int id, String name, Cover cover, List<Genre> genres, List<Platform> platforms, List<ReleaseDate> releaseDates, double ratings, double totalRating, int totalRatingCount, int firstReleaseDate, int follows, List<Franchises> franchise, List<InvolvedCompany> companies, String description, List<Screenshot> screenshots) {
+    public GameApiResponse(int id, String name, Cover cover, List<Genre> genres, List<Platform> platforms, List<ReleaseDate> releaseDates, double ratings, double totalRating, int totalRatingCount, int firstReleaseDate, int follows, List<Franchise> franchise, List<InvolvedCompany> companies, String description, List<Screenshot> screenshots, boolean isWanted,boolean isPlaying,boolean isPlayed, boolean isSynchronized ) {
         this.id = id;
         this.name = name;
         this.cover = cover;
         this.genres = genres;
         this.platforms = platforms;
-        this.releaseDates = releaseDates;
         this.rating = ratings;
         this.totalRating = totalRating;
         this.totalRatingCount = totalRatingCount;
@@ -58,27 +98,87 @@ public class GameApiResponse implements Parcelable {
         this.companies = companies;
         this.description = description;
         this.screenshots = screenshots;
+        this.isWanted = isWanted;
+        this.isPlaying = isPlaying;
+        this.isPlayed = isPlayed;
+        this.isSynchronized = isSynchronized;
     }
 
-    protected GameApiResponse(Parcel in) {
-        id = in.readInt();
-        name = in.readString();
-        rating = in.readDouble();
-        firstReleaseDate = in.readInt();
-        follows = in.readInt();
+    public List<Integer> getSimilarGames() {
+        return similarGames;
     }
 
-    public static final Creator<GameApiResponse> CREATOR = new Creator<GameApiResponse>() {
-        @Override
-        public GameApiResponse createFromParcel(Parcel in) {
-            return new GameApiResponse(in);
-        }
+    public void setSimilarGames(List<Integer> similarGames) {
+        this.similarGames = similarGames;
+    }
 
-        @Override
-        public GameApiResponse[] newArray(int size) {
-            return new GameApiResponse[size];
-        }
-    };
+    public boolean isExplore() {
+        return isExplore;
+    }
+
+    public void setExplore(boolean explore) {
+        isExplore = explore;
+    }
+
+    public boolean isPopular() {
+        return isPopular;
+    }
+
+    public void setPopular(boolean popular) {
+        isPopular = popular;
+    }
+
+    public boolean isBest() {
+        return isBest;
+    }
+
+    public void setBest(boolean best) {
+        isBest = best;
+    }
+
+    public boolean isLatest() {
+        return isLatest;
+    }
+
+    public void setLatest(boolean latest) {
+        isLatest = latest;
+    }
+
+    public boolean isIncoming() {
+        return isIncoming;
+    }
+
+    public void setIncoming(boolean incoming) {
+        isIncoming = incoming;
+    }
+
+    public boolean isWanted() {
+        return isWanted;
+    }
+
+    public boolean isPlaying() {
+        return isPlaying;
+    }
+
+    public boolean isPlayed() {
+        return isPlayed;
+    }
+
+    public void setWanted(boolean wanted) {
+        isWanted = wanted;
+    }
+
+    public void setPlaying(boolean playing) {
+        isPlaying = playing;
+    }
+
+    public void setPlayed(boolean played) {
+        isPlayed = played;
+    }
+
+    public boolean isSynchronized() {
+        return isSynchronized;
+    }
 
     public String getName() {
         return name;
@@ -107,6 +207,9 @@ public class GameApiResponse implements Parcelable {
     public List<Genre> getGenres() {
         return genres;
     }
+    public void setGenres(List<Genre> genres){
+        this.genres = genres;
+    }
 
     public List<String> getGenresString() {
         List<String> genres = new ArrayList<>();
@@ -120,6 +223,9 @@ public class GameApiResponse implements Parcelable {
 
     public List<Platform> getPlatforms() {
         return platforms;
+    }
+    public void setPlatforms(List<Platform> platforms){
+        this.platforms = platforms;
     }
 
     public List<String> getPlatformsString() {
@@ -136,33 +242,67 @@ public class GameApiResponse implements Parcelable {
         return rating;
     }
 
+    public void setRating(double rating) {
+        this.rating = rating;
+    }
+
     @NonNull
     @Override
     public String toString() {
         return "GameApiResponse{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", cover=" + cover +
-                ", genres=" + genres +
-                ", platforms=" + platforms +
-                ", franchise=" + franchise +
-                ", companies=" + getCompany() +
-                ", releaseDates=" + releaseDates +
-                ", rating=" + totalRating +
-                ", reviews=" + totalRatingCount +
-                ", firstReleaseDate=" + firstReleaseDate +
+                ", isPopular=" + isPopular +
+                ", rating =" + totalRating +
+                ", isBest=" + isBest +
+                ", isLatest=" + isLatest +
+                ", isIncoming=" + isIncoming +
+                ", isWanted=" + isWanted +
+                ", isPlaying=" + isPlaying +
+                ", isPlayed=" + isPlayed +
+                ", isExplore=" + isExplore +
+                ", isSynchronized=" + isSynchronized +
                 ", follows=" + follows +
-                '}' + "\n";
+                ", addes=" + added +
+                ", screen=" + screenshots +
+                '}';
     }
 
-    public String getFirstReleaseDate() {
+    public int getFirstReleaseDate(){
+        return firstReleaseDate;
+    }
+
+    public void setFirstReleaseDate(int firstReleaseDate) {
+        this.firstReleaseDate = firstReleaseDate;
+    }
+
+    public void setFranchise(List<Franchise> franchise) {
+        this.franchise = franchise;
+    }
+
+    public String getFirstReleaseDateString() {
         Date date = new Date((long)firstReleaseDate*1000);
         // Display a date in day, month, year format
         @SuppressLint("SimpleDateFormat") DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
         return formatter.format(date);
     }
-    public Date getDate(){
-        return new Date((long)firstReleaseDate*1000);
+    public void setfirstReleaseDateString(){
+
+    }
+    public void setFirstFranchise(){
+
+    }
+    public void setgenresString(){
+
+    }
+    public void setcompany(){
+
+    }
+    public void setplatformsString(){
+
+    }
+    public void setintReleaseDate(){
+
     }
 
     public int getIntReleaseDate(){
@@ -173,29 +313,22 @@ public class GameApiResponse implements Parcelable {
         return follows;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
+    public void setFollows(int follows) {
+        this.follows = follows;
     }
 
-    @Override
-    public void writeToParcel(@NonNull Parcel dest, int flags) {
-        dest.writeInt(id);
-        dest.writeString(name);
-        dest.writeDouble(rating);
-        dest.writeInt(firstReleaseDate);
-        dest.writeInt(follows);
+    public List<Franchise> getFranchise(){
+        return franchise;
     }
-
-    public Franchises getFranchise() {
+    public Franchise getFirstFranchise() {
         if (franchise != null)
             return franchise.get(0);
         return null;
     }
 
-    public String getCompany() {
+    public InvolvedCompany getInvolvedCompany() {
         if (companies != null)
-            return companies.get(0).getCompany().getName();
+            return companies.get(0);
         return null;
     }
 
@@ -203,20 +336,44 @@ public class GameApiResponse implements Parcelable {
         return companies;
     }
 
+    public void setCompanies(List<InvolvedCompany> companies) {
+        this.companies = companies;
+    }
+
     public String getDescription() {
         return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public List<Screenshot> getScreenshots() {
         return screenshots;
     }
 
+    public void setScreenshots(List<Screenshot> screenshots) {
+        this.screenshots = screenshots;
+    }
+
     public double getTotalRating() {
         return totalRating;
     }
 
+    public void setTotalRating(double totalRating) {
+        this.totalRating = totalRating;
+    }
+
     public int getTotalRatingCount() {
         return totalRatingCount;
+    }
+
+    public void setTotalRatingCount(int totalRatingCount) {
+        this.totalRatingCount = totalRatingCount;
+    }
+
+    public void setSynchronized(boolean aSynchronized) {
+        isSynchronized = aSynchronized;
     }
 }
 

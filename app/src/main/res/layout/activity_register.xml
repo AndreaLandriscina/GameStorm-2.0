@@ -8,10 +8,9 @@
     android:paddingTop="20sp"
     android:paddingStart="50dp"
     android:paddingEnd="50sp"
-    tools:context=".ui.RegisterActivity">
+    tools:context=".ui.profile.RegisterActivity">
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/usernameLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="100dp"
@@ -31,7 +30,6 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/emailAddressLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
@@ -51,7 +49,6 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/passwordLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"

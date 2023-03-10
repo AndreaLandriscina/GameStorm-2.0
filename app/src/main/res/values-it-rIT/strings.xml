@@ -4,10 +4,8 @@
     <string name="home">Home</string>
     <string name="search">Cerca</string>
     <string name="profile">Profilo</string>
-    <string name="action_settings">Impostazioni</string>
     <string name="wanted">Desiderato</string>
     <string name="played">Giocato</string>
-    <string name="error_retrieving_games">errore recupero giochi</string>
     <string name="genres">Generi</string>
     <string name="platforms">Piattaforme</string>
     <string name="franchise">SAGA</string>
@@ -26,12 +24,10 @@
     <string name="or">OPPURE</string>
     <string name="haveAccount">Già registrato?</string>
     <string name="emailsent">Email inviata. Controlla la casella spam</string>
-    <string name="sending_mail">Inviando la mail...</string>
+    <string name="sending_mail">Inviando la mail…</string>
     <string name="email_empty">Inserisci la mail</string>
     <string name="password_empty">Inserisci la password</string>
-    <string name="login_successfully">Login riuscito</string>
     <string name="loginPlayedGame">Devi aggiungere almeno un gioco nella sezione "giocato"</string>
-    <string name="gameNoGenre">Hai inserito un gioco senza genere</string>
     <string name="check_data">Controlla i dati inseriti</string>
     <string name="insert_mail_to_reset_password">Per resettare la password, inserisci la tua mail</string>
     <string name="username_empty">Inserisci l\'username</string>
@@ -40,7 +36,6 @@
     <string name="playeds">Giocati</string>
     <string name="login_to_see_this">Funzionalità disponibile solo per gli utenti registrati</string>
     <string name="logout_successfully">Logout riuscito</string>
-    <string name="settings">Impostazioni</string>
     <string name="sign_up">Registrati</string>
     <string name="popular">Popolari</string>
     <string name="bestgames">Giochi migliori</string>
@@ -73,6 +68,8 @@
     <string name="platform_text">Piattaforma</string>
     <string name="release_year_text">Anno di rilascio</string>
     <string name="no_connection_message">Nessuna connessione ad internet, connettiti e riprova.</string>
+    <string name="welcome_back">"Bentornato "</string>
+    <string name="no_game">La lista è vuota! Inizia a salvare qualche gioco!</string>
 
 
 </resources>

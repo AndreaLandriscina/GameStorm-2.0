@@ -2,27 +2,25 @@ package com.example.gamestorm.adapter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
-import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.gamestorm.R;
-import com.example.gamestorm.ui.GameActivity;
+import com.example.gamestorm.ui.gameDetails.GameActivity;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.RecyclerViewHolder> {
 
-    private ArrayList<RecyclerData> dataArrayList;
-    private Context mcontext;
-    private boolean relatedGames;
+    private final ArrayList<RecyclerData> dataArrayList;
+    private final Context mcontext;
+    private final boolean relatedGames;
 
     public boolean isRelatedGames() {
         return relatedGames;
@@ -70,8 +68,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     // View Holder Class to handle Recycler View.
     public class RecyclerViewHolder extends RecyclerView.ViewHolder {
-        private ImageView cover;
-        private ImageView smallCover;
+        private final ImageView cover;
+        private final ImageView smallCover;
 
         public RecyclerViewHolder(@NonNull View itemView) {
             super(itemView);

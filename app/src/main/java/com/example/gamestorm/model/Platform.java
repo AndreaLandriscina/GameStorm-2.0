@@ -2,6 +2,10 @@ package com.example.gamestorm.model;
 
 public class Platform {
     String name;
+    Platform(){
+
+    }
+
     public String getName() {
         return name;
     }

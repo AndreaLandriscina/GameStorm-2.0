@@ -23,11 +23,9 @@ import java.util.List;
 public class RecyclerSearchAdapter extends RecyclerView.Adapter<RecyclerSearchAdapter.RecyclerViewHolder> {
 
     private List<GameApiResponse> games;
-    private Context context;
 
     public RecyclerSearchAdapter(List<GameApiResponse> games, Context context) {
         this.games = games;
-        this.context = context;
     }
 
     @NonNull
@@ -41,7 +39,6 @@ public class RecyclerSearchAdapter extends RecyclerView.Adapter<RecyclerSearchAd
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onBindViewHolder(@NonNull RecyclerSearchAdapter.RecyclerViewHolder holder, int position) {
-        // Set the data to textview and imageview.
         GameApiResponse game = games.get(position);
         if(game.getCover() != null){
             Picasso.get().load(game.getCover().getUrl().replace("thumb", "cover_big")).into(holder.coverIV);
@@ -60,15 +57,12 @@ public class RecyclerSearchAdapter extends RecyclerView.Adapter<RecyclerSearchAd
 
     @Override
     public int getItemCount() {
-        // this method returns the size of recyclerview
         return games.size();
     }
+    public static class RecyclerViewHolder extends RecyclerView.ViewHolder {
 
-    // View Holder Class to handle Recycler View.
-    public class RecyclerViewHolder extends RecyclerView.ViewHolder {
-
-        private ImageView coverIV;
-        private CardView gameCV;
+        private final ImageView coverIV;
+        private final CardView gameCV;
 
         public RecyclerViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -76,7 +70,6 @@ public class RecyclerSearchAdapter extends RecyclerView.Adapter<RecyclerSearchAd
             gameCV = itemView.findViewById(R.id.game_CV);
         }
     }
-
     public void setGames(List<GameApiResponse> games) {
         this.games = games;
     }

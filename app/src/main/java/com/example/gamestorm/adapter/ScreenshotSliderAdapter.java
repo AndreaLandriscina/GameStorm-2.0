@@ -30,9 +30,9 @@ public class ScreenshotSliderAdapter extends SliderViewAdapter<ScreenshotSliderA
     public int getCount() {
         return images.size();
     }
-    public class Holder extends SliderViewAdapter.ViewHolder {
-        ImageView imageViewBig;
-        ImageView imageView;
+    public static class Holder extends SliderViewAdapter.ViewHolder {
+        final ImageView imageViewBig;
+        final ImageView imageView;
         public Holder(View itemView) {
             super(itemView);
             imageView = itemView.findViewById(R.id.screenshot);
