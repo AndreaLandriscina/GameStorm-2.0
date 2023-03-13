@@ -71,7 +71,27 @@ public class GameApiResponse {
     @ColumnInfo(name = "is_synchronized")
     private boolean isSynchronized;
 
+    @TypeConverters(DataTypeConverter.class)
+    private List<Video> videos;
+
     private Long added;
+
+    public List<Video> getVideos() {
+        return videos;
+    }
+    public String getVideoId(){
+        String id = null;
+        for (Video video : videos){
+            if (video.getName().equals("Trailer") || video.getName().equals("Gameplay video")) {
+                id = video.getVideo_id();
+            }
+        }
+        return id;
+    }
+
+    public void setVideos(List<Video> videos) {
+        this.videos = videos;
+    }
 
     public Long getAdded() {
         return added;
@@ -265,6 +285,7 @@ public class GameApiResponse {
                 ", follows=" + follows +
                 ", addes=" + added +
                 ", screen=" + screenshots +
+                ", video" + videos +
                 '}';
     }
 

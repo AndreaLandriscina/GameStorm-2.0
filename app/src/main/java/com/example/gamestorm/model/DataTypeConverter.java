@@ -114,4 +114,20 @@ public class DataTypeConverter {
     public static String IntegerListToString(List<Integer> someObjects) {
         return gson.toJson(someObjects);
     }
+
+    @TypeConverter
+    public static List<Video> stringToVideoList(String data) {
+        if (data == null) {
+            return Collections.emptyList();
+        }
+
+        Type listType = new TypeToken<List<Video>>() {}.getType();
+
+        return gson.fromJson(data, listType);
+    }
+
+    @TypeConverter
+    public static String VideoListToString(List<Video> someObjects) {
+        return gson.toJson(someObjects);
+    }
 }

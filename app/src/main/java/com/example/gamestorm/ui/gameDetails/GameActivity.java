@@ -1,10 +1,12 @@
 package com.example.gamestorm.ui.gameDetails;
 
 import android.annotation.SuppressLint;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Bundle;
 
 import com.example.gamestorm.adapter.RecyclerData;
@@ -120,9 +122,28 @@ public class GameActivity extends AppCompatActivity {
         setFranchiseButton();
         setCompanyButton();
         setButtons();
+        setPlayVideoButton();
         showDescription();
         showScreenshots();
         showRelatedGames();
+    }
+
+    private void setPlayVideoButton() {
+        if (game.getVideoId() == null){
+            return;
+        }
+        Button button = findViewById(R.id.playVideoButton);
+        Log.i("idvideo", game.getVideoId());
+        button.setOnClickListener(v -> {
+            Intent appIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:" + game.getVideoId()));
+            Intent webIntent = new Intent(Intent.ACTION_VIEW,
+                    Uri.parse("http://www.youtube.com/watch?v=" + game.getVideoId()));
+            try {
+                startActivity(appIntent);
+            } catch (ActivityNotFoundException ex) {
+                startActivity(webIntent);
+            }
+        });
     }
 
     @SuppressLint("SetTextI18n")

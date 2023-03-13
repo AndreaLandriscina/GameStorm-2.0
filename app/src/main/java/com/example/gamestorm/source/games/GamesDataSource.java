@@ -28,7 +28,7 @@ public class GamesDataSource extends BaseGamesDataSource {
 
     public GamesDataSource() {
         this.gamesApiService = ServiceLocator.getInstance().getGamesApiService();
-        fields = "fields name, franchises.name, similar_games, first_release_date, genres.name, total_rating," +
+        fields = "fields name, videos.*, franchises.name, similar_games, first_release_date, genres.name, total_rating," +
                 " total_rating_count, cover.url, involved_companies.company.name, platforms.name, summary, screenshots.url, follows; ";
     }
 

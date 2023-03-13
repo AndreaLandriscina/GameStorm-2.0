@@ -68,6 +68,8 @@ public class FranchiseActivity extends AppCompatActivity {
                     progressBar.setVisibility(View.GONE);
                     onSuccess(result);
                 });
+            } else {
+                Toast.makeText(this, R.string.no_connection,Toast.LENGTH_LONG).show();
             }
         }  else {
             franchiseTitleView.setText(R.string.no_results);
@@ -79,11 +81,7 @@ public class FranchiseActivity extends AppCompatActivity {
         ConnectivityManager connectivityManager
                 = (ConnectivityManager) getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        if (!activeNetworkInfo.isConnected()){
-            Toast.makeText(this, getString(R.string.no_connection), Toast.LENGTH_SHORT).show();
-            return false;
-        }
-        return true;
+        return activeNetworkInfo != null;
     }
 
     public void onSuccess(List<GameApiResponse> gamesList) {

@@ -24,6 +24,5 @@ public interface IGamesRepository {
     MutableLiveData<List<GameApiResponse>> getPlayedGames(boolean isFirstLoading);
     MutableLiveData<List<GameApiResponse>> getForYouGames(long lastUpdate);
     MutableLiveData<List<GameApiResponse>> getSearchedGames(String userInput);
-
     MutableLiveData<List<GameApiResponse>> getSimilarGames(List<Integer> similarGames);
 }

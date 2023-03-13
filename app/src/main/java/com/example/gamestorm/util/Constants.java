@@ -8,7 +8,7 @@ public class Constants {
     public static final String TOP_HEADLINES_ENDPOINT = "games";
     public static final String CLIENT_ID = "Client-ID";
     public static final String CLIENT_ID_VALUE = "w70u2nsn2gzl9g0xsbe3uvguva3zos";
-    public static final String TOKEN_API_VALUE = "Bearer c3oo6v7jekiessavzr998neo91am4y";
+    public static final String TOKEN_API_VALUE = "Bearer nho1cwl3koa83t1trbf4eggbs064mf";
     public static final String TOKEN_API = "Authorization";
     public static final String CONTENT_TYPE = "Content-Type";
     public static final String CONTENT_TYPE_VALUE = "application/json;charset=utf-8";

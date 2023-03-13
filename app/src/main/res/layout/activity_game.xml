@@ -37,7 +37,13 @@
                     android:src="@drawable/no_cover"
                     android:visibility="invisible"
                     app:layout_collapseMode="parallax" />
-
+                <Button
+                    android:id="@+id/playVideoButton"
+                    android:layout_width="45dp"
+                    android:layout_height="45dp"
+                    android:layout_gravity="bottom|end"
+                    android:background="@drawable/ic_play_video">
+                </Button>
                 <FrameLayout
                     android:id="@+id/container"
                     android:layout_width="match_parent"
