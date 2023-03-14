@@ -3,6 +3,7 @@ package com.example.gamestorm.model;
 import android.annotation.SuppressLint;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.ArrayMap;
 
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
@@ -17,6 +18,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+
 @Entity
 public class GameApiResponse {
 
@@ -79,11 +82,17 @@ public class GameApiResponse {
     public List<Video> getVideos() {
         return videos;
     }
-    public String getVideoId(){
-        String id = null;
-        for (Video video : videos){
-            if (video.getName().equals("Trailer") || video.getName().equals("Gameplay video")) {
-                id = video.getVideo_id();
+    public Map<String, String> getVideoId(){
+        Map<String, String> id = null;
+        if (videos != null){
+            id = new ArrayMap<>();
+            for (Video video : videos){
+                if (video.getName().equals("Trailer")) {
+                    id.put("Trailer", video.getVideo_id());
+                }
+                if (video.getName().equals("Gameplay video")){
+                    id.put("Gameplay video", video.getVideo_id());
+                }
             }
         }
         return id;

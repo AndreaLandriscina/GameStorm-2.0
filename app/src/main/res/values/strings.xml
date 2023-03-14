@@ -76,6 +76,7 @@
     <string name="no_connection_message">No internet connection, please connect and retry.</string>
     <string name="welcome_back">Welcome back </string>
     <string name="no_game">The list is empty!\nStart saving some games!</string>
+    <string name="video_choose">What do you want to watch?</string>
 
     <string-array name="platforms">
         <item>Any platform</item>
@@ -84,7 +85,7 @@
         <item>PlayStation 2</item>
         <item>iOS</item>
         <item>Commodore Plus/4</item>
-        <item>AY–3-8710</item>
+        <item>AY–3–8710</item>
         <item>Odyssey</item>
         <item>Commodore PET</item>
         <item>Sol-20</item>
@@ -99,41 +100,13 @@
         <item>Thomson MO5</item>
         <item>Odyssey 2 / Videopac G7000</item>
         <item>SteamVR</item>
-        <item>PC-50X Family</item>
-        <item>AY–3–8607</item>
-        <item>AY–3–8605</item>
-        <item>AY–3-8606</item>
-        <item>PC-98</item>
-        <item>Amstrad CPC</item>
-        <item>Playdate</item>
-        <item>Family Computer Disk System</item>
-        <item>WonderSwan Color</item>
-        <item>Neo Geo CD</item>
-        <item>Sega Game Gear</item>
-        <item>Atari Jaguar</item>
-        <item>3DO Interactive Multiplayer</item>
-        <item>Microvision</item>
-        <item>PC Engine SuperGrafx</item>
-        <item>Turbografx-16/PC Engine CD</item>
-        <item>Dreamcast</item>
-        <item>Atari 8-bit</item>
-        <item>Vectrex</item>
-        <item>Donner Model 30</item>
-        <item>PDP-8</item>
-        <item>DEC GT40</item>
-        <item>Microcomputer</item>
-        <item>Ferranti Nimrod Computer</item>
         <item>Apple IIGS</item>
         <item>DOS</item>
-        <item>SwanCrystal</item>
-        <item>Fairchild Channel F</item>
         <item>PC-8801</item>
         <item>Virtual Boy</item>
         <item>TRS-80</item>
         <item>Nintendo Switch</item>
         <item>Amazon Fire TV</item>
-        <item>VC 4000</item>
-        <item>1292 Advanced Programmable Video System</item>
         <item>Tatung Einstein</item>
         <item>Nintendo DSi</item>
         <item>Neo Geo Pocket</item>
@@ -147,9 +120,6 @@
         <item>Sega CD</item>
         <item>Game Boy Advance</item>
         <item>Sega 32X</item>
-        <item>AY–3-8500</item>
-        <item>AY–3-8760</item>
-        <item>AY–3-8603</item>
         <item>Nintendo 64</item>
         <item>Neo Geo Pocket Color</item>
         <item>Wii U</item>
@@ -163,7 +133,6 @@
         <item>Sharp X68000</item>
         <item>Nuon</item>
         <item>Nintendo Entertainment System</item>
-        <item>AY–3-8610</item>
         <item>Nintendo 3DS</item>
         <item>Game Boy Color</item>
         <item>Sega Master System/Mark III</item>

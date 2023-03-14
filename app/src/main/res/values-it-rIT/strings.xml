@@ -70,6 +70,7 @@
     <string name="no_connection_message">Nessuna connessione ad internet, connettiti e riprova.</string>
     <string name="welcome_back">"Bentornato "</string>
     <string name="no_game">La lista è vuota! Inizia a salvare qualche gioco!</string>
+    <string name="video_choose">Cosa vuoi vedere?</string>
 
 
 </resources>

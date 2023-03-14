@@ -1,6 +1,7 @@
 package com.example.gamestorm.ui.gameDetails;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -25,6 +26,7 @@ import com.example.gamestorm.util.Constants;
 import com.example.gamestorm.util.ServiceLocator;
 import com.example.gamestorm.util.SharedPreferencesUtil;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.squareup.picasso.Picasso;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -133,15 +135,21 @@ public class GameActivity extends AppCompatActivity {
             return;
         }
         Button button = findViewById(R.id.playVideoButton);
-        Log.i("idvideo", game.getVideoId());
+
         button.setOnClickListener(v -> {
-            Intent appIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:" + game.getVideoId()));
-            Intent webIntent = new Intent(Intent.ACTION_VIEW,
-                    Uri.parse("http://www.youtube.com/watch?v=" + game.getVideoId()));
-            try {
-                startActivity(appIntent);
-            } catch (ActivityNotFoundException ex) {
-                startActivity(webIntent);
+            Log.i("video", game.getVideoId().get("Trailer"));
+            if (game.getVideoId().containsKey("Trailer") && game.getVideoId().containsKey("Gameplay video")){
+                DialogFragment fragment = new PlayVideoDialogFragment(game.getVideoId());
+                fragment.show(getSupportFragmentManager(), "dialog");
+            } else {
+                Intent appIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:" + game.getVideos().get(0).getVideo_id()));
+                Intent webIntent = new Intent(Intent.ACTION_VIEW,
+                        Uri.parse("http://www.youtube.com/watch?v=" + game.getVideos().get(0).getVideo_id()));
+                try {
+                    startActivity(appIntent);
+                } catch (ActivityNotFoundException ex) {
+                    startActivity(webIntent);
+                }
             }
         });
     }
