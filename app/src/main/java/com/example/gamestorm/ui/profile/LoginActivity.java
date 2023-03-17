@@ -34,8 +34,9 @@ import com.example.gamestorm.model.User;
 import com.example.gamestorm.R;
 import com.example.gamestorm.repository.user.IUserRepository;
 import com.example.gamestorm.ui.MainActivity;
-import com.example.gamestorm.ui.UserViewModel;
-import com.example.gamestorm.ui.UserViewModelFactory;
+import com.example.gamestorm.ui.viewModel.UserViewModel;
+import com.example.gamestorm.ui.viewModel.UserViewModelFactory;
+import com.example.gamestorm.util.Constants;
 import com.example.gamestorm.util.DataEncryptionUtil;
 import com.example.gamestorm.util.ServiceLocator;
 import com.example.gamestorm.util.SharedPreferencesUtil;
@@ -84,7 +85,7 @@ public class LoginActivity extends AppCompatActivity {
                 .setGoogleIdTokenRequestOptions(BeginSignInRequest.GoogleIdTokenRequestOptions.builder()
                         .setSupported(true)
                         // Your server's client ID, not your Android client ID.
-                        .setServerClientId(getString(R.string.default_web_client_id))
+                        .setServerClientId(Constants.DEFAULT_WEB_CLIENT_ID)
                         // Only show accounts previously used to sign in.
                         .setFilterByAuthorizedAccounts(false)
                         .build())

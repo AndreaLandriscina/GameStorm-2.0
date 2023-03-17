@@ -1,10 +1,11 @@
-package com.example.gamestorm.ui;
+package com.example.gamestorm.ui.viewModel;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.gamestorm.repository.user.IUserRepository;
+import com.example.gamestorm.ui.viewModel.UserViewModel;
 
 
 /**

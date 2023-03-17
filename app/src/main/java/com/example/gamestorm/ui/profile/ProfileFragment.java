@@ -26,13 +26,12 @@ import com.example.gamestorm.R;
 import com.example.gamestorm.adapter.ProfilePagerAdapter;
 import com.example.gamestorm.repository.user.IUserRepository;
 import com.example.gamestorm.ui.MainActivity;
-import com.example.gamestorm.ui.UserViewModel;
-import com.example.gamestorm.ui.UserViewModelFactory;
+import com.example.gamestorm.ui.viewModel.UserViewModel;
+import com.example.gamestorm.ui.viewModel.UserViewModelFactory;
 import com.example.gamestorm.util.ServiceLocator;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.material.tabs.TabLayout;
 
 import java.util.Objects;
@@ -134,43 +133,40 @@ public class ProfileFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
-            case R.id.logout_option:
-                GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(requireContext());
-                progressDialog.setTitle(getString(R.string.logout_in_progress));
-                //progressDialog.show();
+        if (item.getItemId() == R.id.logout_option) {
+            GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(requireContext());
+            progressDialog.setTitle(getString(R.string.logout_in_progress));
+            //progressDialog.show();
 
-                //LOGOUT CON MAIL E PASSWORD
-                if (userViewModel.getLoggedUser() != null) {
-                    try {
-                        userViewModel.logout();
-                        Toast.makeText(getContext(), R.string.logout_successfully, Toast.LENGTH_SHORT).show();
-                        logoutLayout.setVisibility(View.GONE);
-                        startActivity(new Intent(getContext(), MainActivity.class));
-                        requireActivity().finish();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        progressDialog.cancel();
-                        Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
+            //LOGOUT CON MAIL E PASSWORD
+            if (userViewModel.getLoggedUser() != null) {
+                try {
+                    userViewModel.logout();
+                    Toast.makeText(getContext(), R.string.logout_successfully, Toast.LENGTH_SHORT).show();
+                    logoutLayout.setVisibility(View.GONE);
+                    startActivity(new Intent(getContext(), MainActivity.class));
+                    requireActivity().finish();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    progressDialog.cancel();
+                    Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
+            }
 
-                //LOGOUT CON GOOGLE
-                if (account != null){
-                        gsc.signOut().addOnCompleteListener(task -> {
-                            requireActivity().finish();
-                            progressDialog.cancel();
-                            Toast.makeText(getContext(), R.string.logout_successfully, Toast.LENGTH_SHORT).show();
-                            logoutLayout.setVisibility(View.GONE);
-                            startActivity(new Intent(getContext(), MainActivity.class));
-                        });
+            //LOGOUT CON GOOGLE
+            if (account != null) {
+                gsc.signOut().addOnCompleteListener(task -> {
+                    requireActivity().finish();
+                    progressDialog.cancel();
+                    Toast.makeText(getContext(), R.string.logout_successfully, Toast.LENGTH_SHORT).show();
+                    logoutLayout.setVisibility(View.GONE);
+                    startActivity(new Intent(getContext(), MainActivity.class));
+                });
 
-                }
-                return true;
-
-            default:
-                return super.onOptionsItemSelected(item);
+            }
+            return true;
         }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

@@ -20,8 +20,8 @@ import com.example.gamestorm.adapter.RecyclerViewAdapter;
 import com.example.gamestorm.model.GameApiResponse;
 import com.example.gamestorm.R;
 import com.example.gamestorm.repository.games.IGamesRepository;
-import com.example.gamestorm.ui.GamesViewModel;
-import com.example.gamestorm.ui.GamesViewModelFactory;
+import com.example.gamestorm.ui.viewModel.GamesViewModel;
+import com.example.gamestorm.ui.viewModel.GamesViewModelFactory;
 import com.example.gamestorm.util.ServiceLocator;
 
 import java.io.IOException;

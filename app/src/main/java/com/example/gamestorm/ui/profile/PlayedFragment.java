@@ -1,5 +1,6 @@
 package com.example.gamestorm.ui.profile;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -7,6 +8,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -14,25 +16,24 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.example.gamestorm.adapter.RecyclerData;
 import com.example.gamestorm.adapter.RecyclerProfileViewAdapter;
 import com.example.gamestorm.model.GameApiResponse;
 import com.example.gamestorm.R;
-import com.example.gamestorm.databinding.FragmentPlayedBinding;
 import com.example.gamestorm.repository.games.IGamesRepository;
 import com.example.gamestorm.repository.user.IUserRepository;
-import com.example.gamestorm.ui.GamesViewModel;
-import com.example.gamestorm.ui.GamesViewModelFactory;
-import com.example.gamestorm.ui.UserViewModel;
-import com.example.gamestorm.ui.UserViewModelFactory;
+import com.example.gamestorm.ui.viewModel.GamesViewModel;
+import com.example.gamestorm.ui.viewModel.GamesViewModelFactory;
+import com.example.gamestorm.ui.viewModel.UserViewModel;
+import com.example.gamestorm.ui.viewModel.UserViewModelFactory;
 import com.example.gamestorm.util.Constants;
 import com.example.gamestorm.util.ServiceLocator;
 import com.example.gamestorm.util.SharedPreferencesUtil;
@@ -40,23 +41,19 @@ import com.example.gamestorm.util.SharedPreferencesUtil;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
-import java.util.List;
 
 public class PlayedFragment extends Fragment {
 
-    FragmentPlayedBinding binding;
     Button loginButton;
     ConstraintLayout function_not_available_layout;
-
     private ArrayList<RecyclerData> recyclerDataArrayList;
-    String loggedUserID;
     ArrayList<Integer> playedGames;
-    ConstraintLayout played_games_layout;
+    LinearLayoutCompat played_games_layout;
     private RecyclerProfileViewAdapter homeAdapter;
     private GamesViewModel gamesViewModel;
     private UserViewModel userViewModel;
     private SharedPreferencesUtil sharedPreferencesUtil;
-    private boolean isFirstLoading;
+    private TextView gamesNumber;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -68,7 +65,6 @@ public class PlayedFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = FragmentPlayedBinding.inflate(getLayoutInflater());
         function_not_available_layout = requireView().findViewById(R.id.function_not_available_layout);
         loginButton = requireView().findViewById(R.id.loginButton);
         played_games_layout = requireView().findViewById(R.id.played_games_layout);
@@ -79,9 +75,8 @@ public class PlayedFragment extends Fragment {
         recyclerView.setAdapter(homeAdapter);
         GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 3);
         recyclerView.setLayoutManager(layoutManager);
-        if (isNetworkAvailable(requireContext())) {
-            //progressBar.setVisibility(View.VISIBLE);
-        }
+        gamesNumber = requireView().findViewById(R.id.wantedNumber);
+
         IGamesRepository iGamesRepository;
         try {
             iGamesRepository = ServiceLocator.getInstance().getGamesRepository(requireActivity().getApplication());
@@ -122,6 +117,7 @@ public class PlayedFragment extends Fragment {
     }
 
 
+    @SuppressLint("SetTextI18n")
     private void observeViewModel() {
         sharedPreferencesUtil =
                 new SharedPreferencesUtil(requireActivity().getApplication());
@@ -132,6 +128,11 @@ public class PlayedFragment extends Fragment {
         gamesViewModel.getPlayedGames(isFirstLoading).observe(getViewLifecycleOwner(), gameApiResponses -> {
             LinearLayout layout = requireView().findViewById(R.id.noGameText);
             layout.setVisibility(View.GONE);
+            if (gameApiResponses.size() == 1){
+                gamesNumber.setText(getString(R.string.one_played_game));
+            } else if (gameApiResponses.size() > 1){
+                gamesNumber.setText(gameApiResponses.size() + " " + getString(R.string.played_games));
+            }
             if (gameApiResponses.isEmpty()){
                 layout.setVisibility(View.VISIBLE);
             }

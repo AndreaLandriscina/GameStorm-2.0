@@ -1,4 +1,4 @@
-package com.example.gamestorm.ui;
+package com.example.gamestorm.ui.viewModel;
 
 import android.util.Log;
 
@@ -135,5 +135,18 @@ public class GamesViewModel extends ViewModel {
 
     public MutableLiveData<List<GameApiResponse>> getSimilarGames(List<Integer> similarGames) {
         return iGamesRepository.getSimilarGames(similarGames);
+    }
+
+    public MutableLiveData<List<GameApiResponse>> getAllPopularGames() {
+        return iGamesRepository.getAllPopularGames();
+    }
+    public MutableLiveData<List<GameApiResponse>> getAllBestGames() {
+        return iGamesRepository.getAllBestGames();
+    }
+    public MutableLiveData<List<GameApiResponse>> getAllLatestGames() {
+        return iGamesRepository.getAllLatestGames();
+    }
+    public MutableLiveData<List<GameApiResponse>> getAllIncomingGames() {
+        return iGamesRepository.getAllIncomingGames();
     }
 }

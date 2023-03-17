@@ -122,17 +122,9 @@ public class GamesLocalDataSource extends BaseGamesLocalDataSource {
                         gameApiResponse.setPlayed(true);
                     break;
             }
-            // Checks if the news just downloaded has already been downloaded earlier
-            // in order to preserve the news status (marked as favorite or not)
-            // This check works because News and NewsSource classes have their own
-            // implementation of equals(Object) and hashCode() methods
+            // Checks if the game just downloaded has already been downloaded earlier
+            // in order to preserve the news status (marked as wanted, playing or played)
 
-            // The primary key and the favorite status is contained only in the News objects
-            // retrieved from the database, and not in the News objects downloaded from the
-            // Web Service. If the same news was already downloaded earlier, the following
-            // line of code replaces the the News object in newsList with the corresponding
-            // News object saved in the database, so that it has the primary key and the
-            // favorite status.
             if (!nQuery.equals("WANTED") && !nQuery.equals("PLAYING") && !nQuery.equals("PLAYED")){
                 for (GameApiResponse game : allGames) {
                     for (GameApiResponse gameApiResponse1 : gameApiResponses){
@@ -145,13 +137,13 @@ public class GamesLocalDataSource extends BaseGamesLocalDataSource {
             }
 
 
-            // Writes the news in the database and gets the associated primary keys
+            // Writes the game in the database and gets the associated primary keys
             List<Long> insertedGameId;
             insertedGameId = gamesDao.insertGamesList(gameApiResponses);
             for (int i = 0; i < gameApiResponses.size(); i++) {
-                // Adds the primary key to the corresponding object News just downloaded so that
-                // if the user marks the news as favorite (and vice-versa), we can use its id
-                // to know which news in the database must be marked as favorite/not favorite
+                // Adds the primary key to the corresponding object GameApiResponse just downloaded so that
+                // if the user marks the game as wanted... , we can use its id
+                // to know which news in the database must be marked as ...
                 gameApiResponses.get(i).setId(insertedGameId.get(i).intValue());
             }
 

@@ -3,7 +3,6 @@ package com.example.gamestorm.ui.gameDetails;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.os.Bundle;
-import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -11,7 +10,7 @@ import androidx.fragment.app.DialogFragment;
 
 import com.example.gamestorm.R;
 import com.example.gamestorm.model.GameApiResponse;
-import com.example.gamestorm.ui.GamesViewModel;
+import com.example.gamestorm.ui.viewModel.GamesViewModel;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.Calendar;

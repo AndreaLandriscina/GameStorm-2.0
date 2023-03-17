@@ -25,4 +25,8 @@ public abstract class BaseGamesDataSource {
     public abstract void getGenreGames(String genre);
     public abstract void getSearchedGames(String userInput);
     public abstract void getSimilarGames(List<Integer> similarGames);
+    public abstract void getAllPopularGames();
+    public abstract void getAllBestGames();
+    public abstract void getAllLatestGames();
+    public abstract void getAllIncomingGames();
 }

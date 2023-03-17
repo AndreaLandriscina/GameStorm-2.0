@@ -1,5 +1,6 @@
 package com.example.gamestorm.ui.profile;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -7,6 +8,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -14,25 +16,24 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.example.gamestorm.adapter.RecyclerData;
 import com.example.gamestorm.adapter.RecyclerProfileViewAdapter;
 import com.example.gamestorm.model.GameApiResponse;
 import com.example.gamestorm.R;
-import com.example.gamestorm.databinding.FragmentPlayingBinding;
 import com.example.gamestorm.repository.games.IGamesRepository;
 import com.example.gamestorm.repository.user.IUserRepository;
-import com.example.gamestorm.ui.GamesViewModel;
-import com.example.gamestorm.ui.GamesViewModelFactory;
-import com.example.gamestorm.ui.UserViewModel;
-import com.example.gamestorm.ui.UserViewModelFactory;
+import com.example.gamestorm.ui.viewModel.GamesViewModel;
+import com.example.gamestorm.ui.viewModel.GamesViewModelFactory;
+import com.example.gamestorm.ui.viewModel.UserViewModel;
+import com.example.gamestorm.ui.viewModel.UserViewModelFactory;
 import com.example.gamestorm.util.Constants;
 import com.example.gamestorm.util.ServiceLocator;
 import com.example.gamestorm.util.SharedPreferencesUtil;
@@ -41,23 +42,21 @@ import com.google.firebase.auth.FirebaseAuth;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
-import java.util.List;
 
 public class PlayingFragment extends Fragment{
 
-    FragmentPlayingBinding binding;
     FirebaseAuth firebaseAuth;
     Button loginButton;
     ConstraintLayout function_not_available_layout;
     ArrayList<Integer> playingGames;
-    ConstraintLayout playing_games_layout;
+    LinearLayoutCompat playing_games_layout;
     private GamesViewModel gamesViewModel;
     private UserViewModel userViewModel;
     private SharedPreferencesUtil sharedPreferencesUtil;
-    private boolean isFirstLoading;
     RecyclerProfileViewAdapter homeAdapter;
     private ArrayList<RecyclerData> recyclerDataArrayList;
     IGamesRepository iGamesRepository;
+    private TextView gamesNumber;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -68,7 +67,6 @@ public class PlayingFragment extends Fragment{
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding=FragmentPlayingBinding.inflate(getLayoutInflater());
         firebaseAuth=FirebaseAuth.getInstance();
         function_not_available_layout=requireView().findViewById(R.id.function_not_available_layout);
         loginButton=requireView().findViewById(R.id.loginButton);
@@ -80,6 +78,7 @@ public class PlayingFragment extends Fragment{
         recyclerView.setAdapter(homeAdapter);
         GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 3);
         recyclerView.setLayoutManager(layoutManager);
+        gamesNumber = requireView().findViewById(R.id.wantedNumber);
 
 
         try {
@@ -107,16 +106,22 @@ public class PlayingFragment extends Fragment{
         }
 
     }
+    @SuppressLint("SetTextI18n")
     private void observeViewModel() {
         sharedPreferencesUtil =
                 new SharedPreferencesUtil(requireActivity().getApplication());
-        isFirstLoading = sharedPreferencesUtil.readBooleanData(Constants.SHARED_PREFERENCES_FILE_NAME,
+        boolean isFirstLoading = sharedPreferencesUtil.readBooleanData(Constants.SHARED_PREFERENCES_FILE_NAME,
                 Constants.SHARED_PREFERENCES_FIRST_LOADING_PLAYING);
         playingGames = new ArrayList<>();
 
         gamesViewModel.getPlayingGames(isFirstLoading).observe(getViewLifecycleOwner(), gameApiResponses -> {
             LinearLayout layout = requireView().findViewById(R.id.noGameText);
             layout.setVisibility(View.GONE);
+            if (gameApiResponses.size() == 1){
+                gamesNumber.setText(getString(R.string.one_playing_game));
+            } else if (gameApiResponses.size() > 1){
+                gamesNumber.setText(gameApiResponses.size() + " " + getString(R.string.played_games));
+            }
             if (gameApiResponses.isEmpty()){
                 layout.setVisibility(View.VISIBLE);
             }
@@ -126,8 +131,6 @@ public class PlayingFragment extends Fragment{
                 recyclerDataArrayList.add(new RecyclerData(gameApiResponse.getId(),gameApiResponse.getCover().getUrl()));
             }
             homeAdapter.notifyDataSetChanged();
-
-
 
             if (isFirstLoading) {
                 sharedPreferencesUtil.writeBooleanData(Constants.SHARED_PREFERENCES_FILE_NAME,

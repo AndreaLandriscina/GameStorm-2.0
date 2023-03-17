@@ -34,6 +34,8 @@ import com.example.gamestorm.model.Genre;
 import com.example.gamestorm.model.Platform;
 import com.example.gamestorm.R;
 import com.example.gamestorm.repository.games.IGamesRepository;
+import com.example.gamestorm.ui.viewModel.GamesViewModel;
+import com.example.gamestorm.ui.viewModel.GamesViewModelFactory;
 import com.example.gamestorm.util.ServiceLocator;
 import com.example.gamestorm.util.SharedPreferencesUtil;
 import com.google.android.material.button.MaterialButton;
@@ -48,7 +50,6 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 
 public class SearchFragment extends Fragment {
 
@@ -135,15 +136,15 @@ public class SearchFragment extends Fragment {
                 }
                 imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
                 exploreShowed = false;
-                if(!games.isEmpty()){
+                if (!games.isEmpty()) {
                     games.clear();
                     gamesCopy.clear();
                     adapter.notifyDataSetChanged();
                 }
                 resetStatus();
 
-                if(getContext()!= null && isNetworkAvailable(getContext())){
-                    if (query.isEmpty()){
+                if (getContext() != null && isNetworkAvailable(getContext())) {
+                    if (query.isEmpty()) {
                         return false;
                     } else {
                         userInput = query;
@@ -157,7 +158,7 @@ public class SearchFragment extends Fragment {
                         searchLoading.setVisibility(View.GONE);
                     });
                     return true;
-                }else{
+                } else {
                     Toast.makeText(requireContext(), R.string.no_connection_message, Toast.LENGTH_LONG).show();
                     return false;
                 }
@@ -165,7 +166,7 @@ public class SearchFragment extends Fragment {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                if(newText.isEmpty() && !exploreShowed){
+                if (newText.isEmpty() && !exploreShowed) {
                     resetStatus();
                 }
                 return false;
@@ -182,11 +183,11 @@ public class SearchFragment extends Fragment {
                         sortingParameter = listItems[i];
                         lastSelectedSortingParameter = i;
 
-                        if(isNetworkAvailable(requireContext()) || !games.isEmpty()){
+                        if (isNetworkAvailable(requireContext()) || !games.isEmpty()) {
                             sortGames(sortingParameter);
 
 
-                        }else{
+                        } else {
                             Toast.makeText(requireContext(), R.string.no_connection_message, Toast.LENGTH_LONG).show();
                         }
 
@@ -221,8 +222,8 @@ public class SearchFragment extends Fragment {
             }
 
             ArrayAdapter<String> genreAdapter = initializeSpinner(genreSPN, genres, lastSelectedGenre);
-            ArrayAdapter<String> platformAdapter =initializeSpinner(platformSPN, platforms, lastSelectedPlatform);
-            ArrayAdapter<String> releaseYearAdapter =initializeSpinner(releaseYearSPN, years.toArray(new String[0]), lastSelectedReleaseYear);
+            ArrayAdapter<String> platformAdapter = initializeSpinner(platformSPN, platforms, lastSelectedPlatform);
+            ArrayAdapter<String> releaseYearAdapter = initializeSpinner(releaseYearSPN, years.toArray(new String[0]), lastSelectedReleaseYear);
 
             new MaterialAlertDialogBuilder(requireContext())
                     .setView(customLayout)
@@ -239,15 +240,13 @@ public class SearchFragment extends Fragment {
                         lastSelectedPlatform = platformAdapter.getPosition(platformInput);
                         lastSelectedReleaseYear = releaseYearAdapter.getPosition(releaseyearInput);
 
-                        if(isNetworkAvailable(requireContext()) || !games.isEmpty()){
+                        if (isNetworkAvailable(requireContext()) || !games.isEmpty()) {
 
                             if (genreInput.equals(genres[0]) || platformInput.equals(platforms[0]) || releaseyearInput.equals(years.get(0))) {
                                 games = new ArrayList<>(gamesCopy);
-
-                                if(!sortingParameter.isEmpty()){
+                                if (!sortingParameter.isEmpty()) {
                                     sortGames(sortingParameter);
                                 }
-
                             }
 
                             if (!genreInput.equals(genres[0])) {
@@ -304,18 +303,18 @@ public class SearchFragment extends Fragment {
                                 }
                             }
 
-                            if(exploreShowed){
+                            if (exploreShowed) {
                                 numberOfResults.setTextSize(30);
                                 numberOfResults.setTypeface(null, Typeface.BOLD);
                                 numberOfResults.setText(R.string.explore_title);
-                            }else{
+                            } else {
                                 numberOfResults.setTextSize(15);
                                 numberOfResults.setTypeface(null, Typeface.NORMAL);
                                 String text = String.format(getContext().getResources().getString(R.string.number_of_results), games.size(), "Esplora");
                                 numberOfResults.setText(text);
                             }
                             showGamesOnRecyclerView(games);
-                        }else{
+                        } else {
                             Toast.makeText(requireContext(), R.string.no_connection_message, Toast.LENGTH_LONG).show();
                         }
 
@@ -344,11 +343,11 @@ public class SearchFragment extends Fragment {
         gamesCopy = new ArrayList<>(games);
         numberOfResults.setText(R.string.explore_title);
 
-        if(isExplore){
+        if (isExplore) {
             numberOfResults.setText(R.string.explore_title);
             numberOfResults.setTextSize(30);
             numberOfResults.setTypeface(null, Typeface.BOLD);
-        }else{
+        } else {
             numberOfResults.setTextSize(15);
             numberOfResults.setTypeface(null, Typeface.NORMAL);
             String text;
@@ -356,7 +355,6 @@ public class SearchFragment extends Fragment {
             numberOfResults.setText(text);
 
         }
-
 
 
         if (gameApiResponses.size() > 0) {
@@ -374,6 +372,7 @@ public class SearchFragment extends Fragment {
         adapter.setGames(gamesList);
         adapter.notifyDataSetChanged();
     }
+
     private boolean isNetworkAvailable(Context context) {
         ConnectivityManager connectivityManager
                 = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -415,7 +414,7 @@ public class SearchFragment extends Fragment {
         }
     }
 
-    public void sortGames(String sortingParameter){
+    public void sortGames(String sortingParameter) {
         switch (sortingParameter) {
             case "Most popular":
             case "Più popolare":
@@ -437,7 +436,7 @@ public class SearchFragment extends Fragment {
         showGamesOnRecyclerView(games);
     }
 
-    public void resetStatus(){
+    public void resetStatus() {
         sortingParameter = "";
         lastSelectedSortingParameter = -1;
         lastSelectedGenre = 0;
@@ -450,7 +449,7 @@ public class SearchFragment extends Fragment {
         adapter.notifyDataSetChanged();
     }
 
-    public ArrayAdapter<String> initializeSpinner(Spinner spinner, String[] data, int lastSelectedItem){
+    public ArrayAdapter<String> initializeSpinner(Spinner spinner, String[] data, int lastSelectedItem) {
         ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_dropdown_item, data);
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(spinnerAdapter);

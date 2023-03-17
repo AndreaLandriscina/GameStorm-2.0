@@ -27,7 +27,7 @@
     <string name="sending_mail">Inviando la mail…</string>
     <string name="email_empty">Inserisci la mail</string>
     <string name="password_empty">Inserisci la password</string>
-    <string name="loginPlayedGame">Devi aggiungere almeno un gioco nella sezione "giocato"</string>
+    <string name="loginPlayedGame">Inizia ad aggiunere giochi nella sezione Giocati!</string>
     <string name="check_data">Controlla i dati inseriti</string>
     <string name="insert_mail_to_reset_password">Per resettare la password, inserisci la tua mail</string>
     <string name="username_empty">Inserisci l\'username</string>
@@ -71,6 +71,16 @@
     <string name="welcome_back">"Bentornato "</string>
     <string name="no_game">La lista è vuota! Inizia a salvare qualche gioco!</string>
     <string name="video_choose">Cosa vuoi vedere?</string>
+    <string name="one_wanted_game">Un gioco desiderato</string>
+    <string name="one_playing_game">Un gioco attualmente in gioco</string>
+    <string name="one_played_game">Un gioco giocato</string>
+    <string name="wanted_games">giochi desiderati</string>
+    <string name="playing_games">giochi attualmente in gioco</string>
+    <string name="played_games">giochi giocati</string>
+    <string name="show_all">Mostra tutti</string>
+    <string name="sign_in_with_your_email_and_password">Registrati con la tua mail e password</string>
+    <string name="sign_in_with_google">Registrati con Google</string>
+    <string name="it_s_completely_free_nwhat_are_you_waiting_for">È tutto GRATIS!\\nCosa aspettI?</string>
 
 
 </resources>

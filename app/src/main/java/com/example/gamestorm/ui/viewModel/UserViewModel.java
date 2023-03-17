@@ -1,4 +1,4 @@
-package com.example.gamestorm.ui;
+package com.example.gamestorm.ui.viewModel;
 
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;

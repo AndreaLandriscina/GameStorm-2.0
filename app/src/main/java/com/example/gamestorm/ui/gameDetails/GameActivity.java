@@ -1,7 +1,6 @@
 package com.example.gamestorm.ui.gameDetails;
 
 import android.annotation.SuppressLint;
-import android.app.Dialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -17,16 +16,15 @@ import com.example.gamestorm.model.GameApiResponse;
 import com.example.gamestorm.R;
 import com.example.gamestorm.repository.games.IGamesRepository;
 import com.example.gamestorm.repository.user.IUserRepository;
-import com.example.gamestorm.ui.GamesViewModel;
-import com.example.gamestorm.ui.GamesViewModelFactory;
-import com.example.gamestorm.ui.UserViewModel;
-import com.example.gamestorm.ui.UserViewModelFactory;
+import com.example.gamestorm.ui.viewModel.GamesViewModel;
+import com.example.gamestorm.ui.viewModel.GamesViewModelFactory;
+import com.example.gamestorm.ui.viewModel.UserViewModel;
+import com.example.gamestorm.ui.viewModel.UserViewModelFactory;
 import com.example.gamestorm.ui.profile.LoginActivity;
 import com.example.gamestorm.util.Constants;
 import com.example.gamestorm.util.ServiceLocator;
 import com.example.gamestorm.util.SharedPreferencesUtil;
 import com.google.android.material.button.MaterialButton;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.squareup.picasso.Picasso;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -131,13 +129,12 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void setPlayVideoButton() {
+        Button button = findViewById(R.id.playVideoButton);
         if (game.getVideoId() == null){
+            button.setVisibility(View.GONE);
             return;
         }
-        Button button = findViewById(R.id.playVideoButton);
-
         button.setOnClickListener(v -> {
-            Log.i("video", game.getVideoId().get("Trailer"));
             if (game.getVideoId().containsKey("Trailer") && game.getVideoId().containsKey("Gameplay video")){
                 DialogFragment fragment = new PlayVideoDialogFragment(game.getVideoId());
                 fragment.show(getSupportFragmentManager(), "dialog");

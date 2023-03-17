@@ -25,7 +25,7 @@
     <string name="latestreleases">Latest releases</string>
     <string name="incoming">Incoming</string>
     <string name="loginHome">You must be logged to view suggested games</string>
-    <string name="loginPlayedGame">You must add at least one game in the "Played" section</string>
+    <string name="loginPlayedGame">Start adding games in the Played section!</string>
     <string name="username" translatable="false">Username</string>
     <string name="emailAddress">Email Address</string>
     <string name="password" translatable="false">Password</string>
@@ -275,4 +275,15 @@
         <item>MOBA</item>
         <item>Point-and-click</item>
     </string-array>
+    <string name="one_wanted_game">One wanted game</string>
+    <string name="one_playing_game">One playing game</string>
+    <string name="one_played_game">One played game</string>
+    <string name="wanted_games">wanted games</string>
+    <string name="playing_games">playing games</string>
+    <string name="played_games">played games</string>
+    <string name="show_all">Show all</string>
+    <string name="sign_in_with_your_email_and_password">Sign in with your email and password</string>
+    <string name="sign_in_with_google">Sign in with Google</string>
+    <string name="it_s_completely_free_nwhat_are_you_waiting_for">It\'s completely FREE!\nWhat are you waiting for?</string>
+
 </resources>

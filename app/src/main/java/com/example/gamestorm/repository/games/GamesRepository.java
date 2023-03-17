@@ -38,6 +38,10 @@ public class GamesRepository implements IGamesRepository, GameCallback {
     private final MutableLiveData<List<GameApiResponse>> genreGamesMutableLiveData;
     private final MutableLiveData<List<GameApiResponse>> searchedGamesMutableLiveData;
     private final MutableLiveData<List<GameApiResponse>> similarGamesMutableLiveData;
+    private final MutableLiveData<List<GameApiResponse>> allPopularGames;
+    private final MutableLiveData<List<GameApiResponse>> allBestGames;
+    private final MutableLiveData<List<GameApiResponse>> allLatestGames;
+    private final MutableLiveData<List<GameApiResponse>> allIncomingGames;
 
     public GamesRepository(BaseGamesDataSource gamesDataSource, BaseGamesLocalDataSource gamesLocalDataSource, BaseSavedGamesDataSource backupDataSource) {
         this.gamesDataSource = gamesDataSource;
@@ -50,6 +54,10 @@ public class GamesRepository implements IGamesRepository, GameCallback {
         this.genreGamesMutableLiveData = new MutableLiveData<>();
         this.searchedGamesMutableLiveData = new MutableLiveData<>();
         this.similarGamesMutableLiveData = new MutableLiveData<>();
+        this.allPopularGames = new MutableLiveData<>();
+        this.allBestGames = new MutableLiveData<>();
+        this.allLatestGames = new MutableLiveData<>();
+        this.allIncomingGames = new MutableLiveData<>();
         this.gamesDataSource.setGameCallback(this);
         this.gamesLocalDataSource.setGameCallback(this);
         this.backupDataSource.setGameCallback(this);
@@ -207,6 +215,30 @@ public class GamesRepository implements IGamesRepository, GameCallback {
     }
 
     @Override
+    public MutableLiveData<List<GameApiResponse>> getAllPopularGames() {
+        gamesDataSource.getAllPopularGames();
+        return allPopularGames;
+    }
+
+    @Override
+    public MutableLiveData<List<GameApiResponse>> getAllBestGames() {
+        gamesDataSource.getAllBestGames();
+        return allBestGames;
+    }
+
+    @Override
+    public MutableLiveData<List<GameApiResponse>> getAllLatestGames() {
+        gamesDataSource.getAllLatestGames();
+        return allLatestGames;
+    }
+
+    @Override
+    public MutableLiveData<List<GameApiResponse>> getAllIncomingGames() {
+        gamesDataSource.getAllIncomingGames();
+        return allIncomingGames;
+    }
+
+    @Override
     public MutableLiveData<List<GameApiResponse>> getForYouGames(long lastUpdate) {
         Map<String, Integer> gamesForGenre = new HashMap<>();
         if (playedGamesMutableLiveData != null && playedGamesMutableLiveData.getValue() != null) {
@@ -296,6 +328,18 @@ public class GamesRepository implements IGamesRepository, GameCallback {
                 break;
             case "FORYOU":
                 forYouGamesMutableLiveData.postValue(gameApiResponses);
+                break;
+            case "ALLPOPULAR":
+                allPopularGames.postValue(gameApiResponses);
+                break;
+            case "ALLBEST":
+                allBestGames.postValue(gameApiResponses);
+                break;
+            case "ALLLATEST":
+                allLatestGames.postValue(gameApiResponses);
+                break;
+            case "ALLINCOMING":
+                allIncomingGames.postValue(gameApiResponses);
                 break;
         }
     }

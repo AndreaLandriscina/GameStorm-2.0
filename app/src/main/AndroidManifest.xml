@@ -32,6 +32,15 @@
                 android:value="" />
         </activity>
         <activity
+            android:name=".ui.Home.AllGamesActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
             android:name=".ui.gameDetails.CompanyActivity"
             android:exported="false"
             android:screenOrientation="portrait"

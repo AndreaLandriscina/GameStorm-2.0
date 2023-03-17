@@ -136,6 +136,30 @@ public class GamesDataSource extends BaseGamesDataSource {
     }
 
     @Override
+    public void getAllPopularGames() {
+        String query = fields + "where follows!=null; sort follows desc; limit 200;";
+        getGames(query, "ALLPOPULAR");
+    }
+
+    @Override
+    public void getAllBestGames() {
+        String query = fields + "where total_rating_count>1000;sort total_rating desc; limit 200;";
+        getGames(query, "ALLBEST");
+    }
+
+    @Override
+    public void getAllLatestGames() {
+        String query = fields + "where first_release_date <= " + currentDate() + ";sort first_release_date desc; limit 200;";
+        getGames(query, "ALLLATEST");
+    }
+
+    @Override
+    public void getAllIncomingGames() {
+        String query = fields + "where first_release_date > " + currentDate() + ";sort first_release_date asc; limit 200;";
+        getGames(query, "ALLINCOMING");
+    }
+
+    @Override
     public void getForYouGames(String genre, int size) {
         int limit;
         if (size <= 3) {

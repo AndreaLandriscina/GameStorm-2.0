@@ -1,6 +1,5 @@
 package com.example.gamestorm.ui;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
@@ -14,6 +13,7 @@ import android.os.Bundle;
 import android.view.WindowManager;
 
 import com.example.gamestorm.R;
+import com.example.gamestorm.ui.Home.HomeFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.Objects;

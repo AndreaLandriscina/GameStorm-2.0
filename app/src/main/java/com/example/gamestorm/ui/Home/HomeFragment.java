@@ -1,10 +1,11 @@
-package com.example.gamestorm.ui;
+package com.example.gamestorm.ui.Home;
 
 
 import static com.example.gamestorm.util.Constants.LAST_UPDATE_HOME;
 import static com.example.gamestorm.util.Constants.SHARED_PREFERENCES_FILE_NAME;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -23,7 +24,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.gamestorm.adapter.HomeAdapter;
@@ -31,9 +31,15 @@ import com.example.gamestorm.model.GameApiResponse;
 import com.example.gamestorm.R;
 import com.example.gamestorm.repository.games.IGamesRepository;
 import com.example.gamestorm.repository.user.IUserRepository;
+import com.example.gamestorm.ui.Home.AllGamesActivity;
+import com.example.gamestorm.ui.viewModel.GamesViewModel;
+import com.example.gamestorm.ui.viewModel.GamesViewModelFactory;
+import com.example.gamestorm.ui.viewModel.UserViewModel;
+import com.example.gamestorm.ui.viewModel.UserViewModelFactory;
 import com.example.gamestorm.util.Constants;
 import com.example.gamestorm.util.ServiceLocator;
 import com.example.gamestorm.util.SharedPreferencesUtil;
+import com.google.android.material.textview.MaterialTextView;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -104,6 +110,8 @@ public class HomeFragment extends Fragment {
         galleryLatestReleases = view.findViewById(R.id.homeGalleryLatestReleases);
         galleryIncoming = view.findViewById(R.id.homeGalleryIncoming);
 
+        setShowAll();
+
         galleryForYou.setVisibility(View.VISIBLE);
         loginTextView.setVisibility(View.GONE);
         loginButton.setVisibility(View.GONE);
@@ -123,6 +131,33 @@ public class HomeFragment extends Fragment {
                     SHARED_PREFERENCES_FILE_NAME, LAST_UPDATE_HOME);
         }
         observeViewModel(lastUpdate);
+    }
+
+    private void setShowAll() {
+        MaterialTextView showAllPopular = requireView().findViewById(R.id.showAllPopular);
+        showAllPopular.setOnClickListener(v -> {
+            Intent myIntent = new Intent(requireContext(), AllGamesActivity.class);
+            myIntent.putExtra("section", "POPULAR");
+            startActivity(myIntent);
+        });
+        MaterialTextView showAllBest = requireView().findViewById(R.id.showAllBest);
+        showAllBest.setOnClickListener(v -> {
+            Intent myIntent = new Intent(requireContext(), AllGamesActivity.class);
+            myIntent.putExtra("section", "BEST");
+            startActivity(myIntent);
+        });
+        MaterialTextView showAllLatest = requireView().findViewById(R.id.showAllLatest);
+        showAllLatest.setOnClickListener(v -> {
+            Intent myIntent = new Intent(requireContext(), AllGamesActivity.class);
+            myIntent.putExtra("section", "LATEST");
+            startActivity(myIntent);
+        });
+        MaterialTextView showAllIncoming = requireView().findViewById(R.id.showAllIncoming);
+        showAllIncoming.setOnClickListener(v -> {
+            Intent myIntent = new Intent(requireContext(), AllGamesActivity.class);
+            myIntent.putExtra("section", "INCOMING");
+            startActivity(myIntent);
+        });
     }
 
     private void observeViewModel(String lastUpdate) {
