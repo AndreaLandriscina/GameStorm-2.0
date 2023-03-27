@@ -43,20 +43,16 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 
-public class PlayingFragment extends Fragment{
-
-    FirebaseAuth firebaseAuth;
-    Button loginButton;
-    ConstraintLayout function_not_available_layout;
-    ArrayList<Integer> playingGames;
-    LinearLayoutCompat playing_games_layout;
+public class PlayingFragment extends Fragment {
+    private ProgressBar progressBar;
     private GamesViewModel gamesViewModel;
     private UserViewModel userViewModel;
     private SharedPreferencesUtil sharedPreferencesUtil;
     RecyclerProfileViewAdapter homeAdapter;
     private ArrayList<RecyclerData> recyclerDataArrayList;
-    IGamesRepository iGamesRepository;
     private TextView gamesNumber;
+    private RecyclerView recyclerView;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -67,20 +63,15 @@ public class PlayingFragment extends Fragment{
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        firebaseAuth=FirebaseAuth.getInstance();
-        function_not_available_layout=requireView().findViewById(R.id.function_not_available_layout);
-        loginButton=requireView().findViewById(R.id.loginButton);
-        playing_games_layout = requireView().findViewById(R.id.playing_games_layout);
-        RecyclerView recyclerView = requireView().findViewById(R.id.playingRecyclerView);
-        ProgressBar progressBar = requireView().findViewById(R.id.progressBar);
+        recyclerView = requireView().findViewById(R.id.playingRecyclerView);
         recyclerDataArrayList = new ArrayList<>();
         homeAdapter = new RecyclerProfileViewAdapter(recyclerDataArrayList, getContext());
         recyclerView.setAdapter(homeAdapter);
         GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 3);
         recyclerView.setLayoutManager(layoutManager);
-        gamesNumber = requireView().findViewById(R.id.wantedNumber);
-
-
+        gamesNumber = requireView().findViewById(R.id.playingNumber);
+        progressBar = requireView().findViewById(R.id.progressBar);
+        IGamesRepository iGamesRepository;
         try {
             iGamesRepository = ServiceLocator.getInstance().getGamesRepository(requireActivity().getApplication());
         } catch (GeneralSecurityException | IOException e) {
@@ -96,42 +87,33 @@ public class PlayingFragment extends Fragment{
                 this,
                 new UserViewModelFactory(userRepository)).get(UserViewModel.class);
 
-        if (userViewModel.getLoggedUser() == null) {
-            function_not_available_layout.setVisibility(View.VISIBLE);
-            playing_games_layout.setVisibility(View.GONE);
-            loginButton.setOnClickListener(view1 -> Navigation.findNavController(requireView()).navigate(R.id.action_profileFragment_to_loginActivity));
-        } else {
-            function_not_available_layout.setVisibility(View.GONE);
-            playing_games_layout.setVisibility(View.VISIBLE);
-        }
-
     }
+
     @SuppressLint("SetTextI18n")
     private void observeViewModel() {
+        progressBar.setVisibility(View.VISIBLE);
         sharedPreferencesUtil =
                 new SharedPreferencesUtil(requireActivity().getApplication());
         boolean isFirstLoading = sharedPreferencesUtil.readBooleanData(Constants.SHARED_PREFERENCES_FILE_NAME,
                 Constants.SHARED_PREFERENCES_FIRST_LOADING_PLAYING);
-        playingGames = new ArrayList<>();
 
         gamesViewModel.getPlayingGames(isFirstLoading).observe(getViewLifecycleOwner(), gameApiResponses -> {
-            LinearLayout layout = requireView().findViewById(R.id.noGameText);
-            layout.setVisibility(View.GONE);
-            if (gameApiResponses.size() == 1){
+            TextView textView = requireView().findViewById(R.id.noGameText);
+            textView.setVisibility(View.GONE);
+            if (gameApiResponses.size() == 0) {
+                textView.setVisibility(View.VISIBLE);
+            } else if (gameApiResponses.size() == 1) {
                 gamesNumber.setText(getString(R.string.one_playing_game));
-            } else if (gameApiResponses.size() > 1){
+            } else {
                 gamesNumber.setText(gameApiResponses.size() + " " + getString(R.string.played_games));
             }
-            if (gameApiResponses.isEmpty()){
-                layout.setVisibility(View.VISIBLE);
-            }
             recyclerDataArrayList.clear();
-            for (GameApiResponse gameApiResponse : gameApiResponses){
-
-                recyclerDataArrayList.add(new RecyclerData(gameApiResponse.getId(),gameApiResponse.getCover().getUrl()));
+            for (GameApiResponse gameApiResponse : gameApiResponses) {
+                recyclerDataArrayList.add(new RecyclerData(gameApiResponse.getId(), gameApiResponse.getCover().getUrl()));
             }
             homeAdapter.notifyDataSetChanged();
-
+            progressBar.setVisibility(View.GONE);
+            recyclerView.setVisibility(View.VISIBLE);
             if (isFirstLoading) {
                 sharedPreferencesUtil.writeBooleanData(Constants.SHARED_PREFERENCES_FILE_NAME,
                         Constants.SHARED_PREFERENCES_FIRST_LOADING_PLAYING, false);
@@ -139,21 +121,14 @@ public class PlayingFragment extends Fragment{
 
         });
     }
+
     @Override
     public void onResume() {
         super.onResume();
-
-            if (userViewModel.getLoggedUser() != null) {
-                function_not_available_layout.setVisibility(View.GONE);
-                playing_games_layout.setVisibility(View.VISIBLE);
-                observeViewModel();
-            } else {
-                function_not_available_layout.setVisibility(View.VISIBLE);
-                playing_games_layout.setVisibility(View.GONE);
-            }
-
+        if (userViewModel.getLoggedUser() != null) {
+            observeViewModel();
+        }
     }
-    
 
     private boolean isNetworkAvailable(Context context) {
         ConnectivityManager connectivityManager
@@ -161,5 +136,4 @@ public class PlayingFragment extends Fragment{
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null;
     }
-    
 }

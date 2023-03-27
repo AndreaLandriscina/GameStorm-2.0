@@ -20,6 +20,10 @@ import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
+import java.io.File;
+import java.util.List;
+import java.util.Objects;
+
 public class UserAuthenticationRemoteDataSource extends BaseUserAuthenticationRemoteDataSource{
     private static final String TAG = UserAuthenticationRemoteDataSource.class.getSimpleName();
     private final FirebaseAuth firebaseAuth;
@@ -32,7 +36,11 @@ public class UserAuthenticationRemoteDataSource extends BaseUserAuthenticationRe
         if (firebaseUser == null) {
             return null;
         } else {
-            return new User(firebaseUser.getDisplayName(), firebaseUser.getEmail(), firebaseUser.getUid());
+            if (firebaseUser.getPhotoUrl() == null){
+                return new User(firebaseUser.getDisplayName(), firebaseUser.getEmail(), firebaseUser.getUid(), null);
+            } else {
+                return new User(firebaseUser.getDisplayName(), firebaseUser.getEmail(), firebaseUser.getUid(), firebaseUser.getPhotoUrl().toString());
+            }
         }
     }
 
@@ -56,12 +64,11 @@ public class UserAuthenticationRemoteDataSource extends BaseUserAuthenticationRe
     public void signUp(String name, String email, String password) {
         firebaseAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
-
+                Log.i("firebase", "success");
                 FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
                 if (firebaseUser != null) {
-
                     userResponseCallback.onSuccessFromAuthentication(new User(
-                            name, email, firebaseUser.getUid()));
+                            name, email, firebaseUser.getUid(), null));
                 } else {
                     userResponseCallback.onFailureFromAuthentication(getErrorMessage(task.getException()));
                 }
@@ -73,13 +80,12 @@ public class UserAuthenticationRemoteDataSource extends BaseUserAuthenticationRe
 
     @Override
     public void signIn(String email, String password) {
-        Log.i("ss","OOOO");
         firebaseAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
                 if (firebaseUser != null) {
                     userResponseCallback.onSuccessFromAuthentication(new User(
-                            firebaseUser.getDisplayName(), email, firebaseUser.getUid()));
+                            firebaseUser.getDisplayName(), email, firebaseUser.getUid(), null));
                 } else {
                     userResponseCallback.onFailureFromAuthentication(getErrorMessage(task.getException()));
                 }
@@ -103,7 +109,7 @@ public class UserAuthenticationRemoteDataSource extends BaseUserAuthenticationRe
                     if (firebaseUser != null) {
                         userResponseCallback.onSuccessFromAuthentication(new User(
                                 firebaseUser.getDisplayName(), firebaseUser.getEmail(),
-                                firebaseUser.getUid()));
+                                firebaseUser.getUid(), firebaseUser.getPhotoUrl().toString()));
                     } else {
                         userResponseCallback.onFailureFromAuthentication(
                                 getErrorMessage(task.getException()));

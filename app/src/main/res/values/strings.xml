@@ -44,7 +44,7 @@
     <string name="desired">Desired</string>
     <string name="playing">Playing</string>
     <string name="playeds">Played</string>
-    <string name="login_to_see_this">This function is available only for registered users</string>
+    <string name="login_to_see_this">Sign in for saving your favourite games!</string>
     <string name="logout" translatable="false">Logout</string>
     <string name="logout_successfully">Logout Successfully</string>
     <string name="logout_in_progress" translatable="false">Logout...</string>
@@ -93,12 +93,6 @@
         <item>Tapwave Zodiac</item>
         <item>ColecoVision</item>
         <item>PlayStation VR</item>
-        <item>Texas Instruments TI-99</item>
-        <item>Acorn Electron</item>
-        <item>Gamate</item>
-        <item>Hyper Neo Geo 64</item>
-        <item>Thomson MO5</item>
-        <item>Odyssey 2 / Videopac G7000</item>
         <item>SteamVR</item>
         <item>Apple IIGS</item>
         <item>DOS</item>
@@ -107,52 +101,26 @@
         <item>TRS-80</item>
         <item>Nintendo Switch</item>
         <item>Amazon Fire TV</item>
-        <item>Tatung Einstein</item>
         <item>Nintendo DSi</item>
-        <item>Neo Geo Pocket</item>
-        <item>Dragon 32/64</item>
-        <item>Amstrad PCW</item>
         <item>Xbox</item>
-        <item>PDP-11</item>
         <item>Virtual Console (Nintendo)</item>
-        <item>MSX2</item>
-        <item>Atari 7800</item>
         <item>Sega CD</item>
         <item>Game Boy Advance</item>
         <item>Sega 32X</item>
         <item>Nintendo 64</item>
-        <item>Neo Geo Pocket Color</item>
         <item>Wii U</item>
         <item>Sharp X1</item>
         <item>Web browser</item>
-        <item>CDC Cyber 70</item>
-        <item>OnLive Game System</item>
-        <item>Acorn Archimedes</item>
-        <item>Amiga CD32</item>
-        <item>Philips CD-i</item>
-        <item>Sharp X68000</item>
-        <item>Nuon</item>
         <item>Nintendo Entertainment System</item>
         <item>Nintendo 3DS</item>
         <item>Game Boy Color</item>
-        <item>Sega Master System/Mark III</item>
-        <item>Amiga</item>
         <item>PlayStation Portable</item>
-        <item>TurboGrafx-16/PC Engine</item>
-        <item>Oculus VR</item>
-        <item>Playdia</item>
         <item>PlayStation 3</item>
         <item>Mac</item>
-        <item>Satellaview</item>
-        <item>Sega Saturn</item>
         <item>Android</item>
         <item>Commodore C64/128/MAX</item>
-        <item>Atari 5200</item>
-        <item>Intellivision</item>
         <item>BlackBerry OS</item>
         <item>Game &amp; Watch</item>
-        <item>Imlac PDS-1</item>
-        <item>FM Towns</item>
         <item>Nintendo PlayStation</item>
         <item>NEC PC-6000 Series</item>
         <item>FM-7</item>
@@ -201,27 +169,7 @@
         <item>Analogue electronics</item>
         <item>Pokémon mini</item>
         <item>EDSAC</item>
-        <item>HP 2100</item>
-        <item>Exidy Sorcerer</item>
-        <item>PDP-7</item>
-        <item>DVD Player</item>
-        <item>HP 3000</item>
-        <item>SDS Sigma 7</item>
         <item>Daydream</item>
-        <item>Call-A-Computer time-shared mainframe computer system</item>
-        <item>Zeebo</item>
-        <item>PLATO</item>
-        <item>Blu-ray Player</item>
-        <item>ZX Spectrum</item>
-        <item>PC-FX</item>
-        <item>MSX</item>
-        <item>Evercade</item>
-        <item>OOParts</item>
-        <item>Sinclair ZX81</item>
-        <item>DUPLICATE Stadia</item>
-        <item>Casio Loopy</item>
-        <item>Xbox Series X|S</item>
-        <item>Atari 2600</item>
         <item>Xbox 360</item>
         <item>Xbox One</item>
         <item>PlayStation</item>
@@ -229,24 +177,6 @@
         <item>AirConsole</item>
         <item>PlayStation VR2</item>
         <item>Windows Mobile</item>
-        <item>Legacy Computer</item>
-        <item>Sinclair QL</item>
-        <item>Handheld Electronic LCD</item>
-        <item>Leapster Explorer/LeadPad Explorer</item>
-        <item>Nintendo 64DD</item>
-        <item>HyperScan</item>
-        <item>Palm OS</item>
-        <item>Mega Duck/Cougar Boy</item>
-        <item>Atari Jaguar CD</item>
-        <item>Watara/QuickShot Supervision</item>
-        <item>LeapTV</item>
-        <item>Leapster</item>
-        <item>Arduboy</item>
-        <item>V.Smile</item>
-        <item>Visual Memory Unit / Visual Memory System</item>
-        <item>PocketStation</item>
-        <item>Sega Mega Drive/Genesis</item>
-        <item>Meta Quest 2</item>
     </string-array>
 
     <string-array name="genres">
@@ -285,5 +215,6 @@
     <string name="sign_in_with_your_email_and_password">Sign in with your email and password</string>
     <string name="sign_in_with_google">Sign in with Google</string>
     <string name="it_s_completely_free_nwhat_are_you_waiting_for">It\'s completely FREE!\nWhat are you waiting for?</string>
+    <string name="sign_up_with_your_mail_and_password">Sign up with your mail and password</string>
 
 </resources>

@@ -1,22 +1,26 @@
 package com.example.gamestorm.model;
 
+import android.net.Uri;
+
+import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 public class User {
     private String id;
-    private String name,email;
-    public static ArrayList<Integer> desiredGames, playedGames, playingGames;
+    private String name;
+    private String email;
+    private String photoProfile;
+
 
     public User() {
     }
 
-    public User(String name, String email, String id) {
+    public User(String name, String email, String id, String photoProfile) {
         this.name = name;
         this.email = email;
         this.id = id;
-        desiredGames=new ArrayList<>();
-        playedGames=new ArrayList<>();
-        playingGames=new ArrayList<>();
+        this.photoProfile = photoProfile;
     }
 
     public String getId() {
@@ -39,15 +43,20 @@ public class User {
         this.email = email;
     }
 
-    public ArrayList<Integer> getDesiredGames() {
-        return desiredGames;
+    public String getPhotoProfile() {
+        return photoProfile;
     }
 
-    public ArrayList<Integer> getPlayedGames() {
-        return playedGames;
+    public void setPhotoProfile(String photoProfile) {
+        this.photoProfile = photoProfile;
     }
 
-    public ArrayList<Integer> getPlayingGames() {
-        return playingGames;
+    @Override
+    public String toString() {
+        return "User{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                '}';
     }
 }

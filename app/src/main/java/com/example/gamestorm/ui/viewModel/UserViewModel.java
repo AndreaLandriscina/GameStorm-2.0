@@ -6,6 +6,8 @@ import androidx.lifecycle.ViewModel;
 import com.example.gamestorm.model.User;
 import com.example.gamestorm.repository.user.IUserRepository;
 
+import java.io.File;
+import java.util.List;
 import java.util.Set;
 
 public class UserViewModel extends ViewModel {
@@ -29,6 +31,7 @@ public class UserViewModel extends ViewModel {
         }
         return userMutableLiveData;
     }
+
 
     public MutableLiveData<User> getGoogleUserMutableLiveData(String token) {
         if (userMutableLiveData == null) {
@@ -64,13 +67,6 @@ public class UserViewModel extends ViewModel {
     }
     private void getUserPlayedGames(String idToken) {
         userPlayedGamesMutableLiveData = userRepository.getUserPlayedGames(idToken);
-    }
-
-
-    public void saveUserPreferences(String favoriteCountry, Set<String> favoriteTopics, String idToken) {
-        if (idToken != null) {
-            userRepository.saveUserPreferences(favoriteCountry, favoriteTopics, idToken);
-        }
     }
 
     public User getLoggedUser() {

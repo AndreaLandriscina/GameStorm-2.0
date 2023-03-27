@@ -34,7 +34,7 @@
     <string name="desired">Desiderati</string>
     <string name="playing">In gioco</string>
     <string name="playeds">Giocati</string>
-    <string name="login_to_see_this">Funzionalità disponibile solo per gli utenti registrati</string>
+    <string name="login_to_see_this">Esegui l\'accesso per salvare i tuoi giochi preferiti!</string>
     <string name="logout_successfully">Logout riuscito</string>
     <string name="sign_up">Registrati</string>
     <string name="popular">Popolari</string>
@@ -81,6 +81,7 @@
     <string name="sign_in_with_your_email_and_password">Registrati con la tua mail e password</string>
     <string name="sign_in_with_google">Registrati con Google</string>
     <string name="it_s_completely_free_nwhat_are_you_waiting_for">È tutto GRATIS!\\nCosa aspettI?</string>
+    <string name="sign_up_with_your_mail_and_password">Iscriviti con la tua mail e password</string>
 
 
 </resources>

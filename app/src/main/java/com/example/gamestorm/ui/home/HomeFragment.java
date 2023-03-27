@@ -1,4 +1,4 @@
-package com.example.gamestorm.ui.Home;
+package com.example.gamestorm.ui.home;
 
 
 import static com.example.gamestorm.util.Constants.LAST_UPDATE_HOME;
@@ -31,7 +31,6 @@ import com.example.gamestorm.model.GameApiResponse;
 import com.example.gamestorm.R;
 import com.example.gamestorm.repository.games.IGamesRepository;
 import com.example.gamestorm.repository.user.IUserRepository;
-import com.example.gamestorm.ui.Home.AllGamesActivity;
 import com.example.gamestorm.ui.viewModel.GamesViewModel;
 import com.example.gamestorm.ui.viewModel.GamesViewModelFactory;
 import com.example.gamestorm.ui.viewModel.UserViewModel;

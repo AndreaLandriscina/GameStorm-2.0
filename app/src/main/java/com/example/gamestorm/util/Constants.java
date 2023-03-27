@@ -20,6 +20,7 @@ public class Constants {
     public static final String WEAK_PASSWORD_ERROR = "passwordIsWeak";
     public static final String FIREBASE_REALTIME_DATABASE = "https://gamestorm-74204-default-rtdb.europe-west1.firebasedatabase.app/";
     public static final String FIREBASE_USERS_COLLECTION = "users";
+    public static final String FIREBASE_IMAGES_COLLECTION = "images";
     public static final String FIREBASE_WANTED_GAMES_COLLECTION = "wanted_games";
     public static final String FIREBASE_PLAYING_GAMES_COLLECTION = "playing_games";
     public static final String FIREBASE_PLAYED_GAMES_COLLECTION = "played_games";
@@ -29,6 +30,7 @@ public class Constants {
     public static final String USERNAME = "username";
     public static final String EMAIL_ADDRESS = "email_address";
     public static final String PASSWORD = "password";
+    public static final String PHOTOPROFILE = "photo_profile";
     public static final String ID_TOKEN = "google_token";
     public static final String gameNameKey = "GAME_NAME";
     public static final String sortingParameterKey = "SORTING_PARAMETER";

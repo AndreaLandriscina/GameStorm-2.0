@@ -6,10 +6,12 @@ import static com.example.gamestorm.util.Constants.ENCRYPTED_DATA_FILE_NAME;
 import static com.example.gamestorm.util.Constants.ENCRYPTED_SHARED_PREFERENCES_FILE_NAME;
 import static com.example.gamestorm.util.Constants.ID_TOKEN;
 import static com.example.gamestorm.util.Constants.PASSWORD;
+import static com.example.gamestorm.util.Constants.PHOTOPROFILE;
 import static com.example.gamestorm.util.Constants.SHARED_PREFERENCES_FILE_NAME;
 import static com.example.gamestorm.util.Constants.SHARED_PREFERENCES_FIRST_LOADING_PLAYED;
 import static com.example.gamestorm.util.Constants.SHARED_PREFERENCES_FIRST_LOADING_PLAYING;
 import static com.example.gamestorm.util.Constants.SHARED_PREFERENCES_FIRST_LOADING_WANTED;
+import static com.example.gamestorm.util.Constants.USERNAME;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.IntentSenderRequest;
@@ -26,10 +28,10 @@ import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.gamestorm.databinding.ActivityLoginBinding;
 import com.example.gamestorm.model.User;
 import com.example.gamestorm.R;
 import com.example.gamestorm.repository.user.IUserRepository;
@@ -52,10 +54,8 @@ import com.google.firebase.auth.FirebaseAuth;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.util.Objects;
 
 public class LoginActivity extends AppCompatActivity {
-    ActivityLoginBinding binding;
     FirebaseAuth firebaseAuth;
     ProgressDialog progressDialog;
     private UserViewModel userViewModel;
@@ -105,7 +105,7 @@ public class LoginActivity extends AppCompatActivity {
             finish();
         });
 
-        googleLogin();
+        googleLoginRequest();
 
         login();
     }
@@ -119,10 +119,13 @@ public class LoginActivity extends AppCompatActivity {
                 try {
                     SignInCredential credential = oneTapClient.getSignInCredentialFromIntent(activityResult.getData());
                     String idToken = credential.getGoogleIdToken();
+                    String uriPhoto = null;
+                    if (credential.getProfilePictureUri() != null)
+                        uriPhoto = credential.getProfilePictureUri().toString();
                     if (idToken != null) {
                         // Got an ID token from Google. Use it to authenticate with Firebase.
                         userViewModel.getGoogleUserMutableLiveData(idToken).observe(this, authenticationResult -> {
-                            saveLoginData(authenticationResult.getEmail(), null, authenticationResult.getId());
+                            saveLoginData(authenticationResult.getName(), authenticationResult.getEmail(), null, authenticationResult.getId());
                             userViewModel.setAuthenticationError(false);
                             retrieveUserInformation(authenticationResult);
                             Intent i = new Intent(LoginActivity.this, MainActivity.class);
@@ -139,34 +142,25 @@ public class LoginActivity extends AppCompatActivity {
 
     private void retrieveUserInformation(User user) {
         //progressIndicator.setVisibility(View.VISIBLE)
-        Log.i("recuper","0");
         userViewModel.getUserWantedGamesMutableLiveData(user.getId()).observe(
-                this, userFavoriteNewsRetrievalResult -> {
-                    Log.i("recuper","1");
-                    sharedPreferencesUtil.writeBooleanData(SHARED_PREFERENCES_FILE_NAME,
-                            SHARED_PREFERENCES_FIRST_LOADING_WANTED, false);
-                }
+                this, userFavoriteNewsRetrievalResult -> sharedPreferencesUtil.writeBooleanData(SHARED_PREFERENCES_FILE_NAME,
+                        SHARED_PREFERENCES_FIRST_LOADING_WANTED, false)
         );
         userViewModel.getUserPlayingGamesMutableLiveData(user.getId()).observe(
-                this, userFavoriteNewsRetrievalResult -> {
-                    Log.i("recuper","2");
-                    sharedPreferencesUtil.writeBooleanData(SHARED_PREFERENCES_FILE_NAME,
-                            SHARED_PREFERENCES_FIRST_LOADING_PLAYING, false);
-                }
+                this, userFavoriteNewsRetrievalResult -> sharedPreferencesUtil.writeBooleanData(SHARED_PREFERENCES_FILE_NAME,
+                        SHARED_PREFERENCES_FIRST_LOADING_PLAYING, false)
         );
         userViewModel.getUserPlayedGamesMutableLiveData(user.getId()).observe(
-                this, userFavoriteNewsRetrievalResult -> {
-                    Log.i("recuper","3");
-                    sharedPreferencesUtil.writeBooleanData(SHARED_PREFERENCES_FILE_NAME,
-                            SHARED_PREFERENCES_FIRST_LOADING_PLAYED, false);
-                }
+                this, userFavoriteNewsRetrievalResult -> sharedPreferencesUtil.writeBooleanData(SHARED_PREFERENCES_FILE_NAME,
+                        SHARED_PREFERENCES_FIRST_LOADING_PLAYED, false)
         );
     }
 
     private void resetPassword() {
         TextView resetPassword = findViewById(R.id.resetPassword);
         resetPassword.setOnClickListener(view -> {
-            String email = Objects.requireNonNull(binding.emailAddress.getText()).toString();
+            EditText emailView = findViewById(R.id.emailAddress);
+            String email = emailView.getText().toString();
             if (isEmailOk(email)) {
                 progressDialog.setTitle(getString(R.string.sending_mail));
                 progressDialog.show();
@@ -187,7 +181,7 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private void googleLogin() {
+    private void googleLoginRequest() {
         SignInButton googleButton = findViewById(R.id.googleButton);
         googleButton.setOnClickListener(v -> oneTapClient.beginSignIn(signInRequest)
                 .addOnSuccessListener(this, result -> {
@@ -230,10 +224,10 @@ public class LoginActivity extends AppCompatActivity {
                     //progressIndicator.setVisibility(View.VISIBLE);
                     String finalEmail = email;
                     String finalPassword = password;
-                    userViewModel.getUserMutableLiveData(null, email, password, true).observe(
+                    userViewModel.getUserMutableLiveData(null, email, password,true).observe(
                             this, result -> {
                                 if (result != null) {
-                                    saveLoginData(finalEmail, finalPassword, result.getId());
+                                    saveLoginData(result.getName(),finalEmail, finalPassword, result.getId());
                                     userViewModel.setAuthenticationError(false);
                                     retrieveUserInformation(result);
                                     Intent i = new Intent(LoginActivity.this, MainActivity.class);
@@ -249,7 +243,7 @@ public class LoginActivity extends AppCompatActivity {
                                 }
                             });
                 } else {
-                    userViewModel.getUser(null, email, password, true);
+                    userViewModel.getUser(null, email, password,true);
                 }
             } else {
                 Snackbar.make(findViewById(android.R.id.content),
@@ -258,7 +252,8 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private void saveLoginData(String email, String password, String idToken) {
+    private void saveLoginData(String name, String email, String password, String idToken) {
+
         try {
             sharedPreferencesUtil = new SharedPreferencesUtil(getApplication());
             sharedPreferencesUtil.writeBooleanData(SHARED_PREFERENCES_FILE_NAME,
@@ -267,6 +262,7 @@ public class LoginActivity extends AppCompatActivity {
                     SHARED_PREFERENCES_FIRST_LOADING_PLAYING, true);
             sharedPreferencesUtil.writeBooleanData(SHARED_PREFERENCES_FILE_NAME,
                     SHARED_PREFERENCES_FIRST_LOADING_PLAYED, true);
+            sharedPreferencesUtil.writeStringData(SHARED_PREFERENCES_FILE_NAME, USERNAME, name);
             dataEncryptionUtil.writeSecretDataWithEncryptedSharedPreferences(
                     ENCRYPTED_SHARED_PREFERENCES_FILE_NAME, EMAIL_ADDRESS, email);
             dataEncryptionUtil.writeSecretDataWithEncryptedSharedPreferences(
@@ -304,4 +300,5 @@ public class LoginActivity extends AppCompatActivity {
             return true;
         }
     }
+
 }

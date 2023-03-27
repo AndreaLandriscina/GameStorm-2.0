@@ -5,15 +5,20 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:paddingTop="20sp"
-    android:paddingStart="50dp"
-    android:paddingEnd="50sp"
     tools:context=".ui.profile.RegisterActivity">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="25dp"
+        android:text="@string/sign_up_with_your_mail_and_password"
+        android:textAlignment="center"
+        android:textSize="24sp" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="100dp"
+        android:layout_marginTop="60dp"
         app:boxBackgroundColor="@android:color/transparent"
         app:startIconDrawable="@drawable/ic_baseline_account_circle_24">
 
@@ -41,11 +46,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
-            android:hint="@string/emailAddress"
             android:fontFamily="@font/poppins_regular"
-            android:textCursorDrawable="@drawable/cursor_color"
+            android:hint="@string/emailAddress"
             android:inputType="textEmailAddress"
-            android:padding="17dp" />
+            android:padding="17dp"
+            android:textCursorDrawable="@drawable/cursor_color" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -61,66 +66,53 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
-            android:hint="@string/password"
             android:fontFamily="@font/poppins_regular"
-            android:textCursorDrawable="@drawable/cursor_color"
+            android:hint="@string/password"
             android:inputType="textPassword"
             android:maxLength="16"
-            android:padding="17dp" />
+            android:padding="17dp"
+            android:textCursorDrawable="@drawable/cursor_color" />
     </com.google.android.material.textfield.TextInputLayout>
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/signup"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:background="@drawable/blue_fill__rounded_color"
-        android:fontFamily="@font/poppins_regular"
-        android:textSize="15sp"
+        android:layout_marginHorizontal="30dp"
         android:layout_marginTop="10dp"
-        android:text="@string/sign_up" />
+        android:fontFamily="@font/poppins_regular"
+        android:text="@string/sign_up"
+        android:textSize="15sp"
+        app:cornerRadius="25dp" />
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <TextView
+        android:id="@+id/textView2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        >
+        android:layout_marginTop="50dp"
+        android:fontFamily="@font/poppins_regular"
+        android:gravity="center"
+        android:text="@string/haveAccount"
+        android:textSize="18sp" />
 
-        <TextView
-            android:id="@+id/textView2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
-            android:layout_marginTop="250dp"
-            android:fontFamily="@font/poppins_regular"
-            android:gravity="center"
-            android:text="@string/haveAccount"
-            android:textAllCaps="false"
-            android:textSize="18sp"
-            app:layout_constraintEnd_toStartOf="@+id/goToLoginActivity"
-            app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintHorizontal_chainStyle="packed"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/goToLoginActivity"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="10dp"
+        android:layout_marginStart="92dp"
+        android:gravity="center"
+        android:text="@string/login"
+        android:textSize="20sp"
+        android:textStyle="bold" />
 
-        <Button
-            android:id="@+id/goToLoginActivity"
-            style="@style/Widget.MaterialComponents.Button.TextButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="10dp"
-            android:layout_marginStart="92dp"
-            android:fontFamily="@font/poppins_regular"
-            android:gravity="center"
-            android:text="@string/login"
-            android:textAllCaps="true"
-            android:textColor="@color/teal_700"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            app:layout_constraintBaseline_toBaselineOf="@id/textView2"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/textView2"
-            app:layout_constraintTop_toBottomOf="@+id/textView2" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:visibility="gone" />
 </LinearLayout>

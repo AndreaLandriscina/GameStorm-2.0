@@ -1,4 +1,4 @@
-package com.example.gamestorm.ui.Home;
+package com.example.gamestorm.ui.home;
 
 import android.content.Context;
 import android.content.Intent;
@@ -18,7 +18,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.gamestorm.R;
 import com.example.gamestorm.adapter.RecyclerData;
 import com.example.gamestorm.adapter.RecyclerProfileViewAdapter;
-import com.example.gamestorm.adapter.RecyclerViewAdapter;
 import com.example.gamestorm.model.GameApiResponse;
 import com.example.gamestorm.repository.games.IGamesRepository;
 import com.example.gamestorm.ui.viewModel.GamesViewModel;

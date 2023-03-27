@@ -6,60 +6,76 @@ import static com.example.gamestorm.util.Constants.ENCRYPTED_DATA_FILE_NAME;
 import static com.example.gamestorm.util.Constants.ENCRYPTED_SHARED_PREFERENCES_FILE_NAME;
 import static com.example.gamestorm.util.Constants.ID_TOKEN;
 import static com.example.gamestorm.util.Constants.PASSWORD;
+import static com.example.gamestorm.util.Constants.PHOTOPROFILE;
+import static com.example.gamestorm.util.Constants.SHARED_PREFERENCES_FILE_NAME;
 import static com.example.gamestorm.util.Constants.USERNAME;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.util.Base64;
+import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 
 import com.example.gamestorm.databinding.ActivityRegisterBinding;
 import com.example.gamestorm.R;
 import com.example.gamestorm.repository.user.IUserRepository;
+import com.example.gamestorm.ui.MainActivity;
 import com.example.gamestorm.ui.viewModel.UserViewModel;
 import com.example.gamestorm.ui.viewModel.UserViewModelFactory;
 import com.example.gamestorm.util.DataEncryptionUtil;
 import com.example.gamestorm.util.ServiceLocator;
+import com.example.gamestorm.util.SharedPreferencesUtil;
 import com.google.android.material.snackbar.Snackbar;
+import com.squareup.picasso.Picasso;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class RegisterActivity extends AppCompatActivity {
     ActivityRegisterBinding binding;
     private UserViewModel userViewModel;
-    private DataEncryptionUtil dataEncryptionUtil;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding=ActivityRegisterBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
+        ProgressBar progressBar = findViewById(R.id.progressBar);
         IUserRepository userRepository = ServiceLocator.getInstance().
                 getUserRepository(getApplication());
         userViewModel = new ViewModelProvider(
                 this,
                 new UserViewModelFactory(userRepository)).get(UserViewModel.class);
         userViewModel.setAuthenticationError(false);
-        dataEncryptionUtil = new DataEncryptionUtil(getApplication());
 
-        //progressDialog=new ProgressDialog(this);
 
         binding.signup.setOnClickListener(view -> {
             String name = Objects.requireNonNull(Objects.requireNonNull(binding.username.getText()).toString().trim());
             String email = Objects.requireNonNull(Objects.requireNonNull(binding.emailAddress.getText()).toString().trim());
             String password = Objects.requireNonNull(Objects.requireNonNull(binding.password.getText()).toString().trim());
-
-            //progressDialog.show();
+            progressBar.setVisibility(View.VISIBLE);
             if (isUsernameOk(name) && isEmailOk(email) && isPasswordOk(password)) {
                 if (!userViewModel.isAuthenticationError()) {
-                    userViewModel.getUserMutableLiveData(name, email, password, false).observe(
+                    userViewModel.getUserMutableLiveData(name, email, password,false).observe(
                             this, result -> {
                                     saveLoginData(name, email, password, result.getId());
                                     userViewModel.setAuthenticationError(false);
+                                    startActivity(new Intent(RegisterActivity.this, MainActivity.class));
                                     finish();
                             });
                 } else {
@@ -77,10 +93,12 @@ public class RegisterActivity extends AppCompatActivity {
             finish();
         });
     }
-    private void saveLoginData(String username, String email, String password, String idToken) {
+
+    private void saveLoginData(String name, String email, String password, String idToken) {
+        DataEncryptionUtil dataEncryptionUtil = new DataEncryptionUtil(getApplication());
         try {
-            dataEncryptionUtil.writeSecretDataWithEncryptedSharedPreferences(
-                    ENCRYPTED_SHARED_PREFERENCES_FILE_NAME, USERNAME, username);
+            SharedPreferencesUtil sharedPreferencesUtil = new SharedPreferencesUtil(getApplication());
+            sharedPreferencesUtil.writeStringData(SHARED_PREFERENCES_FILE_NAME, USERNAME, name);
             dataEncryptionUtil.writeSecretDataWithEncryptedSharedPreferences(
                     ENCRYPTED_SHARED_PREFERENCES_FILE_NAME, EMAIL_ADDRESS, email);
             dataEncryptionUtil.writeSecretDataWithEncryptedSharedPreferences(

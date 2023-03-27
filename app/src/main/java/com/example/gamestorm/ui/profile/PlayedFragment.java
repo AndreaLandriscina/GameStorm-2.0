@@ -44,16 +44,14 @@ import java.util.ArrayList;
 
 public class PlayedFragment extends Fragment {
 
-    Button loginButton;
-    ConstraintLayout function_not_available_layout;
+    private ProgressBar progressBar;
     private ArrayList<RecyclerData> recyclerDataArrayList;
-    ArrayList<Integer> playedGames;
-    LinearLayoutCompat played_games_layout;
     private RecyclerProfileViewAdapter homeAdapter;
     private GamesViewModel gamesViewModel;
     private UserViewModel userViewModel;
     private SharedPreferencesUtil sharedPreferencesUtil;
     private TextView gamesNumber;
+    private RecyclerView recyclerView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -65,18 +63,14 @@ public class PlayedFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        function_not_available_layout = requireView().findViewById(R.id.function_not_available_layout);
-        loginButton = requireView().findViewById(R.id.loginButton);
-        played_games_layout = requireView().findViewById(R.id.played_games_layout);
-        ProgressBar progressBar = requireView().findViewById(R.id.progressBar);
-        RecyclerView recyclerView = requireView().findViewById(R.id.playedRecyclerView);
+        recyclerView = requireView().findViewById(R.id.playedRecyclerView);
         recyclerDataArrayList = new ArrayList<>();
         homeAdapter = new RecyclerProfileViewAdapter(recyclerDataArrayList, getContext());
         recyclerView.setAdapter(homeAdapter);
         GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 3);
         recyclerView.setLayoutManager(layoutManager);
-        gamesNumber = requireView().findViewById(R.id.wantedNumber);
-
+        gamesNumber = requireView().findViewById(R.id.playedNumber);
+        progressBar = requireView().findViewById(R.id.progressBar);
         IGamesRepository iGamesRepository;
         try {
             iGamesRepository = ServiceLocator.getInstance().getGamesRepository(requireActivity().getApplication());
@@ -92,56 +86,42 @@ public class PlayedFragment extends Fragment {
         userViewModel = new ViewModelProvider(
                 this,
                 new UserViewModelFactory(userRepository)).get(UserViewModel.class);
-
-        if (userViewModel.getLoggedUser() == null) {
-            function_not_available_layout.setVisibility(View.VISIBLE);
-            played_games_layout.setVisibility(View.GONE);
-            loginButton.setOnClickListener(view1 -> Navigation.findNavController(requireView()).navigate(R.id.action_profileFragment_to_loginActivity));
-        } else {
-            function_not_available_layout.setVisibility(View.GONE);
-            played_games_layout.setVisibility(View.VISIBLE);
-        }
     }
 
     @Override
     public void onResume() {
         super.onResume();
             if (userViewModel.getLoggedUser() != null) {
-                function_not_available_layout.setVisibility(View.GONE);
-                played_games_layout.setVisibility(View.VISIBLE);
                 observeViewModel();
-            } else {
-                function_not_available_layout.setVisibility(View.VISIBLE);
-                played_games_layout.setVisibility(View.GONE);
             }
     }
 
 
     @SuppressLint("SetTextI18n")
     private void observeViewModel() {
+        progressBar.setVisibility(View.VISIBLE);
         sharedPreferencesUtil =
                 new SharedPreferencesUtil(requireActivity().getApplication());
         boolean isFirstLoading = sharedPreferencesUtil.readBooleanData(Constants.SHARED_PREFERENCES_FILE_NAME,
                 Constants.SHARED_PREFERENCES_FIRST_LOADING_PLAYED);
-        playedGames = new ArrayList<>();
 
         gamesViewModel.getPlayedGames(isFirstLoading).observe(getViewLifecycleOwner(), gameApiResponses -> {
-            LinearLayout layout = requireView().findViewById(R.id.noGameText);
-            layout.setVisibility(View.GONE);
-            if (gameApiResponses.size() == 1){
+            TextView textView = requireView().findViewById(R.id.noGameText);
+            textView.setVisibility(View.GONE);
+            if (gameApiResponses.size() == 0){
+                textView.setVisibility(View.VISIBLE);
+            } else if (gameApiResponses.size() == 1){
                 gamesNumber.setText(getString(R.string.one_played_game));
-            } else if (gameApiResponses.size() > 1){
+            } else {
                 gamesNumber.setText(gameApiResponses.size() + " " + getString(R.string.played_games));
-            }
-            if (gameApiResponses.isEmpty()){
-                layout.setVisibility(View.VISIBLE);
             }
             recyclerDataArrayList.clear();
             for (GameApiResponse gameApiResponse : gameApiResponses){
                 recyclerDataArrayList.add(new RecyclerData(gameApiResponse.getId(),gameApiResponse.getCover().getUrl()));
             }
             homeAdapter.notifyDataSetChanged();
-
+            progressBar.setVisibility(View.GONE);
+            recyclerView.setVisibility(View.VISIBLE);
             if (isFirstLoading) {
                 sharedPreferencesUtil.writeBooleanData(Constants.SHARED_PREFERENCES_FILE_NAME,
                         Constants.SHARED_PREFERENCES_FIRST_LOADING_PLAYED, false);

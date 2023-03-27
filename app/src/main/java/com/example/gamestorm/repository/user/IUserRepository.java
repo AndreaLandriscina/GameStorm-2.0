@@ -4,6 +4,8 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.example.gamestorm.model.User;
 
+import java.io.File;
+import java.util.List;
 import java.util.Set;
 
 public interface IUserRepository {

@@ -9,7 +9,7 @@
     <com.smarteist.autoimageslider.SliderView
         android:id="@+id/image_slider"
         android:layout_width="400dp"
-        android:layout_height="350dp"
+        android:layout_height="550dp"
         android:layout_gravity="center"
         android:layout_marginHorizontal="10dp"
         app:sliderAnimationDuration="600"
