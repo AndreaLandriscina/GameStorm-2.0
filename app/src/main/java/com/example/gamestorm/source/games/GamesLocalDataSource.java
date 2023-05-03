@@ -81,7 +81,6 @@ public class GamesLocalDataSource extends BaseGamesLocalDataSource {
 
     @Override
     public void insertGames(List<GameApiResponse> gameApiResponses, String nQuery) {
-        Log.i("gameslocal inser", gameApiResponses.toString() + " " + nQuery);
         GamesRoomDatabase.databaseWriteExecutor.execute(() -> {
             List<GameApiResponse> allGames = gamesDao.getAll();
             switch (nQuery) {
@@ -123,7 +122,7 @@ public class GamesLocalDataSource extends BaseGamesLocalDataSource {
                     break;
             }
             // Checks if the game just downloaded has already been downloaded earlier
-            // in order to preserve the news status (marked as wanted, playing or played)
+            // in order to preserve the game status (marked as wanted, playing or played)
 
             if (!nQuery.equals("WANTED") && !nQuery.equals("PLAYING") && !nQuery.equals("PLAYED")){
                 for (GameApiResponse game : allGames) {
@@ -135,8 +134,6 @@ public class GamesLocalDataSource extends BaseGamesLocalDataSource {
                     }
                 }
             }
-
-
             // Writes the game in the database and gets the associated primary keys
             List<Long> insertedGameId;
             insertedGameId = gamesDao.insertGamesList(gameApiResponses);

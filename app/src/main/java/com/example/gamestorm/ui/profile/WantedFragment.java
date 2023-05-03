@@ -48,6 +48,7 @@ public class WantedFragment extends Fragment {
 
     private TextView gamesNumber;
     private RecyclerView recyclerView;
+    private TextView noGameTextView;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -71,6 +72,8 @@ public class WantedFragment extends Fragment {
         recyclerView.setLayoutManager(layoutManager);
         gamesNumber = requireView().findViewById(R.id.wantedNumber);
         progressBar = requireView().findViewById(R.id.progressBar);
+        noGameTextView = requireView().findViewById(R.id.noGameText);
+        noGameTextView.setVisibility(View.GONE);
         IGamesRepository iGamesRepository;
         try {
             iGamesRepository = ServiceLocator.getInstance().getGamesRepository(requireActivity().getApplication());
@@ -96,10 +99,9 @@ public class WantedFragment extends Fragment {
                 Constants.SHARED_PREFERENCES_FIRST_LOADING_WANTED);
 
         gamesViewModel.getWantedGames(isFirstLoading).observe(getViewLifecycleOwner(), gameApiResponses -> {
-            TextView textView = requireView().findViewById(R.id.noGameText);
-            textView.setVisibility(View.GONE);
+
             if (gameApiResponses.size() == 0){
-                textView.setVisibility(View.VISIBLE);
+                noGameTextView.setVisibility(View.VISIBLE);
             } else if (gameApiResponses.size() == 1){
                 gamesNumber.setText(R.string.one_wanted_game);
             } else {

@@ -1,9 +1,5 @@
 package com.example.gamestorm.source.games;
 
-import androidx.lifecycle.MutableLiveData;
-
-import com.example.gamestorm.model.GameApiResponse;
-
 import java.util.List;
 
 public abstract class BaseGamesDataSource {
@@ -19,7 +15,7 @@ public abstract class BaseGamesDataSource {
     public abstract void getLatestGames();
     public abstract void getIncomingGames();
     public abstract void getExploreGames();
-    public abstract void getForYouGames(String genre, int size);
+    public abstract void getForYouGames(List<Integer> gamesId, int limit);
     public abstract void getCompanyGames(String company);
     public abstract void getFranchiseGames(String franchise);
     public abstract void getGenreGames(String genre);

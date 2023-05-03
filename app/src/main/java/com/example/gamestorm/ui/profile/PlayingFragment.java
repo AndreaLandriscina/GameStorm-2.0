@@ -8,19 +8,14 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.LinearLayoutCompat;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -37,7 +32,6 @@ import com.example.gamestorm.ui.viewModel.UserViewModelFactory;
 import com.example.gamestorm.util.Constants;
 import com.example.gamestorm.util.ServiceLocator;
 import com.example.gamestorm.util.SharedPreferencesUtil;
-import com.google.firebase.auth.FirebaseAuth;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -52,6 +46,7 @@ public class PlayingFragment extends Fragment {
     private ArrayList<RecyclerData> recyclerDataArrayList;
     private TextView gamesNumber;
     private RecyclerView recyclerView;
+    private TextView noGameTextView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -71,6 +66,8 @@ public class PlayingFragment extends Fragment {
         recyclerView.setLayoutManager(layoutManager);
         gamesNumber = requireView().findViewById(R.id.playingNumber);
         progressBar = requireView().findViewById(R.id.progressBar);
+        noGameTextView = requireView().findViewById(R.id.noGameText);
+        noGameTextView.setVisibility(View.GONE);
         IGamesRepository iGamesRepository;
         try {
             iGamesRepository = ServiceLocator.getInstance().getGamesRepository(requireActivity().getApplication());
@@ -98,14 +95,12 @@ public class PlayingFragment extends Fragment {
                 Constants.SHARED_PREFERENCES_FIRST_LOADING_PLAYING);
 
         gamesViewModel.getPlayingGames(isFirstLoading).observe(getViewLifecycleOwner(), gameApiResponses -> {
-            TextView textView = requireView().findViewById(R.id.noGameText);
-            textView.setVisibility(View.GONE);
             if (gameApiResponses.size() == 0) {
-                textView.setVisibility(View.VISIBLE);
+                noGameTextView.setVisibility(View.VISIBLE);
             } else if (gameApiResponses.size() == 1) {
                 gamesNumber.setText(getString(R.string.one_playing_game));
             } else {
-                gamesNumber.setText(gameApiResponses.size() + " " + getString(R.string.played_games));
+                gamesNumber.setText(gameApiResponses.size() + " " + getString(R.string.playing_games));
             }
             recyclerDataArrayList.clear();
             for (GameApiResponse gameApiResponse : gameApiResponses) {

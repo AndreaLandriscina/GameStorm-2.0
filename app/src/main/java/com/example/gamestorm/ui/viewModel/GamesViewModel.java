@@ -20,11 +20,7 @@ public class GamesViewModel extends ViewModel {
     private MutableLiveData<List<GameApiResponse>> exploreGames;
     private MutableLiveData<List<GameApiResponse>> franchiseGames;
     private MutableLiveData<List<GameApiResponse>> companyGames;
-    private MutableLiveData<List<GameApiResponse>> forYouGames;
     private boolean firstLoading;
-    private MutableLiveData<List<GameApiResponse>> wantedGamesListLiveData;
-    private MutableLiveData<List<GameApiResponse>> playingGamesListLiveData;
-    private MutableLiveData<List<GameApiResponse>> playedGamesListLiveData;
     private MutableLiveData<List<GameApiResponse>> genreGames;
 
     public GamesViewModel(IGamesRepository iGamesRepository) {
@@ -59,7 +55,7 @@ public class GamesViewModel extends ViewModel {
         return incomingGames;
     }
     public MutableLiveData<List<GameApiResponse>> getExploreGames(long lastUpdate) {
-        if (exploreGames == null){
+        if (exploreGames == null || exploreGames.getValue().isEmpty()){
             return exploreGames = iGamesRepository.fetchExploreGames(lastUpdate);
         }
         return exploreGames;
@@ -93,28 +89,19 @@ public class GamesViewModel extends ViewModel {
     }
 
     public MutableLiveData<List<GameApiResponse>> getWantedGames(boolean isFirstLoading) {
-        Log.i("isfirstloadwanted", String.valueOf(isFirstLoading));
-        if (wantedGamesListLiveData == null) {
-            return wantedGamesListLiveData = iGamesRepository.getWantedGames(isFirstLoading);
-        }
+        MutableLiveData<List<GameApiResponse>> wantedGamesListLiveData;
         return wantedGamesListLiveData = iGamesRepository.getWantedGames(isFirstLoading);
 
     }
 
     public MutableLiveData<List<GameApiResponse>> getPlayingGames(boolean isFirstLoading) {
-        Log.i("isfirstloadplaying", String.valueOf(isFirstLoading));
-        if (playingGamesListLiveData == null) {
-            return playingGamesListLiveData = iGamesRepository.getPlayingGames(isFirstLoading);
-        }
+        MutableLiveData<List<GameApiResponse>> playingGamesListLiveData;
         return playingGamesListLiveData = iGamesRepository.getPlayingGames(isFirstLoading);
     }
 
     public MutableLiveData<List<GameApiResponse>> getPlayedGames(boolean isFirstLoading) {
-        Log.i("isfirstloadplayed", String.valueOf(isFirstLoading));
-        if (playedGamesListLiveData == null) {
-            return playedGamesListLiveData = iGamesRepository.getPlayedGames(isFirstLoading);
-        }
-        return playingGamesListLiveData = iGamesRepository.getPlayedGames(isFirstLoading);
+        MutableLiveData<List<GameApiResponse>> playedGamesListLiveData;
+        return playedGamesListLiveData = iGamesRepository.getPlayedGames(isFirstLoading);
     }
     public void updateWantedGame(GameApiResponse game){
         iGamesRepository.updateWantedGame(game);

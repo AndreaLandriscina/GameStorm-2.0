@@ -24,6 +24,8 @@ public class Constants {
     public static final String FIREBASE_WANTED_GAMES_COLLECTION = "wanted_games";
     public static final String FIREBASE_PLAYING_GAMES_COLLECTION = "playing_games";
     public static final String FIREBASE_PLAYED_GAMES_COLLECTION = "played_games";
+
+
     public static final String SHARED_PREFERENCES_FILE_NAME = "com.example.gamestorm.preferences";
     public static final String ENCRYPTED_SHARED_PREFERENCES_FILE_NAME = "com.example.gamestorm.encrypted_preferences";
     public static final String ENCRYPTED_DATA_FILE_NAME = "com.example.gamestorm.encrypted_file.txt";

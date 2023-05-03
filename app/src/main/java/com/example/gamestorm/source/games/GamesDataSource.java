@@ -160,16 +160,16 @@ public class GamesDataSource extends BaseGamesDataSource {
     }
 
     @Override
-    public void getForYouGames(String genre, int size) {
-        int limit;
-        if (size <= 3) {
-            limit = 2;
-        } else if (size <=6) {
-            limit = 4;
-        } else {
-            limit = 8;
+    public void getForYouGames(List<Integer> gamesId, int limit) {
+        StringBuilder ids = new StringBuilder();
+        for (Integer id : gamesId){
+            ids.append(id);
+            if (gamesId.lastIndexOf(id) != gamesId.size() - 1){
+                ids.append(",");
+            }
         }
-        String query = fields + "where genres.name= \"" + genre + "\"; limit " + limit + ";";
+        String query = fields + "where id = (" + ids + "); limit " + limit + ";";
+        Log.i("query", query);
         getGames(query, "FORYOU");
     }
 

@@ -13,12 +13,9 @@ public abstract class BaseGamesLocalDataSource {
 
     public abstract void getPopularGames();
     public abstract void insertGames(List<GameApiResponse> gameApiResponse, String i);
-
     public abstract void deleteAll();
     public abstract void updateWantedGame(GameApiResponse game);
-
     public abstract void updatePlayingGame(GameApiResponse game);
-
     public abstract void updatePlayedGame(GameApiResponse game);
     public abstract void getGame(int id);
     public abstract void getWantedGames();

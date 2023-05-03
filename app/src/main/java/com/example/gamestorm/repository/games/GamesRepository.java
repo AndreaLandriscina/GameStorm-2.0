@@ -28,7 +28,7 @@ public class GamesRepository implements IGamesRepository, GameCallback {
     private final MutableLiveData<List<GameApiResponse>> incomingGames = new MutableLiveData<>();
     private final MutableLiveData<List<GameApiResponse>> latestGames = new MutableLiveData<>();
     private final MutableLiveData<GameApiResponse> game = new MutableLiveData<>();
-    private final MutableLiveData<List<GameApiResponse>> exploreGames = new MutableLiveData<>();
+    private final MutableLiveData<List<GameApiResponse>> exploreGames;
     private final MutableLiveData<List<GameApiResponse>> companyGames = new MutableLiveData<>();
     private final MutableLiveData<List<GameApiResponse>> franchiseGames = new MutableLiveData<>();
     private final MutableLiveData<List<GameApiResponse>> wantedGamesMutableLiveData;
@@ -54,6 +54,7 @@ public class GamesRepository implements IGamesRepository, GameCallback {
         this.genreGamesMutableLiveData = new MutableLiveData<>();
         this.searchedGamesMutableLiveData = new MutableLiveData<>();
         this.similarGamesMutableLiveData = new MutableLiveData<>();
+        this.exploreGames = new MutableLiveData<>();
         this.allPopularGames = new MutableLiveData<>();
         this.allBestGames = new MutableLiveData<>();
         this.allLatestGames = new MutableLiveData<>();
@@ -204,7 +205,8 @@ public class GamesRepository implements IGamesRepository, GameCallback {
 
     @Override
     public MutableLiveData<List<GameApiResponse>> getSearchedGames(String userInput) {
-        gamesDataSource.getSearchedGames(userInput);
+        if (userInput != null)
+            gamesDataSource.getSearchedGames(userInput);
         return searchedGamesMutableLiveData;
     }
 
@@ -240,31 +242,27 @@ public class GamesRepository implements IGamesRepository, GameCallback {
 
     @Override
     public MutableLiveData<List<GameApiResponse>> getForYouGames(long lastUpdate) {
-        Map<String, Integer> gamesForGenre = new HashMap<>();
+        List<Integer> gamesId = new ArrayList<>();
+        int limit = 0;
         if (playedGamesMutableLiveData != null && playedGamesMutableLiveData.getValue() != null) {
-            for (GameApiResponse game : playedGamesMutableLiveData.getValue()) {
-                for (String genre : game.getGenresString()) {
-                    if (gamesForGenre.containsKey(genre)) {
-                        int n = gamesForGenre.get(genre);
-                        gamesForGenre.put(genre, n++);
-                    } else {
-                        gamesForGenre.put(genre, 0);
-                    }
-                }
+            int size = playedGamesMutableLiveData.getValue().size();
+            if (size <= 2) {
+                limit = 2;
+            } else if (size <=6) {
+                limit = 5;
+            } else {
+                limit = 10;
+            }
+            int cont = 0;
+            for (int i = 0; i < size && cont <= limit; i++) {
+                GameApiResponse game = playedGamesMutableLiveData.getValue().get(i);
+                gamesId.add(game.getSimilarGames().get(0));
+                gamesId.add(game.getSimilarGames().get(4));
+                cont+=2;
             }
         }
-        if (!gamesForGenre.isEmpty()) {
-            String genre = null;
-            int n = Collections.max(gamesForGenre.values());
-            for (Map.Entry<String, Integer> entry : gamesForGenre.entrySet()) {
-                if (entry.getValue() == n) {
-                    genre = entry.getKey();
-                }
-            }
-
-            assert playedGamesMutableLiveData != null;
-            gamesDataSource.getForYouGames(genre, playedGamesMutableLiveData.getValue().size());
-        }
+        assert playedGamesMutableLiveData != null;
+        gamesDataSource.getForYouGames(gamesId, limit);
         return forYouGamesMutableLiveData;
     }
 
@@ -276,7 +274,6 @@ public class GamesRepository implements IGamesRepository, GameCallback {
 
     @Override
     public void onSuccessFromLocal(List<GameApiResponse> gameApiResponses, String i) {
-        Log.i("fromlocal", gameApiResponses.toString());
         List<GameApiResponse> gamesList = allGames.getValue();
         if (gamesList != null) {
             gamesList.addAll(gameApiResponses);
@@ -300,6 +297,7 @@ public class GamesRepository implements IGamesRepository, GameCallback {
                 game.postValue((gameApiResponses.get(0)));
                 break;
             case "EXPLORE":
+                Log.i("att","enzione");
                 exploreGames.postValue(gameApiResponses);
                 break;
             case "SEARCHED":
@@ -362,7 +360,6 @@ public class GamesRepository implements IGamesRepository, GameCallback {
             }
         }
         wantedGamesMutableLiveData.postValue(allWanted);
-        //wantedGamesMutableLiveData.postValue(allWanted);
     }
 
     @Override
@@ -384,7 +381,6 @@ public class GamesRepository implements IGamesRepository, GameCallback {
     @Override
     public void onGamePlayingStatusChanged(GameApiResponse updatedGame, List<GameApiResponse> playingGames) {
         List<GameApiResponse> allPlaying = playingGamesMutableLiveData.getValue();
-        Log.i("ongamewantedstatuschanged", allPlaying.toString());
         if (allPlaying != null) {
             for (GameApiResponse gameApiResponse : allPlaying) {
                 if (gameApiResponse.getId() == updatedGame.getId()) {
@@ -463,8 +459,6 @@ public class GamesRepository implements IGamesRepository, GameCallback {
 
     @Override
     public void onSuccessFromCloudWriting(GameApiResponse game, String wanted) {
-        Log.i("onsuccfromcloudwritingrepo", game.toString());
-
         switch (wanted) {
             case "WANTED":
                 if (game != null && !game.isWanted()) {
@@ -472,7 +466,6 @@ public class GamesRepository implements IGamesRepository, GameCallback {
                 }
                 gamesLocalDataSource.updateWantedGame(game);
                 backupDataSource.getWantedGames();
-
                 break;
             case "PLAYING":
                 if (game != null && !game.isPlaying()) {

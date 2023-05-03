@@ -284,7 +284,6 @@ public class GameActivity extends AppCompatActivity {
     private void showScreenshots() {
         recyclerView = findViewById(R.id.screenshotsRecyclerView);
         recyclerDataArrayList = new ArrayList<>();
-        Log.i("SCREEN", game.getScreenshots().toString());
         if (game.getScreenshots() != null) {
             for (int i = 0; i < game.getScreenshots().size(); i++) {
                 if (game.getScreenshots() != null)
