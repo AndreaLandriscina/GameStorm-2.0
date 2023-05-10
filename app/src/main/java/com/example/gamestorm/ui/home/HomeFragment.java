@@ -247,7 +247,14 @@ public class HomeFragment extends Fragment {
             //per ottenere i giochi personali c'è bisogno di prendere i giochi giocati
             boolean isFirstLoading = sharedPreferencesUtil.readBooleanData(Constants.SHARED_PREFERENCES_FILE_NAME,
                     Constants.SHARED_PREFERENCES_FIRST_LOADING_PLAYED);
-            gamesViewModel.getPlayedGames(isFirstLoading).observe(getViewLifecycleOwner(), result -> gamesViewModel.getForYouGames(Long.parseLong("0")).observe(getViewLifecycleOwner(), result1 -> showGames(4, result1)));
+            gamesViewModel.getPlayedGames(isFirstLoading).observe(getViewLifecycleOwner(), played ->
+                    gamesViewModel.getForYouGames(Long.parseLong("0")).observe(getViewLifecycleOwner(), forYou -> {
+                        for (GameApiResponse game : played){
+                            forYou.remove(game);
+                        }
+                        showGames(4, forYou);
+                    }));
+            gamesViewModel.getPlayedGames(isFirstLoading).observe(getViewLifecycleOwner(), gameApiResponses -> {});
         }
     }
 

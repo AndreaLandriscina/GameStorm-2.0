@@ -9,11 +9,15 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.example.gamestorm.R;
 import com.example.gamestorm.model.GameApiResponse;
 import com.example.gamestorm.service.GamesApiService;
 import com.example.gamestorm.util.ServiceLocator;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import okhttp3.MediaType;
@@ -28,7 +32,7 @@ public class GamesDataSource extends BaseGamesDataSource {
 
     public GamesDataSource() {
         this.gamesApiService = ServiceLocator.getInstance().getGamesApiService();
-        fields = "fields name, videos.*, franchises.name, similar_games, first_release_date, genres.name, total_rating," +
+        fields = "fields name, videos.*, franchises.name, similar_games, first_release_date, release_dates.y, genres.name, total_rating," +
                 " total_rating_count, cover.url, involved_companies.company.name, platforms.name, summary, screenshots.url, follows; ";
     }
 
@@ -47,7 +51,7 @@ public class GamesDataSource extends BaseGamesDataSource {
                         List<GameApiResponse> gameApiResponses = response.body();
                         gameCallback.onSuccessFromRemote(gameApiResponses, i);
                     } else {
-                        Log.e(getClass().getName(), "error");
+                        Log.e(getClass().getName(), response.message());
                     }
                 }
 
@@ -92,13 +96,13 @@ public class GamesDataSource extends BaseGamesDataSource {
 
     @Override
     public void getExploreGames() {
-        String query = fields + "where first_release_date <= " + currentDate() + " & cover.url != null;  limit 300;";
+        String query = fields + "where first_release_date <= " + currentDate() + " & cover.url != null; limit 200;";
         getGames(query, "EXPLORE");
     }
 
     @Override
     public void getCompanyGames(String company) {
-        String query = fields + "where involved_companies.company.name = \"" + company + "\"; limit 30;";
+        String query = fields + "where involved_companies.company.name = \"" + company + "\";  limit 30;";
         getGames(query, "COMPANY");
     }
 
@@ -118,6 +122,27 @@ public class GamesDataSource extends BaseGamesDataSource {
     public void getSearchedGames(String userInput) {
         String query = fields + "where first_release_date < " + System.currentTimeMillis() / 1000 + " & version_parent = null;search \"" + userInput + "\"; limit 60;";
         getGames(query, "SEARCHED");
+    }
+
+    @Override
+    public void getSearchedGames(String genre, String platform, String year) {
+        String query = fields;
+        query += "where total_rating != null & cover.url != null & first_release_date != null";
+        if (genre != null || platform != null || year != null) {
+            if (genre != null) {
+                query += " & genres.name = \"" + genre + "\"";
+            }
+            if (platform != null){
+                query += " & platforms.name = \"" + platform + "\"";
+            }
+            if (year != null){
+                query += " & release_dates.y = " + year;
+            }
+        }
+        query += "; ";
+        query += "limit 200;";
+        Log.i("query", query);
+        getGames(query, "FILTERED");
     }
 
     @Override
@@ -169,7 +194,6 @@ public class GamesDataSource extends BaseGamesDataSource {
             }
         }
         String query = fields + "where id = (" + ids + "); limit " + limit + ";";
-        Log.i("query", query);
         getGames(query, "FORYOU");
     }
 

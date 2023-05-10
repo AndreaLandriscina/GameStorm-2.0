@@ -11,11 +11,13 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import androidx.room.TypeConverters;
 
+import com.example.gamestorm.util.sort.SortByMostRecent;
 import com.google.gson.annotations.SerializedName;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +41,10 @@ public class GameApiResponse {
     private int totalRatingCount;
     @SerializedName("first_release_date")
     private int firstReleaseDate;
+
+    @SerializedName("release_dates")
+    @TypeConverters(DataTypeConverter.class)
+    private List<ReleaseDate> releaseDates;
     private int follows;
     @SerializedName("franchises")
     @TypeConverters(DataTypeConverter.class)
@@ -281,20 +287,10 @@ public class GameApiResponse {
         return "GameApiResponse{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", isPopular=" + isPopular +
                 ", rating =" + totalRating +
-                ", isBest=" + isBest +
-                ", isLatest=" + isLatest +
-                ", isIncoming=" + isIncoming +
-                ", isWanted=" + isWanted +
-                ", isPlaying=" + isPlaying +
-                ", isPlayed=" + isPlayed +
-                ", isExplore=" + isExplore +
                 ", isSynchronized=" + isSynchronized +
                 ", follows=" + follows +
-                ", addes=" + added +
-                ", screen=" + screenshots +
-                ", video" + videos +
+                ", year=" + releaseDates +
                 '}';
     }
 
@@ -333,6 +329,14 @@ public class GameApiResponse {
     }
     public void setintReleaseDate(){
 
+    }
+
+    public List<ReleaseDate> getReleaseDates() {
+        return releaseDates;
+    }
+
+    public void setReleaseDates(List<ReleaseDate> releaseDates) {
+        this.releaseDates = releaseDates;
     }
 
     public int getIntReleaseDate(){
@@ -401,9 +405,16 @@ public class GameApiResponse {
     public void setTotalRatingCount(int totalRatingCount) {
         this.totalRatingCount = totalRatingCount;
     }
-
     public void setSynchronized(boolean aSynchronized) {
         isSynchronized = aSynchronized;
+    }
+
+    public String getFirstYear() {
+        List<Integer> years = new ArrayList<>();
+        for (ReleaseDate date : getReleaseDates()){
+            years.add(date.getYear());
+        }
+        return Collections.min(years).toString();
     }
 }
 

@@ -2,6 +2,7 @@ package com.example.gamestorm.util;
 
 public class Constants {
     public static final int FRESH_TIMEOUT = 60*60*1000; // 1 hour in milliseconds
+    public static final int FRESH_TIMEOUT_EXPLORE = 60*3*1000;
     public static final String LAST_UPDATE_HOME = "last_update_home";
     public static final String LAST_UPDATE_EXPLORE = "last_update_explore";
     public static final String GAME_API_BASE_URL = "https://api.igdb.com/v4/";

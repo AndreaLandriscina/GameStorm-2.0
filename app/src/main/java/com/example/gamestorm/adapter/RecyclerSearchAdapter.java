@@ -21,9 +21,7 @@ import java.util.List;
 
 
 public class RecyclerSearchAdapter extends RecyclerView.Adapter<RecyclerSearchAdapter.RecyclerViewHolder> {
-
     private List<GameApiResponse> games;
-
     public RecyclerSearchAdapter(List<GameApiResponse> games, Context context) {
         this.games = games;
     }
@@ -60,7 +58,6 @@ public class RecyclerSearchAdapter extends RecyclerView.Adapter<RecyclerSearchAd
         return games.size();
     }
     public static class RecyclerViewHolder extends RecyclerView.ViewHolder {
-
         private final ImageView coverIV;
         private final CardView gameCV;
 

@@ -1,6 +1,7 @@
 package com.example.gamestorm.repository.games;
 
 import static com.example.gamestorm.util.Constants.FRESH_TIMEOUT;
+import static com.example.gamestorm.util.Constants.FRESH_TIMEOUT_EXPLORE;
 
 import android.util.Log;
 
@@ -37,6 +38,7 @@ public class GamesRepository implements IGamesRepository, GameCallback {
     private final MutableLiveData<List<GameApiResponse>> forYouGamesMutableLiveData;
     private final MutableLiveData<List<GameApiResponse>> genreGamesMutableLiveData;
     private final MutableLiveData<List<GameApiResponse>> searchedGamesMutableLiveData;
+    private  MutableLiveData<List<GameApiResponse>> filteredGamesMutableLiveData;
     private final MutableLiveData<List<GameApiResponse>> similarGamesMutableLiveData;
     private final MutableLiveData<List<GameApiResponse>> allPopularGames;
     private final MutableLiveData<List<GameApiResponse>> allBestGames;
@@ -53,6 +55,7 @@ public class GamesRepository implements IGamesRepository, GameCallback {
         this.forYouGamesMutableLiveData = new MutableLiveData<>();
         this.genreGamesMutableLiveData = new MutableLiveData<>();
         this.searchedGamesMutableLiveData = new MutableLiveData<>();
+        this.filteredGamesMutableLiveData = new MutableLiveData<>();
         this.similarGamesMutableLiveData = new MutableLiveData<>();
         this.exploreGames = new MutableLiveData<>();
         this.allPopularGames = new MutableLiveData<>();
@@ -117,9 +120,11 @@ public class GamesRepository implements IGamesRepository, GameCallback {
     @Override
     public MutableLiveData<List<GameApiResponse>> fetchExploreGames(long lastUpdate) {
         long currentTime = System.currentTimeMillis();
-        if (currentTime - lastUpdate > FRESH_TIMEOUT) {
+        if (currentTime - lastUpdate > FRESH_TIMEOUT_EXPLORE) {
+            Log.i("riscarico","riscarico");
             gamesDataSource.getExploreGames();
         } else {
+            Log.i("recupero","recupero");
             gamesLocalDataSource.getExploreGames();
         }
         return exploreGames;
@@ -241,6 +246,14 @@ public class GamesRepository implements IGamesRepository, GameCallback {
     }
 
     @Override
+    public MutableLiveData<List<GameApiResponse>> getSearchedGames(String genre, String platform, String year) {
+        gamesDataSource.getSearchedGames(genre, platform, year);
+        if (filteredGamesMutableLiveData.getValue() != null && !filteredGamesMutableLiveData.getValue().isEmpty())
+            filteredGamesMutableLiveData = new MutableLiveData<>();
+        return filteredGamesMutableLiveData;
+    }
+
+    @Override
     public MutableLiveData<List<GameApiResponse>> getForYouGames(long lastUpdate) {
         List<Integer> gamesId = new ArrayList<>();
         int limit = 0;
@@ -294,14 +307,17 @@ public class GamesRepository implements IGamesRepository, GameCallback {
                 latestGames.postValue(gameApiResponses);
                 break;
             case "SINGLE":
-                game.postValue((gameApiResponses.get(0)));
+                game.postValue(gameApiResponses.get(0));
                 break;
             case "EXPLORE":
-                Log.i("att","enzione");
                 exploreGames.postValue(gameApiResponses);
                 break;
             case "SEARCHED":
                 searchedGamesMutableLiveData.postValue(gameApiResponses);
+                break;
+            case "FILTERED" :
+                Log.i("FILTERED","FILTERED");
+                filteredGamesMutableLiveData.postValue(gameApiResponses);
                 break;
             case "FRANCHISE":
                 franchiseGames.postValue(gameApiResponses);

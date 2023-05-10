@@ -14,6 +14,7 @@ import com.example.gamestorm.model.GameApiResponse;
 import com.example.gamestorm.util.DataEncryptionUtil;
 import com.example.gamestorm.util.SharedPreferencesUtil;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class GamesLocalDataSource extends BaseGamesLocalDataSource {
@@ -107,6 +108,7 @@ public class GamesLocalDataSource extends BaseGamesLocalDataSource {
                         gameApiResponse.setExplore(true);
                     sharedPreferencesUtil.writeStringData(SHARED_PREFERENCES_FILE_NAME,
                             LAST_UPDATE_EXPLORE, String.valueOf(System.currentTimeMillis()));
+                    Collections.shuffle(gameApiResponses);
                     break;
                 case "WANTED":
                     for (GameApiResponse gameApiResponse : gameApiResponses)

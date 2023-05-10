@@ -7,18 +7,17 @@ import com.google.gson.annotations.SerializedName;
 public class ReleaseDate {
     @SerializedName("y")
     int year;
-    String date;
     ReleaseDate(){
 
     }
-    public String getDate() {
-        return date;
+    public int getYear() {
+        return year;
     }
     @NonNull
     @Override
     public String toString() {
         return "ReleaseDate{" +
-                "date=" + date +
+                "date=" + year +
                 '}';
     }
 }

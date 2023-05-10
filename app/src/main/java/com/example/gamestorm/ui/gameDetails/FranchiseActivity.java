@@ -25,18 +25,25 @@ import com.example.gamestorm.repository.games.IGamesRepository;
 import com.example.gamestorm.ui.viewModel.GamesViewModel;
 import com.example.gamestorm.ui.viewModel.GamesViewModelFactory;
 import com.example.gamestorm.util.ServiceLocator;
+import com.example.gamestorm.util.sort.SortByAlphabet;
+import com.example.gamestorm.util.sort.SortByBestRating;
+import com.example.gamestorm.util.sort.SortByMostPopular;
+import com.example.gamestorm.util.sort.SortByMostRecent;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class FranchiseActivity extends AppCompatActivity {
-    private RecyclerView recyclerView;
     private ArrayList<RecyclerData> recyclerDataArrayList;
     private ProgressBar progressBar;
     private GamesViewModel gamesViewModel;
-
+    private MaterialButton sorting;
+    private RecyclerViewAdapter adapter;
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,8 +55,15 @@ public class FranchiseActivity extends AppCompatActivity {
         TextView franchiseTitleView = findViewById(R.id.franchiseTitle);
 
         progressBar = findViewById(R.id.progressBar);
-        recyclerView=findViewById(R.id.franchiseRecyclerView);
+        RecyclerView recyclerView = findViewById(R.id.franchiseRecyclerView);
+        sorting = findViewById(R.id.sorting_F);
+
         recyclerDataArrayList=new ArrayList<>();
+        adapter = new RecyclerViewAdapter(recyclerDataArrayList,this, false);
+        GridLayoutManager layoutManager=new GridLayoutManager(this,2);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setAdapter(adapter);
+
         if (franchise != null) {
             franchiseTitleView.setText(franchise);
             if (checkNetwork()) {
@@ -66,7 +80,9 @@ public class FranchiseActivity extends AppCompatActivity {
                 }
                 gamesViewModel.getFranchiseGames(franchise).observe(this, result -> {
                     progressBar.setVisibility(View.GONE);
-                    onSuccess(result);
+                    Collections.sort(result, new SortByMostRecent());
+                    showGames(result);
+                    setSorting(result);
                 });
             } else {
                 Toast.makeText(this, R.string.no_connection,Toast.LENGTH_LONG).show();
@@ -76,7 +92,25 @@ public class FranchiseActivity extends AppCompatActivity {
         }
 
     }
+    private int lastSelectedSortingParameter = 1;
+    private void setSorting(List<GameApiResponse> games) {
+        sorting.setOnClickListener(v -> {
+            final String[] listItems = getResources().getStringArray(R.array.sorting_parameters);
 
+            new MaterialAlertDialogBuilder(this)
+                    .setTitle(R.string.sort_by_dialog_title)
+                    .setSingleChoiceItems(listItems, lastSelectedSortingParameter, (dialog, i) -> {
+                        String sortingParameter = listItems[i];
+                        lastSelectedSortingParameter = i;
+                        if (!games.isEmpty()) {
+                            sortGames(games, sortingParameter);
+                        } else {
+                            Toast.makeText(this, R.string.no_connection_message, Toast.LENGTH_LONG).show();
+                        }
+                        dialog.dismiss();
+                    }).setNegativeButton(R.string.cancel_text, (dialogInterface, i) -> dialogInterface.dismiss()).show();
+        });
+    }
     private boolean checkNetwork() {
         ConnectivityManager connectivityManager
                 = (ConnectivityManager) getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -84,15 +118,35 @@ public class FranchiseActivity extends AppCompatActivity {
         return activeNetworkInfo != null;
     }
 
-    public void onSuccess(List<GameApiResponse> gamesList) {
+    public void showGames(List<GameApiResponse> gamesList) {
         progressBar.setVisibility(View.GONE);
+        recyclerDataArrayList.clear();
         for (GameApiResponse gameApiResponse : gamesList) {
             if (gameApiResponse.getCover() != null)
                 recyclerDataArrayList.add(new RecyclerData(gameApiResponse.getId(), gameApiResponse.getCover().getUrl()));
         }
-        RecyclerViewAdapter adapter=new RecyclerViewAdapter(recyclerDataArrayList,this, false);
-        GridLayoutManager layoutManager=new GridLayoutManager(this,2);
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
+    }
+
+    public void sortGames(List<GameApiResponse> games, String sortingParameter) {
+        switch (sortingParameter) {
+            case "Most popular":
+            case "Più popolare":
+                Collections.sort(games, new SortByMostPopular());
+                break;
+            case "Most recent":
+            case "Più recente":
+                Collections.sort(games, new SortByMostRecent());
+                break;
+            case "Best rating":
+            case "Voto migliore":
+                Collections.sort(games, new SortByBestRating());
+                break;
+            case "Alphabet":
+            case "Alfabeto":
+                Collections.sort(games, new SortByAlphabet());
+                break;
+        }
+        showGames(games);
     }
 }

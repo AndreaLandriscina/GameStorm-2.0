@@ -130,4 +130,20 @@ public class DataTypeConverter {
     public static String VideoListToString(List<Video> someObjects) {
         return gson.toJson(someObjects);
     }
+
+    @TypeConverter
+    public static List<ReleaseDate> stringToReleaseDatesList(String data) {
+        if (data == null) {
+            return Collections.emptyList();
+        }
+
+        Type listType = new TypeToken<List<ReleaseDate>>() {}.getType();
+
+        return gson.fromJson(data, listType);
+    }
+
+    @TypeConverter
+    public static String ReleaseDatesListToString(List<ReleaseDate> someObjects) {
+        return gson.toJson(someObjects);
+    }
 }

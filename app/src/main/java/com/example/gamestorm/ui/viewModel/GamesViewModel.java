@@ -20,12 +20,10 @@ public class GamesViewModel extends ViewModel {
     private MutableLiveData<List<GameApiResponse>> exploreGames;
     private MutableLiveData<List<GameApiResponse>> franchiseGames;
     private MutableLiveData<List<GameApiResponse>> companyGames;
-    private boolean firstLoading;
     private MutableLiveData<List<GameApiResponse>> genreGames;
 
     public GamesViewModel(IGamesRepository iGamesRepository) {
         this.iGamesRepository = iGamesRepository;
-        this.firstLoading = true;
     }
     public MutableLiveData<GameApiResponse> getGame(int id) {
         return iGamesRepository.fetchGame(id);
@@ -80,28 +78,17 @@ public class GamesViewModel extends ViewModel {
         return franchiseGames;
     }
 
-    public boolean isFirstLoading() {
-        return firstLoading;
-    }
-
-    public void setFirstLoading(boolean firstLoading) {
-        this.firstLoading = firstLoading;
-    }
-
     public MutableLiveData<List<GameApiResponse>> getWantedGames(boolean isFirstLoading) {
-        MutableLiveData<List<GameApiResponse>> wantedGamesListLiveData;
-        return wantedGamesListLiveData = iGamesRepository.getWantedGames(isFirstLoading);
+        return iGamesRepository.getWantedGames(isFirstLoading);
 
     }
 
     public MutableLiveData<List<GameApiResponse>> getPlayingGames(boolean isFirstLoading) {
-        MutableLiveData<List<GameApiResponse>> playingGamesListLiveData;
-        return playingGamesListLiveData = iGamesRepository.getPlayingGames(isFirstLoading);
+        return iGamesRepository.getPlayingGames(isFirstLoading);
     }
 
     public MutableLiveData<List<GameApiResponse>> getPlayedGames(boolean isFirstLoading) {
-        MutableLiveData<List<GameApiResponse>> playedGamesListLiveData;
-        return playedGamesListLiveData = iGamesRepository.getPlayedGames(isFirstLoading);
+        return iGamesRepository.getPlayedGames(isFirstLoading);
     }
     public void updateWantedGame(GameApiResponse game){
         iGamesRepository.updateWantedGame(game);
@@ -118,6 +105,10 @@ public class GamesViewModel extends ViewModel {
 
     public MutableLiveData<List<GameApiResponse>> getSearchedGames(String userInput) {
         return iGamesRepository.getSearchedGames(userInput);
+    }
+
+    public MutableLiveData<List<GameApiResponse>> getSearchedGames(String genre, String platform, String year) {
+        return iGamesRepository.getSearchedGames(genre, platform, year);
     }
 
     public MutableLiveData<List<GameApiResponse>> getSimilarGames(List<Integer> similarGames) {
