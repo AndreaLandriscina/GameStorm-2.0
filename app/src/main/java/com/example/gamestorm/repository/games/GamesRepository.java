@@ -14,10 +14,7 @@ import com.example.gamestorm.source.games.BaseSavedGamesDataSource;
 import com.example.gamestorm.source.games.GameCallback;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class GamesRepository implements IGamesRepository, GameCallback {
     private final BaseGamesDataSource gamesDataSource;
@@ -68,9 +65,9 @@ public class GamesRepository implements IGamesRepository, GameCallback {
     }
 
     @Override
-    public MutableLiveData<List<GameApiResponse>> fetchPopularGames(long lastUpdate) {
+    public MutableLiveData<List<GameApiResponse>> fetchPopularGames(long lastUpdate, boolean networkAvailable) {
         long currentTime = System.currentTimeMillis();
-        if (currentTime - lastUpdate > FRESH_TIMEOUT) {
+        if (currentTime - lastUpdate > FRESH_TIMEOUT && networkAvailable) {
             gamesDataSource.getPopularGames();
         } else {
             gamesLocalDataSource.getPopularGames();
@@ -79,9 +76,9 @@ public class GamesRepository implements IGamesRepository, GameCallback {
     }
 
     @Override
-    public MutableLiveData<List<GameApiResponse>> fetchBestGames(long lastUpdate) {
+    public MutableLiveData<List<GameApiResponse>> fetchBestGames(long lastUpdate, boolean networkAvailable) {
         long currentTime = System.currentTimeMillis();
-        if (currentTime - lastUpdate > FRESH_TIMEOUT) {
+        if (currentTime - lastUpdate > FRESH_TIMEOUT && networkAvailable) {
             gamesDataSource.getBestGames();
         } else {
             gamesLocalDataSource.getBestGames();
@@ -90,9 +87,9 @@ public class GamesRepository implements IGamesRepository, GameCallback {
     }
 
     @Override
-    public MutableLiveData<List<GameApiResponse>> fetchLatestGames(long lastUpdate) {
+    public MutableLiveData<List<GameApiResponse>> fetchLatestGames(long lastUpdate, boolean networkAvailable) {
         long currentTime = System.currentTimeMillis();
-        if (currentTime - lastUpdate > FRESH_TIMEOUT) {
+        if (currentTime - lastUpdate > FRESH_TIMEOUT && networkAvailable) {
             gamesDataSource.getLatestGames();
         } else {
             gamesLocalDataSource.getLatestGames();
@@ -101,9 +98,9 @@ public class GamesRepository implements IGamesRepository, GameCallback {
     }
 
     @Override
-    public MutableLiveData<List<GameApiResponse>> fetchIncomingGames(long lastUpdate) {
+    public MutableLiveData<List<GameApiResponse>> fetchIncomingGames(long lastUpdate, boolean networkAvailable) {
         long currentTime = System.currentTimeMillis();
-        if (currentTime - lastUpdate > FRESH_TIMEOUT) {
+        if (currentTime - lastUpdate > FRESH_TIMEOUT && networkAvailable) {
             gamesDataSource.getIncomingGames();
         } else {
             gamesLocalDataSource.getIncomingGames();
@@ -118,13 +115,10 @@ public class GamesRepository implements IGamesRepository, GameCallback {
     }
 
     @Override
-    public MutableLiveData<List<GameApiResponse>> fetchExploreGames(long lastUpdate) {
-        long currentTime = System.currentTimeMillis();
-        if (currentTime - lastUpdate > FRESH_TIMEOUT_EXPLORE) {
-            Log.i("riscarico","riscarico");
+    public MutableLiveData<List<GameApiResponse>> fetchExploreGames(boolean networkAvailable) {
+        if (networkAvailable) {
             gamesDataSource.getExploreGames();
         } else {
-            Log.i("recupero","recupero");
             gamesLocalDataSource.getExploreGames();
         }
         return exploreGames;

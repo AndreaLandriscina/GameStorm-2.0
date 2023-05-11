@@ -88,6 +88,7 @@ public class FranchiseActivity extends AppCompatActivity {
                 Toast.makeText(this, R.string.no_connection,Toast.LENGTH_LONG).show();
             }
         }  else {
+            sorting.setVisibility(View.GONE);
             franchiseTitleView.setText(R.string.no_results);
         }
 
@@ -118,6 +119,7 @@ public class FranchiseActivity extends AppCompatActivity {
         return activeNetworkInfo != null;
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     public void showGames(List<GameApiResponse> gamesList) {
         progressBar.setVisibility(View.GONE);
         recyclerDataArrayList.clear();

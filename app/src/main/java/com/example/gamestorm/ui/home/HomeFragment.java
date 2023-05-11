@@ -25,6 +25,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.gamestorm.adapter.HomeAdapter;
 import com.example.gamestorm.model.GameApiResponse;
@@ -109,6 +110,10 @@ public class HomeFragment extends Fragment {
         galleryLatestReleases = view.findViewById(R.id.homeGalleryLatestReleases);
         galleryIncoming = view.findViewById(R.id.homeGalleryIncoming);
 
+        if (!isNetworkAvailable()){
+            Toast.makeText(requireContext(), R.string.no_connection_message, Toast.LENGTH_SHORT).show();
+        }
+
         setShowAll();
 
         galleryForYou.setVisibility(View.VISIBLE);
@@ -160,10 +165,10 @@ public class HomeFragment extends Fragment {
     }
 
     private void observeViewModel(String lastUpdate) {
-        gamesViewModel.getPopularGames(Long.parseLong(lastUpdate)).observe(getViewLifecycleOwner(), result -> showGames(0, result));
-        gamesViewModel.getBestGames(Long.parseLong(lastUpdate)).observe(getViewLifecycleOwner(), result -> showGames(1, result));
-        gamesViewModel.getLatestGames(Long.parseLong(lastUpdate)).observe(getViewLifecycleOwner(), result -> showGames(2, result));
-        gamesViewModel.getIncomingGames(Long.parseLong(lastUpdate)).observe(getViewLifecycleOwner(), result -> showGames(3, result));
+        gamesViewModel.getPopularGames(Long.parseLong(lastUpdate), isNetworkAvailable()).observe(getViewLifecycleOwner(), result -> showGames(0, result));
+        gamesViewModel.getBestGames(Long.parseLong(lastUpdate), isNetworkAvailable()).observe(getViewLifecycleOwner(), result -> showGames(1, result));
+        gamesViewModel.getLatestGames(Long.parseLong(lastUpdate), isNetworkAvailable()).observe(getViewLifecycleOwner(), result -> showGames(2, result));
+        gamesViewModel.getIncomingGames(Long.parseLong(lastUpdate), isNetworkAvailable()).observe(getViewLifecycleOwner(), result -> showGames(3, result));
     }
 
     public void showGames(int countQuery, List<GameApiResponse> gameList) {

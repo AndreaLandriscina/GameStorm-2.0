@@ -7,12 +7,12 @@ import com.example.gamestorm.model.GameApiResponse;
 import java.util.List;
 
 public interface IGamesRepository {
-    MutableLiveData<List<GameApiResponse>> fetchPopularGames(long lastUpdate);
-    MutableLiveData<List<GameApiResponse>> fetchBestGames(long lastUpdate);
-    MutableLiveData<List<GameApiResponse>> fetchLatestGames(long lastUpdate);
-    MutableLiveData<List<GameApiResponse>> fetchIncomingGames(long lastUpdate);
+    MutableLiveData<List<GameApiResponse>> fetchPopularGames(long lastUpdate, boolean networkAvailable);
+    MutableLiveData<List<GameApiResponse>> fetchBestGames(long lastUpdate, boolean networkAvailable);
+    MutableLiveData<List<GameApiResponse>> fetchLatestGames(long lastUpdate, boolean networkAvailable);
+    MutableLiveData<List<GameApiResponse>> fetchIncomingGames(long lastUpdate, boolean networkAvailable);
     MutableLiveData<GameApiResponse> fetchGame(int id);
-    MutableLiveData<List<GameApiResponse>> fetchExploreGames(long lastUpdate);
+    MutableLiveData<List<GameApiResponse>> fetchExploreGames(boolean networkAvailable);
     MutableLiveData<List<GameApiResponse>> fetchCompanyGames(String company);
     MutableLiveData<List<GameApiResponse>> fetchFranchiseGames(String franchise);
     MutableLiveData<List<GameApiResponse>> fetchGenreGames(String genre);

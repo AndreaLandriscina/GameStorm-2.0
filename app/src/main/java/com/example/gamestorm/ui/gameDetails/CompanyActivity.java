@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
@@ -64,11 +65,11 @@ public class CompanyActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
 
-
         if (company != null){
             progressBar.setVisibility(View.VISIBLE);
             companyTitleView.setText(company);
         } else {
+            sorting.setVisibility(View.GONE);
             companyTitleView.setText(R.string.no_results);
         }
         if (checkNetwork()) {
@@ -119,6 +120,7 @@ public class CompanyActivity extends AppCompatActivity {
         return activeNetworkInfo != null;
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     public void showGames(List<GameApiResponse> gamesList) {
         progressBar.setVisibility(View.GONE);
         recyclerDataArrayList.clear();

@@ -34,24 +34,30 @@
                 android:src="@drawable/ic_baseline_account_circle_24"
                 tools:ignore="ContentDescription" />
         </androidx.cardview.widget.CardView>
+
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tab_layout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            app:tabIndicatorAnimationMode="elastic"
+            android:layout_marginTop="5dp">
 
             <com.google.android.material.tabs.TabItem
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:icon="@drawable/ic_wanted"
                 android:text="@string/wanted" />
 
             <com.google.android.material.tabs.TabItem
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:icon="@drawable/ic_playing"
                 android:text="@string/playing" />
 
             <com.google.android.material.tabs.TabItem
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:icon="@drawable/ic_played"
                 android:text="@string/playeds" />
 
         </com.google.android.material.tabs.TabLayout>

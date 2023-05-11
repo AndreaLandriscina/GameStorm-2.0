@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.ArrayMap;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
@@ -92,6 +93,10 @@ public class GameApiResponse {
         Map<String, String> id = null;
         if (videos != null){
             id = new ArrayMap<>();
+            if (videos.size() == 1){
+                id.put("?",videos.get(0).getVideo_id());
+                return id;
+            }
             for (Video video : videos){
                 if (video.getName().equals("Trailer")) {
                     id.put("Trailer", video.getVideo_id());
@@ -411,10 +416,13 @@ public class GameApiResponse {
 
     public String getFirstYear() {
         List<Integer> years = new ArrayList<>();
-        for (ReleaseDate date : getReleaseDates()){
-            years.add(date.getYear());
+        if (getReleaseDates() != null){
+            for (ReleaseDate date : getReleaseDates()){
+                years.add(date.getYear());
+            }
+            return Collections.min(years).toString();
         }
-        return Collections.min(years).toString();
+        return null;
     }
 }
 

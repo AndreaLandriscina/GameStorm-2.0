@@ -5,6 +5,11 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -13,16 +18,10 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ProgressBar;
-import android.widget.TextView;
-
+import com.example.gamestorm.R;
 import com.example.gamestorm.adapter.RecyclerData;
 import com.example.gamestorm.adapter.RecyclerProfileViewAdapter;
 import com.example.gamestorm.model.GameApiResponse;
-import com.example.gamestorm.R;
 import com.example.gamestorm.repository.games.IGamesRepository;
 import com.example.gamestorm.repository.user.IUserRepository;
 import com.example.gamestorm.ui.viewModel.GamesViewModel;
@@ -45,8 +44,6 @@ public class WantedFragment extends Fragment {
     private GamesViewModel gamesViewModel;
     private UserViewModel userViewModel;
     RecyclerProfileViewAdapter homeAdapter;
-
-    private TextView gamesNumber;
     private RecyclerView recyclerView;
     private TextView noGameTextView;
 
@@ -70,7 +67,6 @@ public class WantedFragment extends Fragment {
         recyclerView.setAdapter(homeAdapter);
         GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 3);
         recyclerView.setLayoutManager(layoutManager);
-        gamesNumber = requireView().findViewById(R.id.wantedNumber);
         progressBar = requireView().findViewById(R.id.progressBar);
         noGameTextView = requireView().findViewById(R.id.noGameText);
         noGameTextView.setVisibility(View.GONE);
@@ -102,10 +98,6 @@ public class WantedFragment extends Fragment {
 
             if (gameApiResponses.size() == 0){
                 noGameTextView.setVisibility(View.VISIBLE);
-            } else if (gameApiResponses.size() == 1){
-                gamesNumber.setText(R.string.one_wanted_game);
-            } else {
-                gamesNumber.setText(gameApiResponses.size() + " " + getString(R.string.wanted_games));
             }
             recyclerDataArrayList.clear();
             for (GameApiResponse gameApiResponse : gameApiResponses){

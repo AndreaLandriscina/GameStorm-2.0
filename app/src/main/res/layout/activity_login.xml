@@ -16,31 +16,37 @@
         android:text="@string/sign_in_with_your_email_and_password"
         android:textAlignment="center"
         android:textStyle="bold"
-        android:textSize="22sp" />
+        android:textSize="24sp" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        app:boxBackgroundColor="@android:color/transparent"
-        app:startIconDrawable="@drawable/ic_baseline_alternate_email_24">
+        app:boxCornerRadiusBottomStart="15dp"
+        app:boxCornerRadiusBottomEnd="15dp"
+        app:boxCornerRadiusTopEnd="15dp"
+        app:boxCornerRadiusTopStart="15dp"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+        app:startIconDrawable="@drawable/ic_baseline_alternate_email_24"
+        android:hint="@string/emailAddress"
+        app:endIconMode="clear_text">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/emailAddress"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@android:color/transparent"
-            android:fontFamily="@font/poppins_regular"
-            android:hint="@string/emailAddress"
-            android:inputType="textEmailAddress"
-            android:padding="17dp"
-            android:textCursorDrawable="@drawable/cursor_color" />
+             />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:boxBackgroundColor="@android:color/transparent"
+        android:layout_marginTop="15dp"
+        app:boxCornerRadiusBottomStart="15dp"
+        app:boxCornerRadiusBottomEnd="15dp"
+        app:boxCornerRadiusTopEnd="15dp"
+        app:boxCornerRadiusTopStart="15dp"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
         app:passwordToggleEnabled="true"
         app:startIconDrawable="@drawable/ic_baseline_password_24">
 
@@ -48,12 +54,9 @@
             android:id="@+id/password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@android:color/transparent"
-            android:fontFamily="@font/poppins_regular"
             android:hint="@string/password"
             android:inputType="textPassword"
-            android:maxLength="16"
-            android:padding="17dp" />
+            android:maxLength="16" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <TextView
@@ -72,7 +75,7 @@
         android:id="@+id/login"
         android:layout_width="200dp"
         android:layout_height="50dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="15dp"
         android:layout_gravity="center"
         android:fontFamily="@font/poppins_regular"
         android:text="@string/login"

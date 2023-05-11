@@ -106,9 +106,6 @@ public class GamesLocalDataSource extends BaseGamesLocalDataSource {
                 case "EXPLORE":
                     for (GameApiResponse gameApiResponse : gameApiResponses)
                         gameApiResponse.setExplore(true);
-                    sharedPreferencesUtil.writeStringData(SHARED_PREFERENCES_FILE_NAME,
-                            LAST_UPDATE_EXPLORE, String.valueOf(System.currentTimeMillis()));
-                    Collections.shuffle(gameApiResponses);
                     break;
                 case "WANTED":
                     for (GameApiResponse gameApiResponse : gameApiResponses)

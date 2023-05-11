@@ -44,7 +44,6 @@ public class PlayingFragment extends Fragment {
     private SharedPreferencesUtil sharedPreferencesUtil;
     RecyclerProfileViewAdapter homeAdapter;
     private ArrayList<RecyclerData> recyclerDataArrayList;
-    private TextView gamesNumber;
     private RecyclerView recyclerView;
     private TextView noGameTextView;
 
@@ -64,7 +63,6 @@ public class PlayingFragment extends Fragment {
         recyclerView.setAdapter(homeAdapter);
         GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 3);
         recyclerView.setLayoutManager(layoutManager);
-        gamesNumber = requireView().findViewById(R.id.playingNumber);
         progressBar = requireView().findViewById(R.id.progressBar);
         noGameTextView = requireView().findViewById(R.id.noGameText);
         noGameTextView.setVisibility(View.GONE);
@@ -86,7 +84,7 @@ public class PlayingFragment extends Fragment {
 
     }
 
-    @SuppressLint("SetTextI18n")
+    @SuppressLint({"SetTextI18n", "NotifyDataSetChanged"})
     private void observeViewModel() {
         progressBar.setVisibility(View.VISIBLE);
         sharedPreferencesUtil =
@@ -97,10 +95,6 @@ public class PlayingFragment extends Fragment {
         gamesViewModel.getPlayingGames(isFirstLoading).observe(getViewLifecycleOwner(), gameApiResponses -> {
             if (gameApiResponses.size() == 0) {
                 noGameTextView.setVisibility(View.VISIBLE);
-            } else if (gameApiResponses.size() == 1) {
-                gamesNumber.setText(getString(R.string.one_playing_game));
-            } else {
-                gamesNumber.setText(gameApiResponses.size() + " " + getString(R.string.playing_games));
             }
             recyclerDataArrayList.clear();
             for (GameApiResponse gameApiResponse : gameApiResponses) {

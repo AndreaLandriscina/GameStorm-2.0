@@ -1,8 +1,5 @@
 package com.example.gamestorm.ui.viewModel;
 
-import android.util.Log;
-
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -28,33 +25,33 @@ public class GamesViewModel extends ViewModel {
     public MutableLiveData<GameApiResponse> getGame(int id) {
         return iGamesRepository.fetchGame(id);
     }
-    public MutableLiveData<List<GameApiResponse>> getPopularGames(long lastUpdate) {
+    public MutableLiveData<List<GameApiResponse>> getPopularGames(long lastUpdate, boolean networkAvailable) {
         if (popularGames == null){
-            return popularGames = iGamesRepository.fetchPopularGames(lastUpdate);
+            return popularGames = iGamesRepository.fetchPopularGames(lastUpdate, networkAvailable);
         }
         return popularGames;
     }
-    public MutableLiveData<List<GameApiResponse>> getBestGames(long lastUpdate) {
+    public MutableLiveData<List<GameApiResponse>> getBestGames(long lastUpdate, boolean networkAvailable) {
         if (bestGames == null){
-            return bestGames = iGamesRepository.fetchBestGames(lastUpdate);
+            return bestGames = iGamesRepository.fetchBestGames(lastUpdate, networkAvailable);
         }
         return bestGames;
     }
-    public MutableLiveData<List<GameApiResponse>> getLatestGames(long lastUpdate) {
+    public MutableLiveData<List<GameApiResponse>> getLatestGames(long lastUpdate, boolean networkAvailable) {
         if (latestGames == null){
-            return latestGames = iGamesRepository.fetchLatestGames(lastUpdate);
+            return latestGames = iGamesRepository.fetchLatestGames(lastUpdate, networkAvailable);
         }
         return latestGames;
     }
-    public MutableLiveData<List<GameApiResponse>> getIncomingGames(long lastUpdate) {
+    public MutableLiveData<List<GameApiResponse>> getIncomingGames(long lastUpdate, boolean networkAvailable) {
         if (incomingGames == null) {
-            return incomingGames = iGamesRepository.fetchIncomingGames(lastUpdate);
+            return incomingGames = iGamesRepository.fetchIncomingGames(lastUpdate, networkAvailable);
         }
         return incomingGames;
     }
-    public MutableLiveData<List<GameApiResponse>> getExploreGames(long lastUpdate) {
-        if (exploreGames == null || exploreGames.getValue().isEmpty()){
-            return exploreGames = iGamesRepository.fetchExploreGames(lastUpdate);
+    public MutableLiveData<List<GameApiResponse>> getExploreGames(boolean networkAvailable) {
+        if ((exploreGames == null || exploreGames.getValue().isEmpty())){
+            return exploreGames = iGamesRepository.fetchExploreGames(networkAvailable);
         }
         return exploreGames;
     }

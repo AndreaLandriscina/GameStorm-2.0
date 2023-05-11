@@ -3,6 +3,7 @@ package com.example.gamestorm.ui.search;
 import static com.example.gamestorm.util.Constants.LAST_UPDATE_EXPLORE;
 import static com.example.gamestorm.util.Constants.SHARED_PREFERENCES_FILE_NAME;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Typeface;
@@ -124,6 +125,7 @@ public class SearchFragment extends Fragment {
         }
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @SuppressLint("NotifyDataSetChanged")
             @Override
             public boolean onQueryTextSubmit(String query) {
                 if (query.isEmpty()) {
@@ -309,8 +311,9 @@ public class SearchFragment extends Fragment {
 
     private void showExploreGames() {
         if (firstShowExplore) {
-            gamesViewModel.getExploreGames(0).observe(getViewLifecycleOwner(), result -> {
+            gamesViewModel.getExploreGames(isNetworkAvailable(requireContext())).observe(getViewLifecycleOwner(), result -> {
                 progressBar.setVisibility(View.GONE);
+                Collections.shuffle(result);
                 games = result;
                 exploreCopy.addAll(games);
                 firstShowExplore = false;
@@ -321,6 +324,7 @@ public class SearchFragment extends Fragment {
         }
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     public void showGamesOnRecyclerView(List<GameApiResponse> gamesList) {
         Log.i("mostro","mostro");
         progressBar.setVisibility(View.GONE);
