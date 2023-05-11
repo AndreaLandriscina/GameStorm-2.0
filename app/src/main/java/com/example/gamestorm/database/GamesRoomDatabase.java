@@ -13,7 +13,6 @@ import java.util.concurrent.Executors;
 @Database(entities = {GameApiResponse.class}, version = 1)
 public abstract class GamesRoomDatabase extends RoomDatabase {
     public abstract GamesDao gamesDao();
-
     private static volatile GamesRoomDatabase INSTANCE;
     private static final int NUMBER_OF_THREADS = Runtime.getRuntime().availableProcessors();
     public static final ExecutorService databaseWriteExecutor =

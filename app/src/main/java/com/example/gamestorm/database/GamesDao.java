@@ -15,13 +15,10 @@ import java.util.List;
 public interface GamesDao {
     @Query("SELECT * FROM GameApiResponse")
     List<GameApiResponse> getAll();
-
     @Query("SELECT * FROM GameApiResponse WHERE id = :id")
     GameApiResponse getGame(long id);
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     List<Long> insertGamesList(List<GameApiResponse> gameApiResponses);
-
     @Query("SELECT * FROM gameapiresponse WHERE is_popular = 1 ORDER BY follows DESC")
     List<GameApiResponse> getPopularGame();
     @Query("SELECT * FROM gameapiresponse WHERE is_best = 1 ORDER BY totalRating DESC")

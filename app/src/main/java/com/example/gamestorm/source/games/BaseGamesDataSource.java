@@ -4,7 +4,6 @@ import java.util.List;
 
 public abstract class BaseGamesDataSource {
     protected GameCallback gameCallback;
-
     public void setGameCallback(GameCallback gameCallback) {
         this.gameCallback = gameCallback;
     }

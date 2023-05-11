@@ -4,10 +4,6 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.example.gamestorm.model.User;
 
-import java.io.File;
-import java.util.List;
-import java.util.Set;
-
 public interface IUserRepository {
     MutableLiveData<User> getUser(String name, String email, String password, boolean isUserRegistered);
     MutableLiveData<User> getGoogleUser(String idToken);
@@ -19,6 +15,4 @@ public interface IUserRepository {
     void signUp(String name, String email, String password);
     void signIn(String email, String password);
     void signInWithGoogle(String token);
-    void saveUserPreferences(String favoriteCountry, Set<String> favoriteTopics, String idToken);
-
 }

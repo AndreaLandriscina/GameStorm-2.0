@@ -1,7 +1,5 @@
 package com.example.gamestorm.repository.user;
 
-import android.util.Log;
-
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.gamestorm.model.GameApiResponse;
@@ -11,9 +9,7 @@ import com.example.gamestorm.source.games.GameCallback;
 import com.example.gamestorm.source.user.BaseUserAuthenticationRemoteDataSource;
 import com.example.gamestorm.source.user.BaseUserDataRemoteDataSource;
 
-import java.io.File;
 import java.util.List;
-import java.util.Set;
 
 public class UserRepository implements IUserRepository, UserResponseCallback, GameCallback {
     private static final String TAG = UserRepository.class.getSimpleName();
@@ -99,12 +95,6 @@ public class UserRepository implements IUserRepository, UserResponseCallback, Ga
     @Override
     public void signInWithGoogle(String token) {
         userRemoteDataSource.signInWithGoogle(token);
-    }
-
-    @Override
-    public void saveUserPreferences(String favoriteCountry, Set<String> favoriteTopics, String idToken) {
-        userDataRemoteDataSource.saveUserPreferences(favoriteCountry, favoriteTopics, idToken);
-
     }
 
     @Override
