@@ -6,7 +6,6 @@ import static com.example.gamestorm.util.Constants.ENCRYPTED_DATA_FILE_NAME;
 import static com.example.gamestorm.util.Constants.ENCRYPTED_SHARED_PREFERENCES_FILE_NAME;
 import static com.example.gamestorm.util.Constants.ID_TOKEN;
 import static com.example.gamestorm.util.Constants.PASSWORD;
-import static com.example.gamestorm.util.Constants.PHOTOPROFILE;
 import static com.example.gamestorm.util.Constants.SHARED_PREFERENCES_FILE_NAME;
 import static com.example.gamestorm.util.Constants.SHARED_PREFERENCES_FIRST_LOADING_PLAYED;
 import static com.example.gamestorm.util.Constants.SHARED_PREFERENCES_FIRST_LOADING_PLAYING;

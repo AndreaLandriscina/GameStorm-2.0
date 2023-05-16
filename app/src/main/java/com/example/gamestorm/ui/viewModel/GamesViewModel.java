@@ -50,7 +50,7 @@ public class GamesViewModel extends ViewModel {
         return incomingGames;
     }
     public MutableLiveData<List<GameApiResponse>> getExploreGames(boolean networkAvailable) {
-        if ((exploreGames == null || exploreGames.getValue().isEmpty())){
+        if (exploreGames == null){
             return exploreGames = iGamesRepository.fetchExploreGames(networkAvailable);
         }
         return exploreGames;

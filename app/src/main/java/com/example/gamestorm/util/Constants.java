@@ -9,7 +9,7 @@ public class Constants {
     public static final String TOP_HEADLINES_ENDPOINT = "games";
     public static final String CLIENT_ID = "Client-ID";
     public static final String CLIENT_ID_VALUE = "w70u2nsn2gzl9g0xsbe3uvguva3zos";
-    public static final String TOKEN_API_VALUE = "Bearer nho1cwl3koa83t1trbf4eggbs064mf";
+    public static final String TOKEN_API_VALUE = "Bearer g5ii3offgar43vpgjg9i0vf73madhk"; //expires after some time
     public static final String DEFAULT_WEB_CLIENT_ID = "667206803957-4vkaelrskd7a6o3gn0698mop60ce9ips.apps.googleusercontent.com";
     public static final String TOKEN_API = "Authorization";
     public static final String CONTENT_TYPE = "Content-Type";

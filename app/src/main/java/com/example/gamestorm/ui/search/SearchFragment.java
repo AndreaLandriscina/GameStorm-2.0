@@ -1,19 +1,14 @@
 package com.example.gamestorm.ui.search;
 
-import static com.example.gamestorm.util.Constants.LAST_UPDATE_EXPLORE;
-import static com.example.gamestorm.util.Constants.SHARED_PREFERENCES_FILE_NAME;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -23,6 +18,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.ProgressBar;
@@ -37,13 +33,14 @@ import com.example.gamestorm.repository.games.IGamesRepository;
 import com.example.gamestorm.ui.viewModel.GamesViewModel;
 import com.example.gamestorm.ui.viewModel.GamesViewModelFactory;
 import com.example.gamestorm.util.ServiceLocator;
-import com.example.gamestorm.util.SharedPreferencesUtil;
 import com.example.gamestorm.util.sort.SortByAlphabet;
 import com.example.gamestorm.util.sort.SortByBestRating;
 import com.example.gamestorm.util.sort.SortByMostPopular;
 import com.example.gamestorm.util.sort.SortByMostRecent;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -73,7 +70,7 @@ public class SearchFragment extends Fragment {
     private String yearInput;
     private RecyclerView recyclerView;
     private TextView noGameTextView;
-    private SearchView searchView;
+    private TextInputEditText searchView;
 
     public SearchFragment() {
         // Required empty public constructor
@@ -89,7 +86,7 @@ public class SearchFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         games = new ArrayList<>();
-        searchView = view.findViewById(R.id.game_name_SV);
+        searchView = view.findViewById(R.id.searchView);
         userInput = "";
         yearInput = null;
         sorting = view.findViewById(R.id.sorting_B);
@@ -114,24 +111,32 @@ public class SearchFragment extends Fragment {
         recyclerView.setAdapter(adapter);
 
         searchLoading = view.findViewById(R.id.search_loading_PB);
-        SharedPreferencesUtil sharedPreferencesUtil = new SharedPreferencesUtil(requireActivity().getApplication());
-        Log.i("showExplore", String.valueOf(showExplore));
         if (showExplore) {
             showExploreGames();
-        } else if (showSearch){
+        } else if (showSearch) {
             showSearchedGames(null);
         } else {
             showGamesOnRecyclerView(exploreCopy);
         }
 
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @SuppressLint("NotifyDataSetChanged")
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                if (query.isEmpty()) {
-                    showExploreGames();
-                }
+        setSearchView();
+        TextInputLayout searchViewLayout = requireView().findViewById(R.id.searchViewLayout);
+        searchViewLayout.setEndIconOnClickListener(v -> {
+            searchView.setText("");
+            resetStatus();
+        });
+        setSorting();
+        setFilters();
+    }
 
+    private void setSearchView() {
+        searchView.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                String query = v.getText().toString();
+                if (query.isEmpty()) {
+                    resetStatus();
+                    return false;
+                }
                 hideKeyboard();
                 showExplore = false;
                 if (!games.isEmpty()) {
@@ -140,12 +145,7 @@ public class SearchFragment extends Fragment {
                 }
 
                 if (getContext() != null && isNetworkAvailable(getContext())) {
-                    if (query.isEmpty()) {
-                        return false;
-                    } else {
-                        userInput = query;
-                    }
-                    //timestamp per ottenere solo giochi già usciti su igdb si sono giochi che devono ancora uscire e che non hanno informazioni utili per l'utente)
+                    userInput = query;
                     searchLoading.setVisibility(View.VISIBLE);
                     showSearch = true;
                     showSearchedGames(query);
@@ -155,18 +155,8 @@ public class SearchFragment extends Fragment {
                     return false;
                 }
             }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                if (newText.isEmpty() && !showExplore) {
-                    resetStatus();
-                }
-                return false;
-            }
+            return false;
         });
-
-        setSorting();
-        setFilters();
     }
 
     private void hideKeyboard() {
@@ -228,12 +218,11 @@ public class SearchFragment extends Fragment {
                             recyclerView.setVisibility(View.INVISIBLE);
                             progressBar.setVisibility(View.VISIBLE);
                         } else {
-                            Log.i("reset","reset");
+                            Log.i("reset", "reset");
                             resetStatus();
                             return;
                         }
-                        userInput = searchView.getQuery().toString();
-                        if (userInput.isEmpty()) {
+                        if (!showSearch) {
                             if (genreInput.equals(genres[0]))
                                 genreInput = null;
                             if (platformInput.equals(platforms[0]))
@@ -326,11 +315,11 @@ public class SearchFragment extends Fragment {
 
     @SuppressLint("NotifyDataSetChanged")
     public void showGamesOnRecyclerView(List<GameApiResponse> gamesList) {
-        Log.i("mostro","mostro");
+        Log.i("mostro", "mostro");
         progressBar.setVisibility(View.GONE);
         recyclerView.setVisibility(View.VISIBLE);
         noGameTextView = requireView().findViewById(R.id.noResultText);
-        if (!gamesList.isEmpty()){
+        if (!gamesList.isEmpty()) {
             sorting.setVisibility(View.VISIBLE);
             filters.setVisibility(View.VISIBLE);
             noGameTextView.setVisibility(View.GONE);

@@ -161,5 +161,7 @@
     <string name="it_s_completely_free_nwhat_are_you_waiting_for">It\'s completely FREE!What are you waiting for?</string>
     <string name="sign_up_with_your_mail_and_password">Sign up with your mail and password</string>
     <string name="all_games">All games</string>
+    <string name="filters">filters</string>
+    <string name="sort_by">sort by</string>
 
 </resources>

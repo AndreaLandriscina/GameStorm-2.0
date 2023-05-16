@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 import androidx.viewpager2.widget.ViewPager2;
@@ -38,8 +39,6 @@ import com.example.gamestorm.ui.viewModel.UserViewModelFactory;
 import com.example.gamestorm.util.Constants;
 import com.example.gamestorm.util.ServiceLocator;
 import com.example.gamestorm.util.SharedPreferencesUtil;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.material.tabs.TabLayout;
 import com.squareup.picasso.Picasso;
 
@@ -146,10 +145,13 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
                 menuInflater.inflate(R.menu.profile_menu, menu);
-                logout_option = menu.findItem(R.id.logout_option);
+            }
 
-                GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(requireContext());
-                logout_option.setVisible(userViewModel.getLoggedUser() != null || account != null);
+            @Override
+            public void onPrepareMenu(@NonNull Menu menu) {
+                MenuProvider.super.onPrepareMenu(menu);
+                logout_option = menu.findItem(R.id.logout_option);
+                logout_option.setVisible(userViewModel.getLoggedUser() != null);
             }
 
             @Override
@@ -171,7 +173,7 @@ public class ProfileFragment extends Fragment {
                 }
                 return true;
             }
-        });
+        }, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
     }
 
     @SuppressLint("SetTextI18n")
@@ -186,7 +188,11 @@ public class ProfileFragment extends Fragment {
                     Constants.SHARED_PREFERENCES_FIRST_LOADING_WANTED);
             //badge
             gamesViewModel.getWantedGames(isFirstLoading).observe(getViewLifecycleOwner(),gameApiResponses -> Objects.requireNonNull(tabLayout.getTabAt(0)).getOrCreateBadge().setNumber(gameApiResponses.size()));
+            isFirstLoading = sharedPreferencesUtil.readBooleanData(Constants.SHARED_PREFERENCES_FILE_NAME,
+                    Constants.SHARED_PREFERENCES_FIRST_LOADING_PLAYING);
             gamesViewModel.getPlayingGames(isFirstLoading).observe(getViewLifecycleOwner(),gameApiResponses -> Objects.requireNonNull(tabLayout.getTabAt(1)).getOrCreateBadge().setNumber(gameApiResponses.size()));
+            isFirstLoading = sharedPreferencesUtil.readBooleanData(Constants.SHARED_PREFERENCES_FILE_NAME,
+                    Constants.SHARED_PREFERENCES_FIRST_LOADING_PLAYED);
             gamesViewModel.getPlayedGames(isFirstLoading).observe(getViewLifecycleOwner(),gameApiResponses -> Objects.requireNonNull(tabLayout.getTabAt(2)).getOrCreateBadge().setNumber(gameApiResponses.size()));
         }
     }

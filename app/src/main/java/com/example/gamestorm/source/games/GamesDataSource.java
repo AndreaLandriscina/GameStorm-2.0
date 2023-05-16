@@ -51,7 +51,7 @@ public class GamesDataSource extends BaseGamesDataSource {
                         List<GameApiResponse> gameApiResponses = response.body();
                         gameCallback.onSuccessFromRemote(gameApiResponses, i);
                     } else {
-                        Log.e(getClass().getName(), response.message());
+                        Log.e(getClass().getName(), "API expired");
                     }
                 }
 

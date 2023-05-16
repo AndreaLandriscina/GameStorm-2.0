@@ -7,5 +7,4 @@
         android:icon="@drawable/ic_baseline_logout_24"
         android:title="@string/logout"
         app:showAsAction="ifRoom" />
-
 </menu>

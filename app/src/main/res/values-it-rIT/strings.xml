@@ -83,6 +83,8 @@
     <string name="it_s_completely_free_nwhat_are_you_waiting_for">È tutto GRATIS! Cosa aspettI?</string>
     <string name="sign_up_with_your_mail_and_password">Iscriviti con la tua mail e password</string>
     <string name="all_games">Tutti i giochi</string>
+    <string name="filters">Filtri</string>
+    <string name="sort_by">Ordina per</string>
 
 
 </resources>

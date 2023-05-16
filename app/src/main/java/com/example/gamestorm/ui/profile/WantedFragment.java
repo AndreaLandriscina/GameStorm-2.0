@@ -98,6 +98,8 @@ public class WantedFragment extends Fragment {
 
             if (gameApiResponses.size() == 0){
                 noGameTextView.setVisibility(View.VISIBLE);
+            } else {
+                noGameTextView.setVisibility(View.GONE);
             }
             recyclerDataArrayList.clear();
             for (GameApiResponse gameApiResponse : gameApiResponses){

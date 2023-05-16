@@ -1,11 +1,4 @@
 package com.example.gamestorm.model;
-
-import android.net.Uri;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
 public class User {
     private String id;
     private String name;

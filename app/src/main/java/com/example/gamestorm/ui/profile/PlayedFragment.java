@@ -102,6 +102,8 @@ public class PlayedFragment extends Fragment {
         gamesViewModel.getPlayedGames(isFirstLoading).observe(getViewLifecycleOwner(), gameApiResponses -> {
             if (gameApiResponses.size() == 0){
                 noGameTextView.setVisibility(View.VISIBLE);
+            } else {
+                noGameTextView.setVisibility(View.GONE);
             }
             recyclerDataArrayList.clear();
             for (GameApiResponse gameApiResponse : gameApiResponses){
