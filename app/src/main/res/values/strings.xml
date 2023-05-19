@@ -73,7 +73,7 @@
     <string name="genre_text">Genre</string>
     <string name="platform_text">Platform</string>
     <string name="release_year_text">Release Year</string>
-    <string name="no_connection_message">No internet connection, functionality are limited</string>
+    <string name="no_connection_message">No internet connection, functionalities are limited</string>
     <string name="welcome_back">Welcome back </string>
     <string name="no_game">The list is empty!\nStart saving some games!</string>
     <string name="video_choose">What do you want to watch?</string>
@@ -81,6 +81,16 @@
     <string-array name="platforms">
         <item>Any platform</item>
         <item>Android</item>
+        <item>PC (Microsoft Windows)</item>
+        <item>PlayStation</item>
+        <item>PlayStation 2</item>
+        <item>PlayStation 3</item>
+        <item>PlayStation 4</item>
+        <item>PlayStation 5</item>
+        <item>Wii U</item>
+        <item>Xbox</item>
+        <item>Xbox 360</item>
+        <item>Xbox One</item>
         <item>Apple II</item>
         <item>Apple IIGS</item>
         <item>BlackBerry OS</item>
@@ -105,12 +115,6 @@
         <item>Oculus Go</item>
         <item>Oculus Rift</item>
         <item>Oculus Quest</item>
-        <item>PC (Microsoft Windows)</item>
-        <item>PlayStation</item>
-        <item>PlayStation 2</item>
-        <item>PlayStation 3</item>
-        <item>PlayStation 4</item>
-        <item>PlayStation 5</item>
         <item>PlayStation Portable</item>
         <item>PlayStation Vita</item>
         <item>PlayStation VR</item>
@@ -121,10 +125,6 @@
         <item>Windows Mobile</item>
         <item>Windows Mixed Reality</item>
         <item>Windows Phone</item>
-        <item>Wii U</item>
-        <item>Xbox</item>
-        <item>Xbox 360</item>
-        <item>Xbox One</item>
     </string-array>
 
     <string-array name="genres">
@@ -149,9 +149,6 @@
         <item>Turn-based strategy (TBS)</item>
 
     </string-array>
-    <string name="one_wanted_game">One wanted game</string>
-    <string name="one_playing_game">One playing game</string>
-    <string name="one_played_game">One played game</string>
     <string name="wanted_games">wanted games</string>
     <string name="playing_games">playing games</string>
     <string name="played_games">played games</string>
@@ -161,7 +158,9 @@
     <string name="it_s_completely_free_nwhat_are_you_waiting_for">It\'s completely FREE!What are you waiting for?</string>
     <string name="sign_up_with_your_mail_and_password">Sign up with your mail and password</string>
     <string name="all_games">All games</string>
-    <string name="filters">filters</string>
-    <string name="sort_by">sort by</string>
+    <string name="filters">Filters</string>
+    <string name="sort_by">Sort by</string>
+    <string name="offline">You are offline!</string>
+    <string name="descending_order">Reverse order</string>
 
 </resources>

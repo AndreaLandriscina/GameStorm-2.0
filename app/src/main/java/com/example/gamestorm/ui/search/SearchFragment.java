@@ -9,6 +9,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -39,8 +40,10 @@ import com.example.gamestorm.util.sort.SortByMostPopular;
 import com.example.gamestorm.util.sort.SortByMostRecent;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.materialswitch.MaterialSwitch;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.android.material.textview.MaterialTextView;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -51,11 +54,11 @@ import java.util.List;
 
 public class SearchFragment extends Fragment {
     private static boolean showSearch = false;
+    private static boolean showFiltered = false;
     private static boolean showExplore = true;
     private static boolean firstShowExplore = true;
     private List<GameApiResponse> games;
     private static List<GameApiResponse> exploreCopy = new ArrayList<>();
-    private String userInput;
     private MaterialButton sorting;
     private MaterialButton filters;
     private ProgressBar searchLoading;
@@ -71,6 +74,8 @@ public class SearchFragment extends Fragment {
     private RecyclerView recyclerView;
     private TextView noGameTextView;
     private TextInputEditText searchView;
+    private LinearLayoutCompat inputTextLayout;
+    private boolean reverse;
 
     public SearchFragment() {
         // Required empty public constructor
@@ -87,8 +92,7 @@ public class SearchFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         games = new ArrayList<>();
         searchView = view.findViewById(R.id.searchView);
-        userInput = "";
-        yearInput = null;
+        yearInput = "";
         sorting = view.findViewById(R.id.sorting_B);
         filters = view.findViewById(R.id.filters_B);
         sortingParameter = "";
@@ -115,6 +119,8 @@ public class SearchFragment extends Fragment {
             showExploreGames();
         } else if (showSearch) {
             showSearchedGames(null);
+        } else if (showFiltered){
+            showFilteredGames(null,null);
         } else {
             showGamesOnRecyclerView(exploreCopy);
         }
@@ -129,6 +135,7 @@ public class SearchFragment extends Fragment {
         setFilters();
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private void setSearchView() {
         searchView.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
@@ -145,7 +152,6 @@ public class SearchFragment extends Fragment {
                 }
 
                 if (getContext() != null && isNetworkAvailable(getContext())) {
-                    userInput = query;
                     searchLoading.setVisibility(View.VISIBLE);
                     showSearch = true;
                     showSearchedGames(query);
@@ -174,7 +180,8 @@ public class SearchFragment extends Fragment {
             games.addAll(gameApiResponses);
             showExplore = false;
             searchLoading.setVisibility(View.GONE);
-            showGamesOnRecyclerView(gameApiResponses);
+            sortGames("Most Popular");
+            showGamesOnRecyclerView(games);
         });
     }
 
@@ -218,25 +225,30 @@ public class SearchFragment extends Fragment {
                             recyclerView.setVisibility(View.INVISIBLE);
                             progressBar.setVisibility(View.VISIBLE);
                         } else {
-                            Log.i("reset", "reset");
                             resetStatus();
                             return;
                         }
+                        inputTextLayout = requireView().findViewById(R.id.inputTextLayout);
+
+                        inputTextLayout.removeAllViews();
                         if (!showSearch) {
+
                             if (genreInput.equals(genres[0]))
-                                genreInput = null;
+                                genreInput = "";
+                            else {
+                                addFilterView(genreInput);
+                            }
                             if (platformInput.equals(platforms[0]))
-                                platformInput = null;
+                                platformInput = "";
+                            else {
+                                addFilterView(platformInput);
+                            }
                             if (yearInput.equals(years.get(0)))
-                                yearInput = null;
-                            gamesViewModel.getSearchedGames(genreInput, platformInput, yearInput).observe(getViewLifecycleOwner(), gameApiResponses -> {
-                                games = new ArrayList<>(gameApiResponses);
-                                if (!sortingParameter.isEmpty()) {
-                                    sortGames(sortingParameter);
-                                }
-                                showExplore = false;
-                                showGamesOnRecyclerView(games);
-                            });
+                                yearInput = "";
+                            else {
+                                addFilterView(yearInput);
+                            }
+                            showFilteredGames(genreInput, platformInput);
                         } else {
                             List<GameApiResponse> gamesFiltered = new ArrayList<>();
                             boolean genreOk = false, platformOk = false, yearOk = false;
@@ -279,21 +291,55 @@ public class SearchFragment extends Fragment {
         });
     }
 
+    private void addFilterView(String genreInput) {
+        LinearLayoutCompat.LayoutParams params = new LinearLayoutCompat.LayoutParams(
+                LinearLayoutCompat.LayoutParams.WRAP_CONTENT,
+                LinearLayoutCompat.LayoutParams.WRAP_CONTENT
+        );
+        params.setMargins(0, 0, 15, 0);
+        MaterialTextView textView = new MaterialTextView(requireContext());
+        textView.setText(genreInput);
+        textView.setTextSize(16);
+        textView.setPadding(15, 5, 15, 5);
+        textView.setBackgroundResource(R.drawable.border_text_view);
+        textView.setLayoutParams(params);
+        inputTextLayout.addView(textView);
+    }
+
+    private void showFilteredGames(String genreInput, String platformInput) {
+        gamesViewModel.getFilteredGames(genreInput, platformInput, yearInput).observe(getViewLifecycleOwner(), gameApiResponses -> {
+            games = new ArrayList<>(gameApiResponses);
+            if (!sortingParameter.isEmpty()) {
+                sortGames(sortingParameter);
+            } else {
+                sortGames("Most popular");
+            }
+            showExplore = false;
+            showFiltered = true;
+            showGamesOnRecyclerView(games);
+        });
+    }
+
     private void setSorting() {
         sorting.setOnClickListener(v -> {
+            final View customLayout = getLayoutInflater().inflate(R.layout.dialog_sort, null);
+            MaterialSwitch switchView = customLayout.findViewById(R.id.materialSwitch);
             final String[] listItems = requireContext().getResources().getStringArray(R.array.sorting_parameters);
             new MaterialAlertDialogBuilder(requireContext())
                     .setTitle(R.string.sort_by_dialog_title)
+                    .setView(customLayout)
                     .setSingleChoiceItems(listItems, lastSelectedSortingParameter, (dialog, i) -> {
                         sortingParameter = listItems[i];
                         lastSelectedSortingParameter = i;
+                    })
+                    .setPositiveButton(R.string.confirm_text, (dialog, which) -> {
                         if (isNetworkAvailable(requireContext()) || !games.isEmpty()) {
+                            reverse = switchView.isChecked();
                             sortGames(sortingParameter);
                             showGamesOnRecyclerView(games);
                         } else {
                             Toast.makeText(requireContext(), R.string.no_connection_message, Toast.LENGTH_LONG).show();
                         }
-                        dialog.dismiss();
                     }).setNegativeButton(R.string.cancel_text, (dialogInterface, i) -> dialogInterface.dismiss()).show();
         });
     }
@@ -303,7 +349,7 @@ public class SearchFragment extends Fragment {
             gamesViewModel.getExploreGames(isNetworkAvailable(requireContext())).observe(getViewLifecycleOwner(), result -> {
                 progressBar.setVisibility(View.GONE);
                 Collections.shuffle(result);
-                games = result;
+                games.addAll(result);
                 exploreCopy.addAll(games);
                 firstShowExplore = false;
                 showGamesOnRecyclerView(result);
@@ -324,7 +370,7 @@ public class SearchFragment extends Fragment {
             filters.setVisibility(View.VISIBLE);
             noGameTextView.setVisibility(View.GONE);
             List<GameApiResponse> temp = new ArrayList<>();
-            if (yearInput != null) {
+            if (!yearInput.equals("")) {
                 for (GameApiResponse gameApiResponse : gamesList) {
                     if (gameApiResponse.getFirstYear().equals(yearInput)) {
                         temp.add(gameApiResponse);
@@ -367,6 +413,8 @@ public class SearchFragment extends Fragment {
                 Collections.sort(games, new SortByAlphabet());
                 break;
         }
+        if (reverse)
+            Collections.reverse(games);
     }
 
     public void resetStatus() {
@@ -377,11 +425,14 @@ public class SearchFragment extends Fragment {
         lastSelectedReleaseYear = 0;
         filters.setVisibility(View.VISIBLE);
         sorting.setVisibility(View.VISIBLE);
-        games.clear();
+        games.addAll(exploreCopy);
         noGameTextView.setVisibility(View.GONE);
         hideKeyboard();
         showSearch = false;
-        yearInput = null;
+        showFiltered = false;
+        yearInput = "";
+        LinearLayoutCompat layout = requireView().findViewById(R.id.inputTextLayout);
+        layout.removeAllViews();
         showGamesOnRecyclerView(exploreCopy);
     }
 

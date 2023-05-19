@@ -110,7 +110,6 @@ public class GameActivity extends AppCompatActivity {
     }
 
     @SuppressLint("SetTextI18n")
-
     public void onSuccess() {
         showGameCover();
         showGameName();

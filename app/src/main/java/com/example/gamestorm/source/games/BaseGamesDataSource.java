@@ -24,5 +24,5 @@ public abstract class BaseGamesDataSource {
     public abstract void getAllBestGames();
     public abstract void getAllLatestGames();
     public abstract void getAllIncomingGames();
-    public abstract void getSearchedGames(String genre, String platform, String year);
+    public abstract void getFilteredGames(String genre, String platform, String year);
 }

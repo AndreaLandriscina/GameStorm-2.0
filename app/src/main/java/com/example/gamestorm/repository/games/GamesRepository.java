@@ -240,10 +240,13 @@ public class GamesRepository implements IGamesRepository, GameCallback {
     }
 
     @Override
-    public MutableLiveData<List<GameApiResponse>> getSearchedGames(String genre, String platform, String year) {
-        gamesDataSource.getSearchedGames(genre, platform, year);
-        if (filteredGamesMutableLiveData.getValue() != null && !filteredGamesMutableLiveData.getValue().isEmpty())
-            filteredGamesMutableLiveData = new MutableLiveData<>();
+    public MutableLiveData<List<GameApiResponse>> getFilteredGames(String genre, String platform, String year) {
+        if (genre != null || platform != null){
+            gamesDataSource.getFilteredGames(genre, platform, year);
+        }
+
+        //if (filteredGamesMutableLiveData.getValue() != null && !filteredGamesMutableLiveData.getValue().isEmpty())
+        //    filteredGamesMutableLiveData = new MutableLiveData<>();
         return filteredGamesMutableLiveData;
     }
 

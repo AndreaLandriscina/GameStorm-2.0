@@ -104,8 +104,8 @@ public class GamesViewModel extends ViewModel {
         return iGamesRepository.getSearchedGames(userInput);
     }
 
-    public MutableLiveData<List<GameApiResponse>> getSearchedGames(String genre, String platform, String year) {
-        return iGamesRepository.getSearchedGames(genre, platform, year);
+    public MutableLiveData<List<GameApiResponse>> getFilteredGames(String genre, String platform, String year) {
+        return iGamesRepository.getFilteredGames(genre, platform, year);
     }
 
     public MutableLiveData<List<GameApiResponse>> getSimilarGames(List<Integer> similarGames) {

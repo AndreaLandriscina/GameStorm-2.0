@@ -125,17 +125,17 @@ public class GamesDataSource extends BaseGamesDataSource {
     }
 
     @Override
-    public void getSearchedGames(String genre, String platform, String year) {
+    public void getFilteredGames(String genre, String platform, String year) {
         String query = fields;
         query += "where total_rating != null & cover.url != null & first_release_date != null";
         if (genre != null || platform != null || year != null) {
-            if (genre != null) {
+            if (!genre.isEmpty()) {
                 query += " & genres.name = \"" + genre + "\"";
             }
-            if (platform != null){
+            if (!platform.isEmpty()){
                 query += " & platforms.name = \"" + platform + "\"";
             }
-            if (year != null){
+            if (!year.isEmpty()){
                 query += " & release_dates.y = " + year;
             }
         }

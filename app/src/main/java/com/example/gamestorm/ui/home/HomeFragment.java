@@ -71,7 +71,6 @@ public class HomeFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         IUserRepository userRepository = ServiceLocator.getInstance().
                 getUserRepository(requireActivity().getApplication());
         userViewModel = new ViewModelProvider(
@@ -111,7 +110,10 @@ public class HomeFragment extends Fragment {
         galleryIncoming = view.findViewById(R.id.homeGalleryIncoming);
 
         if (!isNetworkAvailable()){
-            Toast.makeText(requireContext(), R.string.no_connection_message, Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), R.string.no_connection_message, Toast.LENGTH_LONG).show();
+            if (isLogged()){
+                loginTextView.setText(R.string.offline);
+            }
         }
 
         setShowAll();

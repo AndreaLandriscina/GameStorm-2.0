@@ -67,24 +67,23 @@
     <string name="genre_text">Genere</string>
     <string name="platform_text">Piattaforma</string>
     <string name="release_year_text">Anno di rilascio</string>
-    <string name="no_connection_message">Nessuna connessione ad internet, le funzionalità sono limitat.</string>
+    <string name="no_connection_message">Nessuna connessione ad internet, le funzionalità sono limitate.</string>
     <string name="welcome_back">"Bentornato "</string>
     <string name="no_game">La lista è vuota! Inizia a salvare qualche gioco!</string>
     <string name="video_choose">Cosa vuoi vedere?</string>
-    <string name="one_wanted_game">Un gioco desiderato</string>
-    <string name="one_playing_game">Un gioco attualmente in gioco</string>
-    <string name="one_played_game">Un gioco giocato</string>
     <string name="wanted_games">giochi desiderati</string>
     <string name="playing_games">giochi attualmente in gioco</string>
     <string name="played_games">giochi giocati</string>
     <string name="show_all">Mostra tutti</string>
-    <string name="sign_in_with_your_email_and_password">Registrati con la tua mail e password</string>
-    <string name="sign_in_with_google">Registrati con Google</string>
+    <string name="sign_in_with_your_email_and_password">Accedi con la tua mail e password</string>
+    <string name="sign_in_with_google">Accedi con Google</string>
     <string name="it_s_completely_free_nwhat_are_you_waiting_for">È tutto GRATIS! Cosa aspettI?</string>
     <string name="sign_up_with_your_mail_and_password">Iscriviti con la tua mail e password</string>
     <string name="all_games">Tutti i giochi</string>
     <string name="filters">Filtri</string>
     <string name="sort_by">Ordina per</string>
+    <string name="offline">Sei offline!</string>
+    <string name="descending_order">Ordine inverso</string>
 
 
 </resources>
