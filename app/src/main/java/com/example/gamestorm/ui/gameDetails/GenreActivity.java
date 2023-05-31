@@ -67,6 +67,9 @@ public class GenreActivity extends AppCompatActivity{
 
         if (checkNetwork()) {
             progressBar.setVisibility(View.VISIBLE);
+        } else {
+            genreTitle.setText(R.string.no_connection);
+            sorting.setVisibility(View.GONE);
         }
         IGamesRepository iGamesRepository;
         try {

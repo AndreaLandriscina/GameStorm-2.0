@@ -2,7 +2,9 @@ package com.example.gamestorm.ui.profile;
 
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
+import android.content.ClipData;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -151,6 +153,10 @@ public class ProfileFragment extends Fragment {
             public void onPrepareMenu(@NonNull Menu menu) {
                 MenuProvider.super.onPrepareMenu(menu);
                 logout_option = menu.findItem(R.id.logout_option);
+
+                if ((getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES) {
+                    logout_option.setIcon(R.drawable.ic_logout_light);
+                }
                 logout_option.setVisible(userViewModel.getLoggedUser() != null);
             }
 

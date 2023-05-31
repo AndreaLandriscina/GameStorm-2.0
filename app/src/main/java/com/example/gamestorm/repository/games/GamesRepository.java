@@ -14,6 +14,8 @@ import com.example.gamestorm.source.games.BaseSavedGamesDataSource;
 import com.example.gamestorm.source.games.GameCallback;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class GamesRepository implements IGamesRepository, GameCallback {
@@ -313,7 +315,6 @@ public class GamesRepository implements IGamesRepository, GameCallback {
                 searchedGamesMutableLiveData.postValue(gameApiResponses);
                 break;
             case "FILTERED" :
-                Log.i("FILTERED","FILTERED");
                 filteredGamesMutableLiveData.postValue(gameApiResponses);
                 break;
             case "FRANCHISE":
@@ -453,6 +454,8 @@ public class GamesRepository implements IGamesRepository, GameCallback {
             for (GameApiResponse gameApiResponse : games) {
                 gameApiResponse.setSynchronized(true);
             }
+            //da firebase arrivano in un ordine particolare ma devo mostrarli in ordine di aggiunta
+            Collections.sort(games, Comparator.comparing(GameApiResponse::getAdded));
         }
         switch (wanted) {
             case "WANTED":

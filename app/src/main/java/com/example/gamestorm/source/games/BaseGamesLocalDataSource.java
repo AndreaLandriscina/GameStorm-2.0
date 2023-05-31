@@ -24,6 +24,5 @@ public abstract class BaseGamesLocalDataSource {
     public abstract void getBestGames();
     public abstract void getLatestGames();
     public abstract void getIncomingGames();
-
     public abstract void getExploreGames();
 }

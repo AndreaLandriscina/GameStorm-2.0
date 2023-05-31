@@ -44,7 +44,8 @@
     <string name="desired">Desired</string>
     <string name="playing">Playing</string>
     <string name="playeds">Played</string>
-    <string name="login_to_see_this">Sign in for saving your favourite games!</string>
+    <string name="login_to_see_this1">Sign in to save your favourite games!</string>
+    <string name="login_to_see_this2">Sign in to save games!</string>
     <string name="logout" translatable="false">Logout</string>
     <string name="logout_successfully">Logout Successfully</string>
     <string name="logout_in_progress" translatable="false">Logout...</string>

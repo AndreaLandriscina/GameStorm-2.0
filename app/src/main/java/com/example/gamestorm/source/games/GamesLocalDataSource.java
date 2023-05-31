@@ -237,7 +237,6 @@ public class GamesLocalDataSource extends BaseGamesLocalDataSource {
     public void getWantedGames() {
         GamesRoomDatabase.databaseWriteExecutor.execute(() -> {
             List<GameApiResponse> gameApiResponses = gamesDao.getWantedGame();
-            Log.i("LOCALE-WANTED", gameApiResponses.toString());
             gameCallback.onGameWantedStatusChanged(gameApiResponses);
         });
     }
@@ -246,7 +245,6 @@ public class GamesLocalDataSource extends BaseGamesLocalDataSource {
     public void getPlayingGames() {
         GamesRoomDatabase.databaseWriteExecutor.execute(() -> {
             List<GameApiResponse> gameApiResponses = gamesDao.getPlayingGame();
-            Log.i("LOCALE-PLAYING", gameApiResponses.toString());
             gameCallback.onGamePlayingStatusChanged(gameApiResponses);
         });
     }
@@ -255,7 +253,6 @@ public class GamesLocalDataSource extends BaseGamesLocalDataSource {
     public void getPlayedGames() {
         GamesRoomDatabase.databaseWriteExecutor.execute(() -> {
             List<GameApiResponse> gameApiResponses = gamesDao.getPlayedGame();
-            Log.i("LOCALE-PLAYED", gameApiResponses.toString());
             gameCallback.onGamePlayedStatusChanged(gameApiResponses);
         });
     }

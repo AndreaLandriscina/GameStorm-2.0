@@ -74,6 +74,9 @@ public class CompanyActivity extends AppCompatActivity {
         }
         if (checkNetwork()) {
             progressBar.setVisibility(View.VISIBLE);
+        } else {
+            companyTitleView.setText(R.string.no_connection);
+            sorting.setVisibility(View.GONE);
         }
         IGamesRepository iGamesRepository;
         try {

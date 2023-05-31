@@ -40,7 +40,7 @@ public class SavedGamesDataSource extends BaseSavedGamesDataSource {
                         }
                         else {
                             List<GameApiResponse> gameApiResponses = new ArrayList<>();
-                            for(DataSnapshot ds : task.getResult().getChildren()) {
+                            for (DataSnapshot ds : task.getResult().getChildren()) {
                                 GameApiResponse gameApiResponse = ds.getValue(GameApiResponse.class);
                                 gameApiResponse.setSynchronized(true);
                                 gameApiResponses.add(gameApiResponse);

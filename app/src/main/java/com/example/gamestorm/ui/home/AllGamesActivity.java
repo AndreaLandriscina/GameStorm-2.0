@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
@@ -49,19 +50,17 @@ public class AllGamesActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerView);
         recyclerDataArrayList = new ArrayList<>();
 
-        progressBar.setVisibility(View.VISIBLE);
-
-
-        //if (checkNetwork()) {
-        //    progressBar.setVisibility(View.VISIBLE);
-        //}
+        if (checkNetwork()) {
+            progressBar.setVisibility(View.VISIBLE);
+        } else {
+            titleView.setText(R.string.no_connection);
+        }
         IGamesRepository iGamesRepository;
         try {
             iGamesRepository = ServiceLocator.getInstance().getGamesRepository(getApplication());
         } catch (GeneralSecurityException | IOException e) {
             throw new RuntimeException(e);
         }
-
         if (iGamesRepository != null) {
             gamesViewModel = new ViewModelProvider(this, new GamesViewModelFactory(iGamesRepository)).get(GamesViewModel.class);
         }
@@ -91,7 +90,6 @@ public class AllGamesActivity extends AppCompatActivity {
                 });
                 break;
         }
-
     }
 
     private boolean checkNetwork() {

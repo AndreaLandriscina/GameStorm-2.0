@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -71,6 +72,9 @@ public class WantedFragment extends Fragment {
         noGameTextView = requireView().findViewById(R.id.noGameText);
         noGameTextView.setVisibility(View.GONE);
         IGamesRepository iGamesRepository;
+        if (!checkNetwork(requireContext())){
+            Toast.makeText(requireContext(), R.string.no_connection, Toast.LENGTH_LONG).show();
+        }
         try {
             iGamesRepository = ServiceLocator.getInstance().getGamesRepository(requireActivity().getApplication());
         } catch (GeneralSecurityException | IOException e) {

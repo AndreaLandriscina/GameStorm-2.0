@@ -34,7 +34,6 @@
     <string name="desired">Desiderati</string>
     <string name="playing">In gioco</string>
     <string name="playeds">Giocati</string>
-    <string name="login_to_see_this">Esegui l\'accesso per salvare i tuoi giochi preferiti!</string>
     <string name="logout_successfully">Logout riuscito</string>
     <string name="sign_up">Registrati</string>
     <string name="popular">Popolari</string>
@@ -84,6 +83,8 @@
     <string name="sort_by">Ordina per</string>
     <string name="offline">Sei offline!</string>
     <string name="descending_order">Ordine inverso</string>
+    <string name="login_to_see_this1">Esegui l\'accesso per salvare i tuoi giochi preferiti!</string>
+    <string name="login_to_see_this2">Accedi per salvare giochi</string>
 
 
 </resources>

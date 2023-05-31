@@ -57,7 +57,6 @@ public class FranchiseActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.progressBar);
         RecyclerView recyclerView = findViewById(R.id.franchiseRecyclerView);
         sorting = findViewById(R.id.sorting_F);
-
         recyclerDataArrayList=new ArrayList<>();
         adapter = new RecyclerViewAdapter(recyclerDataArrayList,this, false);
         GridLayoutManager layoutManager=new GridLayoutManager(this,2);
@@ -84,8 +83,9 @@ public class FranchiseActivity extends AppCompatActivity {
                     showGames(result);
                     setSorting(result);
                 });
-            } else {
-                Toast.makeText(this, R.string.no_connection,Toast.LENGTH_LONG).show();
+            }  else {
+                franchiseTitleView.setText(R.string.no_connection);
+                sorting.setVisibility(View.GONE);
             }
         }  else {
             sorting.setVisibility(View.GONE);

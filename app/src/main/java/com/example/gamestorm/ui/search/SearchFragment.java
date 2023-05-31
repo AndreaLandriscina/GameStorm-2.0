@@ -138,7 +138,7 @@ public class SearchFragment extends Fragment {
     @SuppressLint("NotifyDataSetChanged")
     private void setSearchView() {
         searchView.setOnEditorActionListener((v, actionId, event) -> {
-            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+            if (actionId == EditorInfo.IME_ACTION_SEARCH && isNetworkAvailable(requireContext())) {
                 String query = v.getText().toString();
                 if (query.isEmpty()) {
                     resetStatus();
@@ -160,6 +160,8 @@ public class SearchFragment extends Fragment {
                     Toast.makeText(requireContext(), R.string.no_connection_message, Toast.LENGTH_LONG).show();
                     return false;
                 }
+            } else {
+                Toast.makeText(requireContext(), R.string.no_connection, Toast.LENGTH_LONG).show();
             }
             return false;
         });
@@ -211,7 +213,10 @@ public class SearchFragment extends Fragment {
                     .setView(customLayout)
                     .setTitle(R.string.search_filters_dialog_title)
                     .setPositiveButton(R.string.confirm_text, (dialogInterface, which) -> {
-
+                        if (!isNetworkAvailable(requireContext())){
+                            Toast.makeText(requireContext(), R.string.no_connection, Toast.LENGTH_LONG).show();
+                            return;
+                        }
                         String genreInput, platformInput;
 
                         genreInput = genreSPN.getSelectedItem().toString();

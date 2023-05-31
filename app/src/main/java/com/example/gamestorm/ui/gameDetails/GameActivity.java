@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -25,6 +26,8 @@ import com.example.gamestorm.util.Constants;
 import com.example.gamestorm.util.ServiceLocator;
 import com.example.gamestorm.util.SharedPreferencesUtil;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textview.MaterialTextView;
 import com.squareup.picasso.Picasso;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -37,13 +40,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.io.IOException;
@@ -205,7 +208,9 @@ public class GameActivity extends AppCompatActivity {
                 }
                 dialogFragment.show(getSupportFragmentManager(), "Dialog");
             } else {
-                goToLoginActivity();
+                RelativeLayout relativeLayout = findViewById(R.id.gameActivityLayout);
+                Snackbar.make(relativeLayout, R.string.login_to_see_this2, Snackbar.LENGTH_LONG)
+                        .setAction(R.string.login, v1 -> goToLoginActivity()).show();
             }
         });
     }
@@ -242,7 +247,9 @@ public class GameActivity extends AppCompatActivity {
                     gamesViewModel.updateWantedGame(game);
                 }
             } else {
-                goToLoginActivity();
+                RelativeLayout relativeLayout = findViewById(R.id.gameActivityLayout);
+                Snackbar.make(relativeLayout, R.string.login_to_see_this2, Snackbar.LENGTH_LONG)
+                        .setAction(R.string.login, v1 -> goToLoginActivity()).show();
             }
         });
     }
@@ -307,20 +314,26 @@ public class GameActivity extends AppCompatActivity {
 
     @SuppressLint("SetTextI18n")
     private void showReviewsNumber() {
-        TextView ratingCount = findViewById(R.id.ratingCount);
-        String ratingCountString = "\n" + getString(R.string.reviews);
-        ratingCount.setText(game.getTotalRatingCount() + ratingCountString);
+        if ((getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_NO) {
+            ImageView imageView = findViewById(R.id.ratingCountImage);
+            imageView.setImageResource(R.drawable.ic_rate_review_light);
+        }
+        MaterialTextView ratingCount = findViewById(R.id.ratingCount);
+        ratingCount.setText(String.valueOf(game.getTotalRatingCount()));
     }
 
     @SuppressLint("SetTextI18n")
     private void showRating() {
+        if ((getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_NO) {
+            ImageView imageView = findViewById(R.id.ratingImage);
+            imageView.setImageResource(R.drawable.ic_thumb_up_light);
+        }
         DecimalFormat df = new DecimalFormat("0.0");
-        TextView rating = findViewById(R.id.rating);
-        String ratingString = "\n" + getString(R.string.rating);
+        MaterialTextView rating = findViewById(R.id.rating);
         if (game.getTotalRating() != 0.0) {
             double value = game.getTotalRating() / 10;
             df.setRoundingMode(RoundingMode.DOWN);
-            rating.setText(df.format(value) + ratingString);
+            rating.setText(df.format(value));
         } else {
             rating.setText(getString(R.string.NoRating));
         }
@@ -350,7 +363,7 @@ public class GameActivity extends AppCompatActivity {
         LinearLayout linearLayout = findViewById(R.id.genresLayout);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
+                120
         );
         params.setMarginEnd(20);
         TextView genresView = findViewById(R.id.genresView);
@@ -360,9 +373,9 @@ public class GameActivity extends AppCompatActivity {
             MaterialButton button = new MaterialButton(this);
             button.setLayoutParams(params);
             button.setTextSize(16);
-            button.setPadding(15, 15, 15, 15);
-            button.setCornerRadius(30);
+            button.setCornerRadius(50);
             button.setText(genre);
+            button.setLayoutParams(params);
             button.setOnClickListener(v -> {
                 Intent myIntent = new Intent(getApplicationContext(), GenreActivity.class);
                 myIntent.putExtra("genreName", genre);
@@ -373,7 +386,11 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void showReleaseDate() {
-        TextView releaseDateView = findViewById(R.id.releaseDate);
+        if ((getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_NO) {
+                ImageView imageView = findViewById(R.id.calendarImage);
+                imageView.setImageResource(R.drawable.ic_calendar_light);
+        }
+        MaterialTextView releaseDateView = findViewById(R.id.releaseDate);
         String date;
         if (game.getFirstReleaseDateString() != null)
             date = game.getFirstReleaseDateString();
@@ -393,7 +410,7 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void showGameName() {
-        TextView gameNameView = findViewById(R.id.gameName);
+        MaterialTextView gameNameView = findViewById(R.id.gameName);
         gameNameView.setText(game.getName());
     }
 
