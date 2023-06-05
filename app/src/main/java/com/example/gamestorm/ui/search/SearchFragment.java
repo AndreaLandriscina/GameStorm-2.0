@@ -57,6 +57,7 @@ public class SearchFragment extends Fragment {
     private static boolean showFiltered = false;
     private static boolean showExplore = true;
     private static boolean firstShowExplore = true;
+    private static List<String> stringFilters = new ArrayList<>();
     private List<GameApiResponse> games;
     private static List<GameApiResponse> exploreCopy = new ArrayList<>();
     private MaterialButton sorting;
@@ -95,6 +96,7 @@ public class SearchFragment extends Fragment {
         yearInput = "";
         sorting = view.findViewById(R.id.sorting_B);
         filters = view.findViewById(R.id.filters_B);
+        inputTextLayout = requireView().findViewById(R.id.inputTextLayout);
         sortingParameter = "";
         IGamesRepository iGamesRepository;
         try {
@@ -123,6 +125,12 @@ public class SearchFragment extends Fragment {
             showFilteredGames(null,null);
         } else {
             showGamesOnRecyclerView(exploreCopy);
+        }
+
+        if (!stringFilters.isEmpty()){
+            for (String filter : stringFilters) {
+                addFilterView(filter);
+            }
         }
 
         setSearchView();
@@ -233,7 +241,6 @@ public class SearchFragment extends Fragment {
                             resetStatus();
                             return;
                         }
-                        inputTextLayout = requireView().findViewById(R.id.inputTextLayout);
 
                         inputTextLayout.removeAllViews();
                         if (!showSearch) {
@@ -241,16 +248,19 @@ public class SearchFragment extends Fragment {
                             if (genreInput.equals(genres[0]))
                                 genreInput = "";
                             else {
+                                stringFilters.add(genreInput);
                                 addFilterView(genreInput);
                             }
                             if (platformInput.equals(platforms[0]))
                                 platformInput = "";
                             else {
+                                stringFilters.add(genreInput);
                                 addFilterView(platformInput);
                             }
                             if (yearInput.equals(years.get(0)))
                                 yearInput = "";
                             else {
+                                stringFilters.add(genreInput);
                                 addFilterView(yearInput);
                             }
                             showFilteredGames(genreInput, platformInput);
@@ -387,9 +397,9 @@ public class SearchFragment extends Fragment {
             }
             adapter.notifyDataSetChanged();
         } else {
+            recyclerView.setVisibility(View.GONE);
             noGameTextView.setVisibility(View.VISIBLE);
         }
-
     }
 
     private boolean isNetworkAvailable(Context context) {
@@ -436,6 +446,7 @@ public class SearchFragment extends Fragment {
         showSearch = false;
         showFiltered = false;
         yearInput = "";
+        stringFilters.clear();
         LinearLayoutCompat layout = requireView().findViewById(R.id.inputTextLayout);
         layout.removeAllViews();
         showGamesOnRecyclerView(exploreCopy);

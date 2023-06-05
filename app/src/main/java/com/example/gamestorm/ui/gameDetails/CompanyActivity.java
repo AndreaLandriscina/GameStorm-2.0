@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.ProgressBar;
@@ -29,8 +30,10 @@ import com.example.gamestorm.util.sort.SortByAlphabet;
 import com.example.gamestorm.util.sort.SortByBestRating;
 import com.example.gamestorm.util.sort.SortByMostPopular;
 import com.example.gamestorm.util.sort.SortByMostRecent;
+import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.textview.MaterialTextView;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -54,6 +57,7 @@ public class CompanyActivity extends AppCompatActivity {
         Intent intent = getIntent();
         String company = intent.getStringExtra("nameCompany");
         TextView companyTitleView = findViewById(R.id.companyTitle);
+        MaterialTextView descriptionView = findViewById(R.id.companyDescription);
 
         progressBar = findViewById(R.id.progressBar);
         RecyclerView recyclerView = findViewById(R.id.companyRecyclerView);
@@ -68,6 +72,7 @@ public class CompanyActivity extends AppCompatActivity {
         if (company != null){
             progressBar.setVisibility(View.VISIBLE);
             companyTitleView.setText(company);
+
         } else {
             sorting.setVisibility(View.GONE);
             companyTitleView.setText(R.string.no_results);
@@ -92,6 +97,11 @@ public class CompanyActivity extends AppCompatActivity {
         gamesViewModel.getCompanyGames(company).observe(this, result -> {
             progressBar.setVisibility(View.GONE);
             Collections.sort(result, new SortByMostRecent());
+            if (result.get(0).getInvolvedCompany().getCompany().getDescription() != null){
+                CollapsingToolbarLayout collapsingToolbarLayout = findViewById(R.id.collapsing);
+                collapsingToolbarLayout.setVisibility(View.VISIBLE);
+                descriptionView.setText(result.get(0).getInvolvedCompany().getCompany().getDescription());
+            }
             showGames(result);
             setSorting(result);
         });

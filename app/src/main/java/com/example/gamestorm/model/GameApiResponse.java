@@ -296,6 +296,7 @@ public class GameApiResponse {
                 ", isSynchronized=" + isSynchronized +
                 ", follows=" + follows +
                 ", year=" + releaseDates +
+                ", descrpition" + getCompanyDescription() +
                 '}';
     }
 
@@ -423,6 +424,10 @@ public class GameApiResponse {
             return Collections.min(years).toString();
         }
         return null;
+    }
+
+    public String getCompanyDescription() {
+        return getInvolvedCompany().getCompany().getDescription();
     }
 }
 

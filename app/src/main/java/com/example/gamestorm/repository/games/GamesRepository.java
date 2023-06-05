@@ -1,8 +1,8 @@
 package com.example.gamestorm.repository.games;
 
 import static com.example.gamestorm.util.Constants.FRESH_TIMEOUT;
-import static com.example.gamestorm.util.Constants.FRESH_TIMEOUT_EXPLORE;
 
+import android.os.Build;
 import android.util.Log;
 
 import androidx.lifecycle.MutableLiveData;
@@ -455,7 +455,9 @@ public class GamesRepository implements IGamesRepository, GameCallback {
                 gameApiResponse.setSynchronized(true);
             }
             //da firebase arrivano in un ordine particolare ma devo mostrarli in ordine di aggiunta
-            Collections.sort(games, Comparator.comparing(GameApiResponse::getAdded));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                Collections.sort(games, Comparator.comparing(GameApiResponse::getAdded));
+            }
         }
         switch (wanted) {
             case "WANTED":

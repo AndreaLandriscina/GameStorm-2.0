@@ -1,7 +1,15 @@
 package com.example.gamestorm.ui.profile;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -10,25 +18,17 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ProgressBar;
-import android.widget.TextView;
-
+import com.example.gamestorm.R;
 import com.example.gamestorm.adapter.RecyclerData;
 import com.example.gamestorm.adapter.RecyclerProfileViewAdapter;
 import com.example.gamestorm.model.GameApiResponse;
-import com.example.gamestorm.R;
 import com.example.gamestorm.repository.games.IGamesRepository;
 import com.example.gamestorm.repository.user.IUserRepository;
 import com.example.gamestorm.ui.viewModel.GamesViewModel;
 import com.example.gamestorm.ui.viewModel.GamesViewModelFactory;
 import com.example.gamestorm.ui.viewModel.UserViewModel;
 import com.example.gamestorm.ui.viewModel.UserViewModelFactory;
-import com.example.gamestorm.util.Constants;
 import com.example.gamestorm.util.ServiceLocator;
-import com.example.gamestorm.util.SharedPreferencesUtil;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -41,7 +41,6 @@ public class PlayedFragment extends Fragment {
     private RecyclerProfileViewAdapter homeAdapter;
     private GamesViewModel gamesViewModel;
     private UserViewModel userViewModel;
-    private SharedPreferencesUtil sharedPreferencesUtil;
     private RecyclerView recyclerView;
     private TextView noGameTextView;
 
@@ -91,12 +90,7 @@ public class PlayedFragment extends Fragment {
     @SuppressLint({"SetTextI18n", "NotifyDataSetChanged"})
     private void observeViewModel() {
         progressBar.setVisibility(View.VISIBLE);
-        sharedPreferencesUtil =
-                new SharedPreferencesUtil(requireActivity().getApplication());
-        boolean isFirstLoading = sharedPreferencesUtil.readBooleanData(Constants.SHARED_PREFERENCES_FILE_NAME,
-                Constants.SHARED_PREFERENCES_FIRST_LOADING_PLAYED);
-
-        gamesViewModel.getPlayedGames(isFirstLoading).observe(getViewLifecycleOwner(), gameApiResponses -> {
+        gamesViewModel.getPlayedGames(checkNetwork(requireContext())).observe(getViewLifecycleOwner(), gameApiResponses -> {
             if (gameApiResponses.size() == 0){
                 noGameTextView.setVisibility(View.VISIBLE);
             } else {
@@ -109,11 +103,13 @@ public class PlayedFragment extends Fragment {
             homeAdapter.notifyDataSetChanged();
             progressBar.setVisibility(View.GONE);
             recyclerView.setVisibility(View.VISIBLE);
-            if (isFirstLoading) {
-                sharedPreferencesUtil.writeBooleanData(Constants.SHARED_PREFERENCES_FILE_NAME,
-                        Constants.SHARED_PREFERENCES_FIRST_LOADING_PLAYED, false);
-            }
-
         });
+    }
+
+    private boolean checkNetwork(Context context) {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null;
     }
 }

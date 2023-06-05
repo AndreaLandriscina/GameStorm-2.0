@@ -33,7 +33,7 @@ public class GamesDataSource extends BaseGamesDataSource {
     public GamesDataSource() {
         this.gamesApiService = ServiceLocator.getInstance().getGamesApiService();
         fields = "fields name, videos.*, franchises.name, similar_games, first_release_date, release_dates.y, genres.name, total_rating," +
-                " total_rating_count, cover.url, involved_companies.company.name, platforms.name, summary, screenshots.url, follows; ";
+                " total_rating_count, cover.url, involved_companies.company.name, involved_companies.company.description, platforms.name, summary, screenshots.url, follows; ";
     }
 
     public void getGames(String query, String i) {
@@ -57,7 +57,7 @@ public class GamesDataSource extends BaseGamesDataSource {
 
                 @Override
                 public void onFailure(@NonNull Call<List<GameApiResponse>> call, @NonNull Throwable t) {
-                    Log.e(getClass().getSimpleName(), "error");
+                    Log.e(getClass().getSimpleName(), t.getMessage());
                 }
         });
     }

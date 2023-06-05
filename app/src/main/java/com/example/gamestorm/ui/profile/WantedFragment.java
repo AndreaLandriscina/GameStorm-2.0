@@ -29,9 +29,7 @@ import com.example.gamestorm.ui.viewModel.GamesViewModel;
 import com.example.gamestorm.ui.viewModel.GamesViewModelFactory;
 import com.example.gamestorm.ui.viewModel.UserViewModel;
 import com.example.gamestorm.ui.viewModel.UserViewModelFactory;
-import com.example.gamestorm.util.Constants;
 import com.example.gamestorm.util.ServiceLocator;
-import com.example.gamestorm.util.SharedPreferencesUtil;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -40,7 +38,6 @@ import java.util.ArrayList;
 
 public class WantedFragment extends Fragment {
     private ProgressBar progressBar;
-    private SharedPreferencesUtil sharedPreferencesUtil;
     private ArrayList<RecyclerData> recyclerDataArrayList;
     private GamesViewModel gamesViewModel;
     private UserViewModel userViewModel;
@@ -93,13 +90,8 @@ public class WantedFragment extends Fragment {
     @SuppressLint({"NotifyDataSetChanged", "SetTextI18n"})
     private void observeViewModel() {
         progressBar.setVisibility(View.VISIBLE);
-        sharedPreferencesUtil =
-                new SharedPreferencesUtil(requireActivity().getApplication());
-        boolean isFirstLoading = sharedPreferencesUtil.readBooleanData(Constants.SHARED_PREFERENCES_FILE_NAME,
-                Constants.SHARED_PREFERENCES_FIRST_LOADING_WANTED);
 
-        gamesViewModel.getWantedGames(isFirstLoading).observe(getViewLifecycleOwner(), gameApiResponses -> {
-
+        gamesViewModel.getWantedGames(checkNetwork(requireContext())).observe(getViewLifecycleOwner(), gameApiResponses -> {
             if (gameApiResponses.size() == 0){
                 noGameTextView.setVisibility(View.VISIBLE);
             } else {
@@ -112,10 +104,6 @@ public class WantedFragment extends Fragment {
             homeAdapter.notifyDataSetChanged();
             recyclerView.setVisibility(View.VISIBLE);
             progressBar.setVisibility(View.GONE);
-            if (isFirstLoading) {
-                sharedPreferencesUtil.writeBooleanData(Constants.SHARED_PREFERENCES_FILE_NAME,
-                        Constants.SHARED_PREFERENCES_FIRST_LOADING_WANTED, false);
-            }
         });
     }
 
