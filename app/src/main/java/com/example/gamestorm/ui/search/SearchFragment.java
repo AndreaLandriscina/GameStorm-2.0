@@ -160,6 +160,7 @@ public class SearchFragment extends Fragment {
                 }
 
                 if (getContext() != null && isNetworkAvailable(getContext())) {
+                    recyclerView.setVisibility(View.GONE);
                     searchLoading.setVisibility(View.VISIBLE);
                     showSearch = true;
                     showSearchedGames(query);
@@ -244,7 +245,6 @@ public class SearchFragment extends Fragment {
 
                         inputTextLayout.removeAllViews();
                         if (!showSearch) {
-
                             if (genreInput.equals(genres[0]))
                                 genreInput = "";
                             else {
@@ -269,10 +269,23 @@ public class SearchFragment extends Fragment {
                             boolean genreOk = false, platformOk = false, yearOk = false;
                             if (genreInput.equals(genres[0]))
                                 genreOk = true;
+                            else {
+                                stringFilters.add(genreInput);
+                                addFilterView(genreInput);
+                            }
                             if (platformInput.equals(platforms[0]))
                                 platformOk = true;
-                            if (yearInput.equals(years.get(0)))
+                            else {
+                                stringFilters.add(platformInput);
+                                addFilterView(platformInput);
+                            }
+                            if (yearInput.equals(years.get(0))){
+                                yearInput = "";
                                 yearOk = true;
+                            } else {
+                                stringFilters.add(yearInput);
+                                addFilterView(yearInput);
+                            }
                             for (GameApiResponse gameApiResponse : games) {
                                 if (!genreOk) {
                                     if (gameApiResponse.getGenresString().contains(genreInput)) {
@@ -385,12 +398,14 @@ public class SearchFragment extends Fragment {
             filters.setVisibility(View.VISIBLE);
             noGameTextView.setVisibility(View.GONE);
             List<GameApiResponse> temp = new ArrayList<>();
-            if (!yearInput.equals("")) {
+            Log.i("year",yearInput);
+            if (!yearInput.isEmpty()) {
                 for (GameApiResponse gameApiResponse : gamesList) {
                     if (gameApiResponse.getFirstYear().equals(yearInput)) {
                         temp.add(gameApiResponse);
                     }
                 }
+                Log.i("temp",temp.toString());
                 adapter.setGames(temp);
             } else {
                 adapter.setGames(gamesList);

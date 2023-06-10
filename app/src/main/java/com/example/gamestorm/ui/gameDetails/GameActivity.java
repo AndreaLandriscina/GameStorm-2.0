@@ -49,6 +49,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.math.RoundingMode;
@@ -200,6 +201,10 @@ public class GameActivity extends AppCompatActivity {
             }
         });
         playedButton.setOnClickListener(v -> {
+            if(!checkNetwork()){
+                Toast.makeText(this, R.string.offline, Toast.LENGTH_SHORT).show();
+                return;
+            }
             if (userViewModel.getLoggedUser() != null) {
                 DialogFragment dialogFragment;
                 if (!game.isPlayed() && !game.isPlaying()) {
@@ -236,6 +241,10 @@ public class GameActivity extends AppCompatActivity {
         });
 
         wantedButton.setOnClickListener(v -> {
+            if(!checkNetwork()){
+                Toast.makeText(this, R.string.offline, Toast.LENGTH_SHORT).show();
+                return;
+            }
             if (userViewModel.getLoggedUser() != null) {
                 if (game.isWanted()) {
                     game.setWanted(false);

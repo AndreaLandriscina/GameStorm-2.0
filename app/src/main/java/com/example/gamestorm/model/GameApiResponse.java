@@ -427,7 +427,9 @@ public class GameApiResponse {
     }
 
     public String getCompanyDescription() {
-        return getInvolvedCompany().getCompany().getDescription();
+        if (getInvolvedCompany() != null)
+            return getInvolvedCompany().getCompany().getDescription();
+        return null;
     }
 }
 

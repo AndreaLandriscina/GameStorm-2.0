@@ -97,10 +97,11 @@ public class CompanyActivity extends AppCompatActivity {
         gamesViewModel.getCompanyGames(company).observe(this, result -> {
             progressBar.setVisibility(View.GONE);
             Collections.sort(result, new SortByMostRecent());
-            if (result.get(0).getInvolvedCompany().getCompany().getDescription() != null){
+            String description = result.get(0).getInvolvedCompany().getCompany().getDescription();
+            if (!description.isEmpty()){
                 CollapsingToolbarLayout collapsingToolbarLayout = findViewById(R.id.collapsing);
                 collapsingToolbarLayout.setVisibility(View.VISIBLE);
-                descriptionView.setText(result.get(0).getInvolvedCompany().getCompany().getDescription());
+                descriptionView.setText(description);
             }
             showGames(result);
             setSorting(result);
