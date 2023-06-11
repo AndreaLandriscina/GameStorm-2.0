@@ -33,6 +33,7 @@ import com.example.gamestorm.util.sort.SortByMostRecent;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.materialswitch.MaterialSwitch;
 import com.google.android.material.textview.MaterialTextView;
 
 import java.io.IOException;
@@ -47,6 +48,7 @@ public class CompanyActivity extends AppCompatActivity {
     private GamesViewModel gamesViewModel;
     private MaterialButton sorting;
     private RecyclerViewAdapter adapter;
+    private boolean reverse;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,22 +110,29 @@ public class CompanyActivity extends AppCompatActivity {
         });
 
     }
+    String sortingParameter = "";
     private int lastSelectedSortingParameter = 1;
     private void setSorting(List<GameApiResponse> games) {
         sorting.setOnClickListener(v -> {
             final String[] listItems = getResources().getStringArray(R.array.sorting_parameters);
-
+            final View customLayout = getLayoutInflater().inflate(R.layout.dialog_sort, null);
+            MaterialSwitch switchView = customLayout.findViewById(R.id.materialSwitch);
+            sortingParameter = listItems[1];
             new MaterialAlertDialogBuilder(this)
+                    .setView(customLayout)
                     .setTitle(R.string.sort_by_dialog_title)
                     .setSingleChoiceItems(listItems, lastSelectedSortingParameter, (dialog, i) -> {
-                        String sortingParameter = listItems[i];
+                        sortingParameter = listItems[i];
                         lastSelectedSortingParameter = i;
-                        if (!games.isEmpty()) {
+                    })
+                    .setPositiveButton(R.string.confirm_text, (dialog, which) -> {
+                        if (checkNetwork() || !games.isEmpty()) {
+                            reverse = switchView.isChecked();
                             sortGames(games, sortingParameter);
+                            showGames(games);
                         } else {
                             Toast.makeText(this, R.string.no_connection_message, Toast.LENGTH_LONG).show();
                         }
-                        dialog.dismiss();
                     }).setNegativeButton(R.string.cancel_text, (dialogInterface, i) -> dialogInterface.dismiss()).show();
         });
     }
@@ -164,6 +173,8 @@ public class CompanyActivity extends AppCompatActivity {
                 Collections.sort(games, new SortByAlphabet());
                 break;
         }
+        if (reverse)
+            Collections.reverse(games);
         showGames(games);
     }
 }

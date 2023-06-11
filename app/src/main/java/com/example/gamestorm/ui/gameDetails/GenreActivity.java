@@ -31,6 +31,7 @@ import com.example.gamestorm.util.sort.SortByMostPopular;
 import com.example.gamestorm.util.sort.SortByMostRecent;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.materialswitch.MaterialSwitch;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -44,6 +45,7 @@ public class GenreActivity extends AppCompatActivity{
     private GamesViewModel gamesViewModel;
     private MaterialButton sorting;
     private RecyclerViewAdapter adapter;
+    private boolean reverse;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,7 +79,6 @@ public class GenreActivity extends AppCompatActivity{
         } catch (GeneralSecurityException | IOException e) {
             throw new RuntimeException(e);
         }
-
         if (iGamesRepository != null) {
             gamesViewModel = new ViewModelProvider(this, new GamesViewModelFactory(iGamesRepository)).get(GamesViewModel.class);
         }
@@ -108,22 +109,28 @@ public class GenreActivity extends AppCompatActivity{
         }
         adapter.notifyDataSetChanged();
     }
+    String sortingParameter = "";
     private int lastSelectedSortingParameter = 1;
     private void setSorting(List<GameApiResponse> games) {
         sorting.setOnClickListener(v -> {
             final String[] listItems = getResources().getStringArray(R.array.sorting_parameters);
-
+            final View customLayout = getLayoutInflater().inflate(R.layout.dialog_sort, null);
+            MaterialSwitch switchView = customLayout.findViewById(R.id.materialSwitch);
             new MaterialAlertDialogBuilder(this)
+                    .setView(customLayout)
                     .setTitle(R.string.sort_by_dialog_title)
                     .setSingleChoiceItems(listItems, lastSelectedSortingParameter, (dialog, i) -> {
-                        String sortingParameter = listItems[i];
+                        sortingParameter = listItems[i];
                         lastSelectedSortingParameter = i;
-                        if (!games.isEmpty()) {
+                    })
+                    .setPositiveButton(R.string.confirm_text, (dialog, which) -> {
+                        if (checkNetwork() || !games.isEmpty()) {
+                            reverse = switchView.isChecked();
                             sortGames(games, sortingParameter);
+                            showGames(games);
                         } else {
                             Toast.makeText(this, R.string.no_connection_message, Toast.LENGTH_LONG).show();
                         }
-                        dialog.dismiss();
                     }).setNegativeButton(R.string.cancel_text, (dialogInterface, i) -> dialogInterface.dismiss()).show();
         });
     }
@@ -147,6 +154,8 @@ public class GenreActivity extends AppCompatActivity{
                 Collections.sort(games, new SortByAlphabet());
                 break;
         }
+        if (reverse)
+            Collections.reverse(games);
         showGames(games);
     }
 }

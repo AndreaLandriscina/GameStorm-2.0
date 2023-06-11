@@ -163,6 +163,10 @@ public class SearchFragment extends Fragment {
                     recyclerView.setVisibility(View.GONE);
                     searchLoading.setVisibility(View.VISIBLE);
                     showSearch = true;
+                    lastSelectedGenre = 0;
+                    lastSelectedPlatform = 0;
+                    lastSelectedReleaseYear = 0;
+                    inputTextLayout.removeAllViews();
                     showSearchedGames(query);
                     return true;
                 } else {
@@ -458,6 +462,7 @@ public class SearchFragment extends Fragment {
         games.addAll(exploreCopy);
         noGameTextView.setVisibility(View.GONE);
         hideKeyboard();
+        searchView.setText("");
         showSearch = false;
         showFiltered = false;
         yearInput = "";
