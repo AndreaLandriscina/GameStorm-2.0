@@ -146,35 +146,34 @@ public class SearchFragment extends Fragment {
     @SuppressLint("NotifyDataSetChanged")
     private void setSearchView() {
         searchView.setOnEditorActionListener((v, actionId, event) -> {
-            if (actionId == EditorInfo.IME_ACTION_SEARCH && isNetworkAvailable(requireContext())) {
-                String query = v.getText().toString();
-                if (query.isEmpty()) {
-                    resetStatus();
-                    return false;
-                }
-                hideKeyboard();
-                showExplore = false;
-                if (!games.isEmpty()) {
-                    games.clear();
-                    adapter.notifyDataSetChanged();
-                }
+            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                if (!isNetworkAvailable(requireContext())){
+                    Toast.makeText(requireContext(), R.string.no_connection, Toast.LENGTH_LONG).show();
+                } else{
+                    String query = v.getText().toString();
+                    if (query.isEmpty()) {
+                        resetStatus();
+                        return false;
+                    }
+                    hideKeyboard();
+                    showExplore = false;
+                    if (!games.isEmpty()) {
+                        games.clear();
+                        adapter.notifyDataSetChanged();
+                    }
 
-                if (getContext() != null && isNetworkAvailable(getContext())) {
-                    recyclerView.setVisibility(View.GONE);
-                    searchLoading.setVisibility(View.VISIBLE);
-                    showSearch = true;
-                    lastSelectedGenre = 0;
-                    lastSelectedPlatform = 0;
-                    lastSelectedReleaseYear = 0;
-                    inputTextLayout.removeAllViews();
-                    showSearchedGames(query);
-                    return true;
-                } else {
-                    Toast.makeText(requireContext(), R.string.no_connection_message, Toast.LENGTH_LONG).show();
-                    return false;
+                    if (getContext() != null) {
+                        recyclerView.setVisibility(View.GONE);
+                        searchLoading.setVisibility(View.VISIBLE);
+                        showSearch = true;
+                        lastSelectedGenre = 0;
+                        lastSelectedPlatform = 0;
+                        lastSelectedReleaseYear = 0;
+                        inputTextLayout.removeAllViews();
+                        showSearchedGames(query);
+                        return true;
+                    }
                 }
-            } else {
-                Toast.makeText(requireContext(), R.string.no_connection, Toast.LENGTH_LONG).show();
             }
             return false;
         });
