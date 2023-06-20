@@ -18,8 +18,6 @@ public class ProfilePagerAdapter extends FragmentStateAdapter {
     @Override
     public Fragment createFragment(int position) {
         switch (position){
-            case 0:
-                return new WantedFragment();
             case 1:
                 return new PlayingFragment();
             case 2:

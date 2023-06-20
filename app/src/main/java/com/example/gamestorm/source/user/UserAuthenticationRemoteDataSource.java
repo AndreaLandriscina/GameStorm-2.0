@@ -20,10 +20,6 @@ import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
-import java.io.File;
-import java.util.List;
-import java.util.Objects;
-
 public class UserAuthenticationRemoteDataSource extends BaseUserAuthenticationRemoteDataSource{
     private static final String TAG = UserAuthenticationRemoteDataSource.class.getSimpleName();
     private final FirebaseAuth firebaseAuth;

@@ -12,8 +12,6 @@
     <string name="description">Descrizione</string>
     <string name="company">COMPAGNIA</string>
     <string name="gameCover">Cover del gioco</string>
-    <string name="rating">Punteggio</string>
-    <string name="reviews">Recensioni</string>
     <string name="Unreleased">Non rilisciato</string>
     <string name="related_games">Giochi simili</string>
     <string name="no_results">Nessun risultato ;(</string>
@@ -31,10 +29,8 @@
     <string name="check_data">Controlla i dati inseriti</string>
     <string name="insert_mail_to_reset_password">Per resettare la password, inserisci la tua mail</string>
     <string name="username_empty">Inserisci l\'username</string>
-    <string name="desired">Desiderati</string>
     <string name="playing">In gioco</string>
     <string name="playeds">Giocati</string>
-    <string name="logout_successfully">Logout riuscito</string>
     <string name="sign_up">Registrati</string>
     <string name="popular">Popolari</string>
     <string name="bestgames">Giochi migliori</string>
@@ -59,7 +55,6 @@
 
     <string name="search_games_hint">Cerca giochi</string>
     <string name="no_platforms">Nessuna piattaforma disponibile</string>
-    <string name="number_of_results"> %1$d risultati trovati per &quot;%2$s&quot;</string>
     <string name="any_genre">Qualsiasi</string>
     <string name="any_platform">Qualsiasi</string>
     <string name="any_year">Qualsiasi</string>
@@ -70,15 +65,11 @@
     <string name="welcome_back">"Bentornato "</string>
     <string name="no_game">La lista è vuota! Inizia a salvare qualche gioco!</string>
     <string name="video_choose">Cosa vuoi vedere?</string>
-    <string name="wanted_games">giochi desiderati</string>
-    <string name="playing_games">giochi attualmente in gioco</string>
-    <string name="played_games">giochi giocati</string>
     <string name="show_all">Mostra tutti</string>
     <string name="sign_in_with_your_email_and_password">Accedi con la tua mail e password</string>
     <string name="sign_in_with_google">Accedi con Google</string>
     <string name="it_s_completely_free_nwhat_are_you_waiting_for">È tutto GRATIS! Cosa aspettI?</string>
     <string name="sign_up_with_your_mail_and_password">Iscriviti con la tua mail e password</string>
-    <string name="all_games">Tutti i giochi</string>
     <string name="filters">Filtri</string>
     <string name="sort_by">Ordina per</string>
     <string name="offline">Sei offline!</string>

@@ -1,4 +1,7 @@
 package com.example.gamestorm.model;
+
+import androidx.annotation.NonNull;
+
 public class User {
     private String id;
     private String name;
@@ -44,6 +47,7 @@ public class User {
         this.photoProfile = photoProfile;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "User{" +

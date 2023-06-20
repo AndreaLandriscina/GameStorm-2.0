@@ -1,17 +1,11 @@
 package com.example.gamestorm.source.user;
 
-import static com.example.gamestorm.util.Constants.FIREBASE_IMAGES_COLLECTION;
 import static com.example.gamestorm.util.Constants.FIREBASE_PLAYED_GAMES_COLLECTION;
 import static com.example.gamestorm.util.Constants.FIREBASE_PLAYING_GAMES_COLLECTION;
 import static com.example.gamestorm.util.Constants.FIREBASE_REALTIME_DATABASE;
 import static com.example.gamestorm.util.Constants.FIREBASE_USERS_COLLECTION;
 import static com.example.gamestorm.util.Constants.FIREBASE_WANTED_GAMES_COLLECTION;
-import static com.example.gamestorm.util.Constants.PHOTOPROFILE;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.provider.MediaStore;
-import android.util.Base64;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -25,10 +19,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -38,7 +29,7 @@ public class UserDataRemoteDataSource extends BaseUserDataRemoteDataSource{
     private static final String TAG = UserDataRemoteDataSource.class.getSimpleName();
 
     private final DatabaseReference databaseReference;
-    private SharedPreferencesUtil sharedPreferencesUtil;
+    private final SharedPreferencesUtil sharedPreferencesUtil;
     public UserDataRemoteDataSource(SharedPreferencesUtil sharedPreferencesUtil) {
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance(FIREBASE_REALTIME_DATABASE);
         databaseReference = firebaseDatabase.getReference().getRef();
@@ -53,6 +44,7 @@ public class UserDataRemoteDataSource extends BaseUserDataRemoteDataSource{
                 if (snapshot.exists()) {
                     Log.d(TAG, "User already present in Firebase Realtime Database");
                     HashMap<String,?> hashMap = (HashMap<String, String>) snapshot.getValue();
+                    assert hashMap != null;
                     String name = (String) hashMap.get("name");
                     user.setName(name);
                     sharedPreferencesUtil.writeStringData(Constants.SHARED_PREFERENCES_FILE_NAME, Constants.USERNAME, name);

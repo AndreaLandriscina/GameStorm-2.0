@@ -37,7 +37,7 @@ public class GamesRepository implements IGamesRepository, GameCallback {
     private final MutableLiveData<List<GameApiResponse>> forYouGamesMutableLiveData;
     private final MutableLiveData<List<GameApiResponse>> genreGamesMutableLiveData;
     private final MutableLiveData<List<GameApiResponse>> searchedGamesMutableLiveData;
-    private  MutableLiveData<List<GameApiResponse>> filteredGamesMutableLiveData;
+    private final MutableLiveData<List<GameApiResponse>> filteredGamesMutableLiveData;
     private final MutableLiveData<List<GameApiResponse>> similarGamesMutableLiveData;
     private final MutableLiveData<List<GameApiResponse>> allPopularGames;
     private final MutableLiveData<List<GameApiResponse>> allBestGames;
@@ -186,7 +186,7 @@ public class GamesRepository implements IGamesRepository, GameCallback {
 
     @Override
     public MutableLiveData<List<GameApiResponse>> getPlayingGames(boolean isFirstLoading) {
-        if (isFirstLoading) {
+        if (isFirstLoading ) {
             backupDataSource.getPlayingGames();
         } else {
             gamesLocalDataSource.getPlayingGames();
@@ -246,9 +246,6 @@ public class GamesRepository implements IGamesRepository, GameCallback {
         if (genre != null || platform != null){
             gamesDataSource.getFilteredGames(genre, platform, year);
         }
-
-        //if (filteredGamesMutableLiveData.getValue() != null && !filteredGamesMutableLiveData.getValue().isEmpty())
-        //    filteredGamesMutableLiveData = new MutableLiveData<>();
         return filteredGamesMutableLiveData;
     }
 

@@ -6,10 +6,6 @@ import androidx.lifecycle.ViewModel;
 import com.example.gamestorm.model.User;
 import com.example.gamestorm.repository.user.IUserRepository;
 
-import java.io.File;
-import java.util.List;
-import java.util.Set;
-
 public class UserViewModel extends ViewModel {
     private static final String TAG = UserViewModel.class.getSimpleName();
 

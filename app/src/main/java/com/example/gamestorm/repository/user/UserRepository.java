@@ -12,7 +12,6 @@ import com.example.gamestorm.source.user.BaseUserDataRemoteDataSource;
 import java.util.List;
 
 public class UserRepository implements IUserRepository, UserResponseCallback, GameCallback {
-    private static final String TAG = UserRepository.class.getSimpleName();
 
     private final BaseUserAuthenticationRemoteDataSource userRemoteDataSource;
     private final BaseUserDataRemoteDataSource userDataRemoteDataSource;
@@ -121,8 +120,6 @@ public class UserRepository implements IUserRepository, UserResponseCallback, Ga
 
     @Override
     public void onFailureFromRemoteDatabase(String message) {
-        //Result.Error result = new Result.Error(message);
-        //userMutableLiveData.postValue(result);
     }
 
     @Override
@@ -137,14 +134,10 @@ public class UserRepository implements IUserRepository, UserResponseCallback, Ga
 
     @Override
     public void onSuccessFromLocal(List<GameApiResponse> gameApiResponses, String i) {
-        //Result.GamesResponseSuccess result = new Result.GamesResponseSuccess(gameApiResponses);
-        //userFavoriteNewsMutableLiveData.postValue(result);
     }
 
     @Override
     public void onSuccessDeletion() {
-        //Result.UserResponseSuccess result = new Result.UserResponseSuccess(null);
-        //userMutableLiveData.postValue(result);
     }
 
     @Override

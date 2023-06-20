@@ -6,15 +6,6 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.widget.LinearLayoutCompat;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,9 +18,17 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.LinearLayoutCompat;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.gamestorm.R;
 import com.example.gamestorm.adapter.RecyclerSearchAdapter;
 import com.example.gamestorm.model.GameApiResponse;
-import com.example.gamestorm.R;
 import com.example.gamestorm.repository.games.IGamesRepository;
 import com.example.gamestorm.ui.viewModel.GamesViewModel;
 import com.example.gamestorm.ui.viewModel.GamesViewModelFactory;
@@ -257,13 +256,13 @@ public class SearchFragment extends Fragment {
                             if (platformInput.equals(platforms[0]))
                                 platformInput = "";
                             else {
-                                stringFilters.add(genreInput);
+                                stringFilters.add(platformInput);
                                 addFilterView(platformInput);
                             }
                             if (yearInput.equals(years.get(0)))
                                 yearInput = "";
                             else {
-                                stringFilters.add(genreInput);
+                                stringFilters.add(yearInput);
                                 addFilterView(yearInput);
                             }
                             showFilteredGames(genreInput, platformInput);

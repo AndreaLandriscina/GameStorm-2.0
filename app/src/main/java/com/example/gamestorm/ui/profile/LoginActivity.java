@@ -28,6 +28,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -56,7 +57,7 @@ import java.security.GeneralSecurityException;
 
 public class LoginActivity extends AppCompatActivity {
     FirebaseAuth firebaseAuth;
-    ProgressDialog progressDialog;
+    ProgressBar progressBar;
     private UserViewModel userViewModel;
     private DataEncryptionUtil dataEncryptionUtil;
     private SignInClient oneTapClient;
@@ -68,7 +69,7 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
+        firebaseAuth = FirebaseAuth.getInstance();
         IUserRepository userRepository = ServiceLocator.getInstance().
                 getUserRepository(getApplication());
         userViewModel = new ViewModelProvider(
@@ -118,9 +119,6 @@ public class LoginActivity extends AppCompatActivity {
                 try {
                     SignInCredential credential = oneTapClient.getSignInCredentialFromIntent(activityResult.getData());
                     String idToken = credential.getGoogleIdToken();
-                    String uriPhoto = null;
-                    if (credential.getProfilePictureUri() != null)
-                        uriPhoto = credential.getProfilePictureUri().toString();
                     if (idToken != null) {
                         // Got an ID token from Google. Use it to authenticate with Firebase.
                         userViewModel.getGoogleUserMutableLiveData(idToken).observe(this, authenticationResult -> {
@@ -140,7 +138,6 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void retrieveUserInformation(User user) {
-        //progressIndicator.setVisibility(View.VISIBLE)
         userViewModel.getUserWantedGamesMutableLiveData(user.getId()).observe(
                 this, userFavoriteNewsRetrievalResult -> sharedPreferencesUtil.writeBooleanData(SHARED_PREFERENCES_FILE_NAME,
                         SHARED_PREFERENCES_FIRST_LOADING_WANTED, false)
@@ -158,26 +155,36 @@ public class LoginActivity extends AppCompatActivity {
     private void resetPassword() {
         TextView resetPassword = findViewById(R.id.resetPassword);
         resetPassword.setOnClickListener(view -> {
+            hideKeyboard();
             EditText emailView = findViewById(R.id.emailAddress);
             String email = emailView.getText().toString();
+            progressBar = findViewById(R.id.progressBar);
             if (isEmailOk(email)) {
-                progressDialog.setTitle(getString(R.string.sending_mail));
-                progressDialog.show();
+                progressBar.setVisibility(View.VISIBLE);
                 firebaseAuth.sendPasswordResetEmail(email)
                         .addOnSuccessListener(unused -> {
-                            progressDialog.cancel();
-                            Toast.makeText(LoginActivity.this, emailsent, Toast.LENGTH_SHORT).show();
+                            progressBar.setVisibility(View.GONE);
+                            Toast.makeText(LoginActivity.this, emailsent, Toast.LENGTH_LONG).show();
                         })
                         .addOnFailureListener(e -> {
-                            progressDialog.cancel();
+                            progressBar.setVisibility(View.GONE);
                             Toast.makeText(LoginActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                         });
             } else {
                 Snackbar.make(LoginActivity.this.findViewById(android.R.id.content),
                         R.string.insert_mail_to_reset_password, Snackbar.LENGTH_SHORT).show();
-                progressDialog.cancel();
+                progressBar.setVisibility(View.GONE);
             }
         });
+    }
+
+    private void hideKeyboard() {
+        InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
+        View view = getCurrentFocus();
+        if (view == null) {
+            view = new View(getApplication());
+        }
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
     private void googleLoginRequest() {

@@ -8,7 +8,7 @@
     android:layout_marginHorizontal="5dp"
     tools:context=".ui.gameDetails.GenreActivity">
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/genreTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

@@ -2,9 +2,8 @@ package com.example.gamestorm.util;
 
 public class Constants {
     public static final int FRESH_TIMEOUT = 60*30*1000;
-    public static final int FRESH_TIMEOUT_EXPLORE = 60*3*1000;
     public static final String LAST_UPDATE_HOME = "last_update_home";
-    public static final String LAST_UPDATE_EXPLORE = "last_update_explore";
+    public static final String YOUTUBE_URL = "http://www.youtube.com/watch?v=";
     public static final String GAME_API_BASE_URL = "https://api.igdb.com/v4/";
     public static final String TOP_HEADLINES_ENDPOINT = "games";
     public static final String CLIENT_ID = "Client-ID";
@@ -21,7 +20,6 @@ public class Constants {
     public static final String WEAK_PASSWORD_ERROR = "passwordIsWeak";
     public static final String FIREBASE_REALTIME_DATABASE = "https://gamestorm-74204-default-rtdb.europe-west1.firebasedatabase.app/";
     public static final String FIREBASE_USERS_COLLECTION = "users";
-    public static final String FIREBASE_IMAGES_COLLECTION = "images";
     public static final String FIREBASE_WANTED_GAMES_COLLECTION = "wanted_games";
     public static final String FIREBASE_PLAYING_GAMES_COLLECTION = "playing_games";
     public static final String FIREBASE_PLAYED_GAMES_COLLECTION = "played_games";
@@ -33,20 +31,7 @@ public class Constants {
     public static final String USERNAME = "username";
     public static final String EMAIL_ADDRESS = "email_address";
     public static final String PASSWORD = "password";
-    public static final String PHOTOPROFILE = "photo_profile";
     public static final String ID_TOKEN = "google_token";
-    public static final String gameNameKey = "GAME_NAME";
-    public static final String sortingParameterKey = "SORTING_PARAMETER";
-    public static final String lastSelectedSortingParameterKey = "LAST_SORTING_PARAMETER";
-    public static final String lastSelectedGenreKey = "GENRE";
-    public static final String lastSelectedPlatformKey = "PLATFORM";
-    public static final String lastSelectedReleaseYearKey = "RELEASE_YEAR";
-    public static final String gamesKey = "GAMES";
-    public static final String gamesCopyKey = "GAMES_COPY";
-    public static final String exploreShowedKey = "EXPLORE_SHOWED";
-    public static final String resultNumberKey = "RESULTS_NUMBER";
-    public static final String filterVisibilityKey = "FILTER_VISIBILITY";
-    public static final String sortingVisibilityKey = "SORTING_VISIBILITY";
 
     public static final String SHARED_PREFERENCES_FIRST_LOADING_WANTED = "first_loading";
     public static final String SHARED_PREFERENCES_FIRST_LOADING_PLAYING = "first_loading";

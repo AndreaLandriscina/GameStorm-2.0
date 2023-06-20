@@ -2,7 +2,6 @@ package com.example.gamestorm.ui.profile;
 
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
-import android.content.ClipData;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;

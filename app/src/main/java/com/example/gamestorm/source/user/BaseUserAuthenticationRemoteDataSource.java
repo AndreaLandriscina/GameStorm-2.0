@@ -3,9 +3,6 @@ package com.example.gamestorm.source.user;
 import com.example.gamestorm.model.User;
 import com.example.gamestorm.repository.user.UserResponseCallback;
 
-import java.io.File;
-import java.util.List;
-
 public abstract class BaseUserAuthenticationRemoteDataSource {
     protected UserResponseCallback userResponseCallback;
 

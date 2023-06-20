@@ -1,10 +1,7 @@
 package com.example.gamestorm.model;
 
 import android.annotation.SuppressLint;
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.util.ArrayMap;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
@@ -12,7 +9,6 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import androidx.room.TypeConverters;
 
-import com.example.gamestorm.util.sort.SortByMostRecent;
 import com.google.gson.annotations.SerializedName;
 
 import java.text.DateFormat;

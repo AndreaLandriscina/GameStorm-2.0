@@ -40,7 +40,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -145,7 +144,7 @@ public class GameActivity extends AppCompatActivity {
             } else {
                 Intent appIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:" + game.getVideos().get(0).getVideo_id()));
                 Intent webIntent = new Intent(Intent.ACTION_VIEW,
-                        Uri.parse("http://www.youtube.com/watch?v=" + game.getVideos().get(0).getVideo_id()));
+                        Uri.parse(Constants.YOUTUBE_URL + game.getVideos().get(0).getVideo_id()));
                 try {
                     startActivity(appIntent);
                 } catch (ActivityNotFoundException ex) {

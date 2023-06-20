@@ -4,20 +4,15 @@ import static com.example.gamestorm.util.Constants.CLIENT_ID_VALUE;
 import static com.example.gamestorm.util.Constants.CONTENT_TYPE_VALUE;
 import static com.example.gamestorm.util.Constants.TOKEN_API_VALUE;
 
-import android.content.Intent;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.example.gamestorm.R;
 import com.example.gamestorm.model.GameApiResponse;
 import com.example.gamestorm.service.GamesApiService;
 import com.example.gamestorm.util.ServiceLocator;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import okhttp3.MediaType;

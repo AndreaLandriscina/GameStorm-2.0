@@ -6,25 +6,15 @@ import static com.example.gamestorm.util.Constants.ENCRYPTED_DATA_FILE_NAME;
 import static com.example.gamestorm.util.Constants.ENCRYPTED_SHARED_PREFERENCES_FILE_NAME;
 import static com.example.gamestorm.util.Constants.ID_TOKEN;
 import static com.example.gamestorm.util.Constants.PASSWORD;
-import static com.example.gamestorm.util.Constants.PHOTOPROFILE;
 import static com.example.gamestorm.util.Constants.SHARED_PREFERENCES_FILE_NAME;
 import static com.example.gamestorm.util.Constants.USERNAME;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
-import android.util.Base64;
-import android.util.Log;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import com.example.gamestorm.databinding.ActivityRegisterBinding;
@@ -37,14 +27,9 @@ import com.example.gamestorm.util.DataEncryptionUtil;
 import com.example.gamestorm.util.ServiceLocator;
 import com.example.gamestorm.util.SharedPreferencesUtil;
 import com.google.android.material.snackbar.Snackbar;
-import com.squareup.picasso.Picasso;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 public class RegisterActivity extends AppCompatActivity {

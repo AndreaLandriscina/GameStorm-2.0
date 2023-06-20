@@ -2,7 +2,6 @@ package com.example.gamestorm.source.games;
 
 import static com.example.gamestorm.util.Constants.ENCRYPTED_DATA_FILE_NAME;
 import static com.example.gamestorm.util.Constants.ENCRYPTED_SHARED_PREFERENCES_FILE_NAME;
-import static com.example.gamestorm.util.Constants.LAST_UPDATE_EXPLORE;
 import static com.example.gamestorm.util.Constants.LAST_UPDATE_HOME;
 import static com.example.gamestorm.util.Constants.SHARED_PREFERENCES_FILE_NAME;
 
@@ -14,7 +13,6 @@ import com.example.gamestorm.model.GameApiResponse;
 import com.example.gamestorm.util.DataEncryptionUtil;
 import com.example.gamestorm.util.SharedPreferencesUtil;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class GamesLocalDataSource extends BaseGamesLocalDataSource {
